@@ -3,11 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ChevronLeft, MapPin, Star, Clock, Loader2, MessageSquare, Heart, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import useEmblaCarousel from 'embla-carousel-react';
 import { toast } from 'sonner';
 import { Button } from '../components/ui/Button';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import { Input } from '../components/ui/Input';
 import { PageWrapper } from '../components/ui/PageWrapper';
+import { Map } from '../components/ui/Map'; // Assuming Map is a reusable component or we create it
 import api from '../lib/api';
 
 // Generate time slots from 09:00 to 21:00 in 30-minute increments
@@ -28,6 +30,7 @@ export default function SalonDetail() {
   const [appointmentDate, setAppointmentDate] = useState('');
   const [appointmentTime, setAppointmentTime] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [emblaRef] = useEmblaCarousel({ loop: true });
 
   const { data: salon, isLoading } = useQuery({
     queryKey: ['salon', id],
@@ -219,11 +222,22 @@ export default function SalonDetail() {
 
   return (
     <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-[#121212] pb-6 transition-colors">
-      {/* Top Header Image & Back Button */}
+      {/* Top Header Image Carousel */}
       <div className="relative h-64 bg-zinc-200 dark:bg-zinc-800 transition-colors">
-        {salon.image_url && (
-          <img src={`http://localhost:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
-        )}
+        <div className="overflow-hidden h-full" ref={emblaRef}>
+          <div className="flex h-full">
+            {salon.image_url && (
+              <div className="flex-[0_0_100%] min-w-0">
+                <img src={`http://localhost:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
+              </div>
+            )}
+            {salon.images?.map((img: any) => (
+              <div key={img.id} className="flex-[0_0_100%] min-w-0">
+                <img src={`http://localhost:8000${img.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
+              </div>
+            ))}
+          </div>
+        </div>
         <button 
           onClick={() => navigate(-1)}
           className="absolute top-12 left-4 w-10 h-10 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm z-10 active:scale-95"
@@ -285,6 +299,14 @@ export default function SalonDetail() {
           </div>
         </div>
       )}
+
+      {/* Location Section */}
+      <div className="px-4 mt-6">
+        <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-4">Məkan</h2>
+        <div className="w-full h-48 rounded-2xl overflow-hidden shadow-sm border border-zinc-100 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 relative z-0">
+          <Map salons={[salon]} className="w-full h-full z-0" />
+        </div>
+      </div>
 
       {/* Services List */}
       <div className="px-4 mt-6">

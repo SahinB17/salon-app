@@ -7,6 +7,8 @@ import { PageWrapper } from '../components/ui/PageWrapper';
 import { SkeletonCard } from '../components/ui/SkeletonCard';
 import api from '../lib/api';
 
+import { motion } from 'framer-motion';
+
 export default function Home() {
   const navigate = useNavigate();
   const [recentlyViewed, setRecentlyViewed] = useState<any[]>([]);
@@ -97,13 +99,27 @@ export default function Home() {
 
         {/* Main Content */}
         <div className="px-4 mt-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">Populyar Salonlar</h2>
-            <span onClick={() => navigate('/salons')} className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 cursor-pointer transition-colors">Hamısı</span>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">Məşhur Salonlar</h2>
+            <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors" onClick={() => navigate('/salons')}>
+              Hamısı
+            </span>
           </div>
-
-          {/* Horizontal Scrollable Cards on Mobile, Grid on Desktop */}
-          <div className="flex lg:grid overflow-x-auto lg:overflow-x-visible snap-x snap-mandatory gap-4 pb-4 lg:pb-0 -mx-4 lg:mx-0 px-4 lg:px-0 scrollbar-hide lg:grid-cols-3 xl:grid-cols-4">
+          
+          <motion.div 
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.1
+                }
+              }
+            }}
+            className="space-y-4"
+          >
             {isLoading ? (
               // Loading skeleton
               [1, 2, 3, 4].map((i) => (
@@ -111,40 +127,47 @@ export default function Home() {
               ))
             ) : (
             popularSalons.map((salon: any) => (
-              <Card 
-                key={salon.id} 
-                onClick={() => navigate(`/salons/${salon.id}`)}
-                className="min-w-[260px] lg:min-w-0 snap-center rounded-2xl overflow-hidden border-0 shadow-sm active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer dark:bg-zinc-900"
+              <motion.div
+                key={salon.id}
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+                }}
               >
-                <div className="h-32 bg-zinc-200 dark:bg-zinc-800 w-full relative">
-                   {salon.image_url ? (
-                     <img src={`http://localhost:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
-                   ) : (
-                     <div className="absolute top-3 left-3 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-bold text-zinc-800 dark:text-zinc-200">
-                       Salon
-                     </div>
-                   )}
-                </div>
-                <div className="p-4 bg-white dark:bg-zinc-900">
-                  <h3 className="font-bold text-zinc-900 dark:text-zinc-50 truncate">{salon.name}</h3>
-                  <div className="flex items-center text-zinc-500 dark:text-zinc-400 mt-1 text-sm">
-                    <MapPin className="w-3.5 h-3.5 mr-1" />
-                    <span className="truncate">{salon.address || 'Ünvan yoxdur'}</span>
+                <Card 
+                  onClick={() => navigate(`/salons/${salon.id}`)}
+                  className="w-full snap-center rounded-2xl overflow-hidden border-0 shadow-sm active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer dark:bg-zinc-900"
+                >
+                  <div className="h-32 bg-zinc-200 dark:bg-zinc-800 w-full relative">
+                     {salon.image_url ? (
+                       <img src={`http://localhost:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
+                     ) : (
+                       <div className="absolute top-3 left-3 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-bold text-zinc-800 dark:text-zinc-200">
+                         Salon
+                       </div>
+                     )}
                   </div>
-                  <div className="flex items-center justify-between mt-4">
-                    <div className="flex items-center text-amber-500 font-medium text-sm">
-                      <Star className="w-4 h-4 fill-current mr-1" />
-                      {salon.average_rating ? salon.average_rating.toFixed(1) : '0.0'}
+                  <div className="p-4 bg-white dark:bg-zinc-900">
+                    <h3 className="font-bold text-zinc-900 dark:text-zinc-50 truncate">{salon.name}</h3>
+                    <div className="flex items-center text-zinc-500 dark:text-zinc-400 mt-1 text-sm">
+                      <MapPin className="w-3.5 h-3.5 mr-1" />
+                      <span className="truncate">{salon.address || 'Ünvan yoxdur'}</span>
                     </div>
-                    <div className="flex items-center text-zinc-400 dark:text-zinc-500 text-xs font-medium">
-                       <Clock className="w-3.5 h-3.5 mr-1" /> Bax
+                    <div className="flex items-center justify-between mt-4">
+                      <div className="flex items-center text-amber-500 font-medium text-sm">
+                        <Star className="w-4 h-4 fill-current mr-1" />
+                        {salon.average_rating ? salon.average_rating.toFixed(1) : '0.0'}
+                      </div>
+                      <div className="flex items-center text-zinc-400 dark:text-zinc-500 text-xs font-medium">
+                         <Clock className="w-3.5 h-3.5 mr-1" /> Bax
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              </motion.div>
             ))
           )}
-          </div>
+          </motion.div>
         </div>
 
         <div className="px-4 mt-6 lg:mt-10 mb-8">

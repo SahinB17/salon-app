@@ -8,6 +8,7 @@ import { Map } from '../components/ui/Map';
 import { EmptyState } from '../components/ui/EmptyState';
 import { PageWrapper } from '../components/ui/PageWrapper';
 import { SkeletonCard } from '../components/ui/SkeletonCard';
+import { motion } from 'framer-motion';
 import api from '../lib/api';
 
 // Simple debounce hook
@@ -101,36 +102,54 @@ export default function Search() {
              <Map salons={results} className="w-full h-[60vh] rounded-xl z-0" />
            </div>
         ) : (
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+           <motion.div 
+             initial="hidden"
+             animate="visible"
+             variants={{
+               hidden: { opacity: 0 },
+               visible: {
+                 opacity: 1,
+                 transition: { staggerChildren: 0.1 }
+               }
+             }}
+             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+           >
              {results.map((salon: any) => (
-               <Card 
-                 key={salon.id} 
-                 onClick={() => navigate(`/salons/${salon.id}`)}
-                 className="flex flex-row p-3 rounded-2xl border-0 shadow-sm active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer bg-white dark:bg-zinc-900"
+               <motion.div
+                 key={salon.id}
+                 variants={{
+                   hidden: { opacity: 0, y: 20 },
+                   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+                 }}
                >
-                 <div className="w-24 h-24 bg-zinc-200 dark:bg-zinc-800 rounded-xl flex-shrink-0 overflow-hidden relative">
-                    {salon.image_url ? (
-                      <img src={`http://localhost:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-zinc-400 dark:text-zinc-500">
-                         <MapPin className="w-6 h-6" />
-                      </div>
-                    )}
-                 </div>
-                 <div className="ml-4 flex flex-col justify-center flex-1">
-                   <h3 className="font-bold text-zinc-900 dark:text-zinc-50 line-clamp-1">{salon.name}</h3>
-                   <div className="flex items-center text-zinc-500 dark:text-zinc-400 mt-1 text-sm">
-                     <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
-                     <span className="line-clamp-1">{salon.address || 'Ünvan yoxdur'}</span>
+                 <Card 
+                   onClick={() => navigate(`/salons/${salon.id}`)}
+                   className="flex flex-row p-3 rounded-2xl border-0 shadow-sm active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer bg-white dark:bg-zinc-900 h-full"
+                 >
+                   <div className="w-24 h-24 bg-zinc-200 dark:bg-zinc-800 rounded-xl flex-shrink-0 overflow-hidden relative">
+                      {salon.image_url ? (
+                        <img src={`http://localhost:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-zinc-400 dark:text-zinc-500">
+                           <MapPin className="w-6 h-6" />
+                        </div>
+                      )}
                    </div>
-                   <div className="flex items-center text-amber-500 font-medium text-sm mt-2">
-                     <Star className="w-4 h-4 fill-current mr-1" />
-                     {salon.average_rating ? salon.average_rating.toFixed(1) : '0.0'}
+                   <div className="ml-4 flex flex-col justify-center flex-1">
+                     <h3 className="font-bold text-zinc-900 dark:text-zinc-50 line-clamp-1">{salon.name}</h3>
+                     <div className="flex items-center text-zinc-500 dark:text-zinc-400 mt-1 text-sm">
+                       <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
+                       <span className="line-clamp-1">{salon.address || 'Ünvan yoxdur'}</span>
+                     </div>
+                     <div className="flex items-center text-amber-500 font-medium text-sm mt-2">
+                       <Star className="w-4 h-4 fill-current mr-1" />
+                       {salon.average_rating ? salon.average_rating.toFixed(1) : '0.0'}
+                     </div>
                    </div>
-                 </div>
-               </Card>
+                 </Card>
+               </motion.div>
              ))}
-           </div>
+           </motion.div>
         )}
       </div>
     </PageWrapper>

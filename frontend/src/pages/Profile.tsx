@@ -241,7 +241,7 @@ export default function Profile() {
                 />
               </div>
               <div className="pt-2 flex gap-3">
-                <Button variant="outline" className="flex-1 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-800" onClick={() => setSettingsView('menu')}>Geri</Button>
+                <Button className="flex-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-800" onClick={() => setSettingsView('menu')}>Geri</Button>
                 <Button 
                   className="flex-1"
                   isLoading={updateProfileMutation.isPending}
@@ -274,7 +274,7 @@ export default function Profile() {
                 />
               </div>
               <div className="pt-2 flex gap-3">
-                <Button variant="outline" className="flex-1 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-800" onClick={() => setSettingsView('menu')}>Geri</Button>
+                <Button className="flex-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-800" onClick={() => setSettingsView('menu')}>Geri</Button>
                 <Button 
                   className="flex-1"
                   isLoading={updatePasswordMutation.isPending}
@@ -311,7 +311,7 @@ export default function Profile() {
                 <span className="font-medium text-zinc-900 dark:text-zinc-50">Gecə (Dark)</span>
               </div>
               <div className="pt-2">
-                <Button variant="outline" className="w-full bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-800" onClick={() => setSettingsView('menu')}>Geri</Button>
+                <Button className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-800" onClick={() => setSettingsView('menu')}>Geri</Button>
               </div>
             </div>
           )}
@@ -331,7 +331,7 @@ export default function Profile() {
                 />
               </div>
               <div className="pt-2 flex gap-3">
-                <Button variant="outline" className="flex-1 bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-800" onClick={() => setSettingsView('menu')}>Ləğv et</Button>
+                <Button className="flex-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-800" onClick={() => setSettingsView('menu')}>Ləğv et</Button>
                 <Button 
                   className="flex-1 bg-red-600 hover:bg-red-700 text-white dark:bg-red-600 dark:text-white dark:hover:bg-red-700"
                   isLoading={deleteAccountMutation.isPending}
