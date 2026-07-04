@@ -26,6 +26,23 @@ async def create_appointment_endpoint(
     if not service or service.salon_id != salon.id:
         raise HTTPException(status_code=400, detail="Invalid service for this salon")
         
+    # Check staff if provided
+    if appointment_in.staff_id:
+        from app.crud import crud_staff
+        staff = await crud_staff.get_staff(db=session, staff_id=appointment_in.staff_id)
+        if not staff or staff.salon_id != salon.id or not staff.is_active:
+            raise HTTPException(status_code=400, detail="Invalid or inactive staff for this salon")
+
+    # Check working hours
+    if salon.open_time and salon.close_time:
+        start_t = appointment_in.start_time.time()
+        end_t = appointment_in.end_time.time()
+        if start_t < salon.open_time or end_t > salon.close_time:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Appointment is outside salon working hours ({salon.open_time} - {salon.close_time})"
+            )
+        
     is_overlapping = await crud_appointment.check_overlapping(
         db=session,
         salon_id=appointment_in.salon_id,

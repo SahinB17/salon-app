@@ -18,5 +18,4 @@ class User(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     salons = relationship("Salon", back_populates="owner", cascade="all, delete-orphan")
-    appointments_as_customer = relationship("Appointment", foreign_keys="Appointment.customer_id", back_populates="customer", cascade="all, delete-orphan")
-    appointments_as_staff = relationship("Appointment", foreign_keys="Appointment.staff_id", back_populates="staff")
+    appointments_as_customer = relationship("Appointment", foreign_keys="[Appointment.customer_id]", back_populates="customer")

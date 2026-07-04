@@ -5,6 +5,10 @@ from app.models.user import User
 from app.schemas.salon import SalonCreate, SalonUpdate, SalonResponse
 from app.schemas.salon import SalonBase
 from app.crud import crud_salon
+from sqlalchemy.future import select
+from sqlalchemy import or_
+from app.models.salon import Salon
+from app.models.service import Service
 
 router = APIRouter(prefix="/salons", tags=["Salons"])
 
@@ -85,3 +89,35 @@ async def delete_salon_endpoint(
         raise HTTPException(status_code=403, detail="Not enough permissions")
     await crud_salon.delete_salon(db=session, salon_id=salon_id)
     return {"status": "success", "message": "Salon deleted successfully"}
+
+@router.get("/search/", response_model=List[SalonResponse])
+async def search_salons(
+    session: SessionDep,
+    query: str = "",
+    skip: int = 0,
+    limit: int = 100
+) -> Any:
+    """
+    Search salons by name, address, or service name.
+    """
+    if not query:
+        return []
+    
+    search_term = f"%{query}%"
+    
+    stmt = (
+        select(Salon)
+        .outerjoin(Salon.services)
+        .where(
+            or_(
+                Salon.name.ilike(search_term),
+                Salon.address.ilike(search_term),
+                Service.name.ilike(search_term)
+            )
+        )
+        .distinct()
+        .offset(skip)
+        .limit(limit)
+    )
+    result = await session.execute(stmt)
+    return list(result.scalars().all())

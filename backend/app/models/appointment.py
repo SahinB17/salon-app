@@ -10,7 +10,7 @@ class Appointment(Base):
     customer_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     salon_id = Column(Integer, ForeignKey("salons.id", ondelete="CASCADE"), nullable=False)
     service_id = Column(Integer, ForeignKey("services.id", ondelete="CASCADE"), nullable=False)
-    staff_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    staff_id = Column(Integer, ForeignKey("staffs.id", ondelete="SET NULL"), nullable=True)
     
     start_time = Column(DateTime(timezone=True), nullable=False, index=True)
     end_time = Column(DateTime(timezone=True), nullable=False, index=True)
@@ -22,4 +22,4 @@ class Appointment(Base):
     customer = relationship("User", foreign_keys=[customer_id], back_populates="appointments_as_customer")
     salon = relationship("Salon", back_populates="appointments")
     service = relationship("Service", back_populates="appointments")
-    staff = relationship("User", foreign_keys=[staff_id], back_populates="appointments_as_staff")
+    staff = relationship("Staff", back_populates="appointments")

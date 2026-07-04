@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api.routers import auth, users, salons, services, appointments
+from app.api.routers import auth, users, salons, services, appointments, staff
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -26,6 +26,7 @@ app.include_router(users.router, prefix=settings.API_V1_STR)
 app.include_router(salons.router, prefix=settings.API_V1_STR)
 app.include_router(services.router, prefix=settings.API_V1_STR)
 app.include_router(appointments.router, prefix=settings.API_V1_STR)
+app.include_router(staff.router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 async def root():

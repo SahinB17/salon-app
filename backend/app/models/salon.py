@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Time
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.db.database import Base
@@ -18,4 +18,8 @@ class Salon(Base):
 
     owner = relationship("User", back_populates="salons")
     services = relationship("Service", back_populates="salon", cascade="all, delete-orphan")
+    open_time = Column(Time, nullable=True)
+    close_time = Column(Time, nullable=True)
+    
     appointments = relationship("Appointment", back_populates="salon", cascade="all, delete-orphan")
+    staffs = relationship("Staff", back_populates="salon", cascade="all, delete-orphan")

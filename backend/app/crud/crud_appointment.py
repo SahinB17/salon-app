@@ -25,8 +25,12 @@ async def check_overlapping(
         start_time < Appointment.end_time
     )
     
+    # Overlapping strictly by staff_id, if staff is assigned
     if staff_id is not None:
         query = query.where(Appointment.staff_id == staff_id)
+    else:
+        # If no staff is assigned, assume overlapping checks are disabled or handled differently
+        pass
         
     if exclude_appointment_id is not None:
         query = query.where(Appointment.id != exclude_appointment_id)
