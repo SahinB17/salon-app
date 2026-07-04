@@ -13,12 +13,14 @@ class UserCreate(UserBase):
     password: str
 
 class UserUpdate(BaseModel):
-    email: Optional[EmailStr] = None
     full_name: Optional[str] = None
     phone: Optional[str] = None
-    password: Optional[str] = None
     role: Optional[str] = None
     is_active: Optional[bool] = None
+
+class UserPasswordUpdate(BaseModel):
+    old_password: str
+    new_password: str
 
 class UserResponse(UserBase):
     id: int
