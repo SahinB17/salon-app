@@ -1,16 +1,19 @@
 from datetime import datetime, timedelta, timezone
+import hashlib
+import bcrypt
 from typing import Optional, Any
 from jose import jwt
-from passlib.context import CryptContext
 from app.core.config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    # Peşəkar yanaşma: bcrypt-in 72 bayt limitini keçmək üçün parolu əvvəlcə SHA-256 ilə hash-ləyirik
+    pre_hashed = hashlib.sha256(plain_password.encode('utf-8')).hexdigest().encode('utf-8')
+    return bcrypt.checkpw(pre_hashed, hashed_password.encode('utf-8'))
 
 def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    pre_hashed = hashlib.sha256(password.encode('utf-8')).hexdigest().encode('utf-8')
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(pre_hashed, salt).decode('utf-8')
 
 def create_access_token(subject: str | Any, expires_delta: Optional[timedelta] = None) -> str:
     if expires_delta:
