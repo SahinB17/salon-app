@@ -1,6 +1,8 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime, time
+from .service import ServiceResponse
+from .staff import StaffResponse
 
 class SalonBase(BaseModel):
     name: str
@@ -22,6 +24,8 @@ class SalonUpdate(BaseModel):
 class SalonResponse(SalonBase):
     id: int
     owner_id: int
+    services: List[ServiceResponse] = []
+    staffs: List[StaffResponse] = []
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 

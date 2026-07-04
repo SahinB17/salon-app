@@ -1,16 +1,25 @@
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 
 from app.models.salon import Salon
 from app.schemas.salon import SalonCreate, SalonUpdate
 
 async def get_salon(db: AsyncSession, salon_id: int) -> Optional[Salon]:
-    result = await db.execute(select(Salon).where(Salon.id == salon_id))
+    stmt = select(Salon).where(Salon.id == salon_id).options(
+        selectinload(Salon.services),
+        selectinload(Salon.staffs)
+    )
+    result = await db.execute(stmt)
     return result.scalar_one_or_none()
 
 async def get_salons(db: AsyncSession, skip: int = 0, limit: int = 100) -> List[Salon]:
-    result = await db.execute(select(Salon).offset(skip).limit(limit))
+    stmt = select(Salon).offset(skip).limit(limit).options(
+        selectinload(Salon.services),
+        selectinload(Salon.staffs)
+    )
+    result = await db.execute(stmt)
     return list(result.scalars().all())
 
 async def create_salon(db: AsyncSession, salon_in: SalonCreate) -> Salon:

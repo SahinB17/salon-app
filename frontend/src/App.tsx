@@ -6,6 +6,10 @@ import ForgotPassword from './pages/ForgotPassword';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import MainLayout from './components/layout/MainLayout';
 import Home from './pages/Home';
+import Search from './pages/Search';
+import SalonDetail from './pages/SalonDetail';
+import Appointments from './pages/Appointments';
+import Profile from './pages/Profile';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -22,9 +26,10 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
-              <Route path="/salons" element={<div className="p-4 text-center mt-10">Axtarış (Tezliklə)</div>} />
-              <Route path="/appointments" element={<div className="p-4 text-center mt-10">Rezervasiyalarım (Tezliklə)</div>} />
-              <Route path="/profile" element={<div className="p-4 text-center mt-10">Profil (Tezliklə)</div>} />
+              <Route path="/salons" element={<Search />} />
+              <Route path="/salons/:id" element={<SalonDetail />} />
+              <Route path="/appointments" element={<Appointments />} />
+              <Route path="/profile" element={<Profile />} />
             </Route>
           </Route>
         </Routes>
