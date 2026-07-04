@@ -3,7 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.api.deps import SessionDep, get_current_active_user
 from app.models.user import User
 from app.schemas.appointment import AppointmentCreate, AppointmentResponse
-from app.crud import crud_appointment, crud_salon, crud_service
+from app.crud import crud_appointment, crud_salon, crud_service, crud_notification
+from app.schemas.notification import NotificationCreate
 
 router = APIRouter(prefix="/appointments", tags=["Appointments"])
 
@@ -59,6 +60,20 @@ async def create_appointment_endpoint(
     appointment = await crud_appointment.create_appointment(
         db=session, appointment_in=appointment_in, customer_id=current_user.id
     )
+    
+    # Notify the salon owner about the new reservation
+    try:
+        await crud_notification.create_notification(
+            db=session,
+            notification_in=NotificationCreate(
+                user_id=salon.owner_id,
+                title="Yeni Rezervasiya!",
+                message=f"Müştəri {current_user.full_name or 'İstifadəçi'} {appointment.start_time.strftime('%Y-%m-%d %H:%M')} tarixinə {service.name} xidməti üçün yazıldı."
+            )
+        )
+    except Exception as e:
+        print(f"Failed to create notification for salon owner: {e}")
+        
     return appointment
 
 @router.get("/me", response_model=List[AppointmentResponse])
@@ -121,6 +136,22 @@ async def update_appointment_status_endpoint(
         raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of {valid_statuses}")
         
     appointment = await crud_appointment.update_appointment_status(db=session, db_obj=appointment, status=new_status)
+    
+    # Notify the customer about the status update
+    try:
+        service = await crud_service.get_service(db=session, service_id=appointment.service_id)
+        status_msg = "təsdiqləndi" if new_status == "confirmed" else "ləğv edildi" if new_status == "cancelled" else "tamamlandı" if new_status == "completed" else new_status
+        await crud_notification.create_notification(
+            db=session,
+            notification_in=NotificationCreate(
+                user_id=appointment.customer_id,
+                title=f"Rezervasiya {status_msg}!",
+                message=f"{salon.name} salonunda {appointment.start_time.strftime('%Y-%m-%d %H:%M')} tarixinə olan {service.name if service else 'xidmət'} üzrə rezervasiyanız {status_msg}."
+            )
+        )
+    except Exception as e:
+        print(f"Failed to create notification for customer: {e}")
+        
     return appointment
 
 @router.get("/salon/{salon_id}/slots")

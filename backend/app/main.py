@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.core.config import settings
-from app.api.routers import auth, users, salons, services, appointments, staff, upload
+from app.api.routers import auth, users, salons, services, appointments, staff, upload, notifications
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -32,6 +32,7 @@ app.include_router(services.router, prefix=settings.API_V1_STR)
 app.include_router(appointments.router, prefix=settings.API_V1_STR)
 app.include_router(staff.router, prefix=settings.API_V1_STR)
 app.include_router(upload.router, prefix=settings.API_V1_STR)
+app.include_router(notifications.router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 async def root():

@@ -1,6 +1,7 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Store, Scissors, CalendarCheck, LogOut, Users } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { NotificationBell } from '../ui/NotificationBell';
 
 export default function AdminLayout() {
   const navItems = [
@@ -59,7 +60,10 @@ export default function AdminLayout() {
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 lg:pl-64 flex flex-col min-h-screen pb-20 lg:pb-0">
+      <div className="flex-1 lg:pl-64 flex flex-col min-h-screen pb-20 lg:pb-0 relative">
+        <div className="fixed top-3 right-4 lg:top-4 lg:right-6 z-50">
+          <NotificationBell />
+        </div>
         <main className="flex-1 p-4 lg:p-8">
           <Outlet />
         </main>
