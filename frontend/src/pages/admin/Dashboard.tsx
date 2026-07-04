@@ -55,7 +55,8 @@ export default function Dashboard() {
     queryFn: async () => {
       if (!selectedSalonId) return [];
       const res = await api.get(`/api/v1/appointments/salon/${selectedSalonId}`);
-      const today = new Date().toISOString().split('T')[0];
+      // Get local date in YYYY-MM-DD format
+      const today = new Date().toLocaleDateString('en-CA');
       return res.data.filter((a: any) => a.start_time?.startsWith(today));
     },
     enabled: !!selectedSalonId
@@ -63,8 +64,8 @@ export default function Dashboard() {
 
   const isLoading = isDailyLoading || isMonthlyLoading;
 
-  // Calculate today's revenue from daily report
-  const todayStr = new Date().toISOString().split('T')[0];
+  // Calculate today's revenue from daily report using local date
+  const todayStr = new Date().toLocaleDateString('en-CA');
   const todayData = dailyReport?.data?.find((d: any) => d.date === todayStr);
   const todayRevenue = todayData?.revenue || 0;
 
@@ -157,12 +158,12 @@ export default function Dashboard() {
                 <div className="w-10 h-10 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center transition-colors">
                   <TrendingUp className="w-5 h-5" />
                 </div>
-                <h3 className="text-sm font-medium text-zinc-500 dark:text-zinc-400 transition-colors">Bugünkü Gəlir</h3>
+                <h3 className="text-sm font-medium text-zinc-500 dark:text-zinc-400 transition-colors">Ümumi Gəlir</h3>
               </div>
               {isLoading ? (
                 <div className="h-8 bg-zinc-100 dark:bg-zinc-800 rounded-lg animate-pulse w-20 transition-colors" />
               ) : (
-                <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 transition-colors">{todayRevenue.toFixed(0)} ₼</p>
+                <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 transition-colors">{(monthlyReport?.total_revenue || 0).toFixed(0)} ₼</p>
               )}
             </Card>
           </div>
