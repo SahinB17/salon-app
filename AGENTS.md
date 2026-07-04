@@ -12,6 +12,7 @@ This file defines the global behavioral rules for all AI agents working on the p
 - **Inline CSS Forbidden:** All styling must be done with Tailwind CSS classes. Never use `style={{}}` (except for dynamic values).
 - **Component Isolation:** Components should serve a single purpose. Break large files into small, reusable components.
 - **State Management:** Use `TanStack Query` (React Query) hooks instead of direct `useEffect` for API calls.
+- **UI Architecture (Zero Duplication & Zero Override):** All reusable UI elements (Buttons, Inputs, Cards) MUST be centralized in `src/components/ui/`. Never write arbitrary ad-hoc elements. Always use the `cn()` utility function (with `clsx` and `tailwind-merge`) to merge Tailwind classes cleanly without conflicts.
 
 ## 3. Code Quality and Comments
 - Write docstrings or comments explaining what it does above every complex function or algorithm (especially the Overlapping logic).
