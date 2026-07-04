@@ -42,3 +42,19 @@ async def update_staff_endpoint(
     if salon.owner_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not enough permissions")
     return await crud_staff.update_staff(db=session, db_staff=staff, staff_in=staff_in)
+
+@router.delete("/{staff_id}")
+async def delete_staff_endpoint(
+    staff_id: int,
+    session: SessionDep,
+    current_user: User = Depends(get_current_active_user)
+) -> Any:
+    staff = await crud_staff.get_staff(db=session, staff_id=staff_id)
+    if not staff:
+        raise HTTPException(status_code=404, detail="Staff not found")
+    salon = await crud_salon.get_salon(db=session, salon_id=staff.salon_id)
+    if salon.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+    await crud_staff.delete_staff(db=session, staff_id=staff_id)
+    return {"status": "success", "message": "Staff deleted successfully"}
+

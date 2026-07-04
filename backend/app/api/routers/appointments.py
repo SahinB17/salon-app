@@ -122,3 +122,45 @@ async def update_appointment_status_endpoint(
         
     appointment = await crud_appointment.update_appointment_status(db=session, db_obj=appointment, status=new_status)
     return appointment
+
+@router.get("/salon/{salon_id}/slots")
+async def get_booked_slots(
+    salon_id: int,
+    date: str,
+    session: SessionDep,
+) -> Any:
+    """
+    Get booked time slots for a salon on a specific date.
+    Returns a list of {start_time, end_time} for all active appointments.
+    """
+    from datetime import datetime, timedelta
+    
+    try:
+        target_date = datetime.strptime(date, "%Y-%m-%d").date()
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
+    
+    day_start = datetime.combine(target_date, datetime.min.time())
+    day_end = day_start + timedelta(days=1)
+    
+    from sqlalchemy.future import select
+    from app.models.appointment import Appointment
+    
+    stmt = select(Appointment).where(
+        Appointment.salon_id == salon_id,
+        Appointment.status.in_(["pending", "confirmed"]),
+        Appointment.start_time >= day_start,
+        Appointment.start_time < day_end
+    )
+    result = await session.execute(stmt)
+    appointments = result.scalars().all()
+    
+    return [
+        {
+            "start_time": apt.start_time.isoformat(),
+            "end_time": apt.end_time.isoformat(),
+            "staff_id": apt.staff_id
+        }
+        for apt in appointments
+    ]
+

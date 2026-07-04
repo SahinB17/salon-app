@@ -16,6 +16,7 @@ import Dashboard from './pages/admin/Dashboard';
 import SalonsManagement from './pages/admin/SalonsManagement';
 import AppointmentsManagement from './pages/admin/AppointmentsManagement';
 import ServicesManagement from './pages/admin/ServicesManagement';
+import StaffManagement from './pages/admin/StaffManagement';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ function App() {
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="salons" element={<SalonsManagement />} />
                 <Route path="services" element={<ServicesManagement />} />
+                <Route path="staff" element={<StaffManagement />} />
                 <Route path="appointments" element={<AppointmentsManagement />} />
               </Route>
             </Route>

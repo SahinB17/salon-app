@@ -1,11 +1,21 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { ChevronLeft, MapPin, Star, Clock } from 'lucide-react';
+import { ChevronLeft, MapPin, Star, Clock, Loader2 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import { Input } from '../components/ui/Input';
 import api from '../lib/api';
+
+// Generate time slots from 09:00 to 21:00 in 30-minute increments
+function generateTimeSlots(startHour = 9, endHour = 21) {
+  const slots: string[] = [];
+  for (let h = startHour; h < endHour; h++) {
+    slots.push(`${String(h).padStart(2, '0')}:00`);
+    slots.push(`${String(h).padStart(2, '0')}:30`);
+  }
+  return slots;
+}
 
 export default function SalonDetail() {
   const { id } = useParams();
@@ -23,12 +33,24 @@ export default function SalonDetail() {
     }
   });
 
+  // Fetch booked slots for the selected date
+  const { data: bookedSlots = [], isLoading: isSlotsLoading } = useQuery({
+    queryKey: ['bookedSlots', id, appointmentDate],
+    queryFn: async () => {
+      if (!appointmentDate) return [];
+      const res = await api.get(`/api/v1/appointments/salon/${id}/slots?date=${appointmentDate}`);
+      return res.data;
+    },
+    enabled: !!appointmentDate && !!id
+  });
+
   const bookMutation = useMutation({
     mutationFn: async () => {
       const startDateTime = `${appointmentDate}T${appointmentTime}:00`;
-      // Calculate end time (assuming 1 hour for now, can be based on service duration)
       const d = new Date(startDateTime);
-      d.setHours(d.getHours() + 1);
+      // Use service duration if available, otherwise default to 60 minutes
+      const durationMinutes = selectedService?.duration_minutes || 60;
+      d.setMinutes(d.getMinutes() + durationMinutes);
       const endDateTime = d.toISOString().substring(0, 19);
 
       const response = await api.post('/api/v1/appointments/', {
@@ -61,10 +83,41 @@ export default function SalonDetail() {
     setAppointmentTime('');
   };
 
+  // Check if a time slot is booked
+  const isSlotBooked = (time: string): boolean => {
+    if (!appointmentDate || bookedSlots.length === 0) return false;
+    const slotStart = new Date(`${appointmentDate}T${time}:00`);
+    const durationMinutes = selectedService?.duration_minutes || 60;
+    const slotEnd = new Date(slotStart.getTime() + durationMinutes * 60000);
+
+    return bookedSlots.some((booked: any) => {
+      const bookedStart = new Date(booked.start_time);
+      const bookedEnd = new Date(booked.end_time);
+      // Check overlap: slotStart < bookedEnd AND bookedStart < slotEnd
+      return slotStart < bookedEnd && bookedStart < slotEnd;
+    });
+  };
+
+  // Check if slot is in the past
+  const isSlotPast = (time: string): boolean => {
+    if (!appointmentDate) return false;
+    const now = new Date();
+    const slotDateTime = new Date(`${appointmentDate}T${time}:00`);
+    return slotDateTime <= now;
+  };
+
+  // Generate slots based on salon working hours
+  const openHour = salon.open_time ? parseInt(salon.open_time.substring(0, 2)) : 9;
+  const closeHour = salon.close_time ? parseInt(salon.close_time.substring(0, 2)) : 21;
+  const timeSlots = generateTimeSlots(openHour, closeHour);
+
   return (
     <div className="flex flex-col min-h-screen bg-[#FAFAFA] pb-6">
       {/* Top Header Image & Back Button */}
       <div className="relative h-64 bg-zinc-200">
+        {salon.image_url && (
+          <img src={`http://localhost:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
+        )}
         <button 
           onClick={() => navigate(-1)}
           className="absolute top-12 left-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm z-10 active:scale-95"
@@ -104,7 +157,7 @@ export default function SalonDetail() {
               <div key={service.id} className="bg-white p-4 rounded-2xl shadow-sm border border-zinc-100 flex justify-between items-center">
                 <div>
                   <h3 className="font-bold text-zinc-900">{service.name}</h3>
-                  <p className="text-sm text-zinc-500 mt-1">{service.price} ₼ • 1 saat</p>
+                  <p className="text-sm text-zinc-500 mt-1">{service.price} ₼ • {service.duration_minutes} dəq.</p>
                 </div>
                 <Button 
                   onClick={() => handleBookClick(service)}
@@ -130,7 +183,7 @@ export default function SalonDetail() {
           <div className="space-y-6">
             <div className="bg-zinc-50 p-4 rounded-xl">
               <div className="font-bold text-zinc-900">{selectedService.name}</div>
-              <div className="text-zinc-500 text-sm mt-1">{selectedService.price} ₼</div>
+              <div className="text-zinc-500 text-sm mt-1">{selectedService.price} ₼ • {selectedService.duration_minutes} dəq.</div>
             </div>
 
             {/* Staff Selection (Optional) */}
@@ -150,32 +203,64 @@ export default function SalonDetail() {
                     className={`flex flex-col items-center justify-center min-w-[72px] h-[72px] rounded-2xl border-2 transition-all cursor-pointer ${selectedStaff === staff.id ? 'border-zinc-900 bg-zinc-50' : 'border-zinc-100 bg-white'}`}
                   >
                      <div className="w-8 h-8 bg-zinc-200 rounded-full mb-1"></div>
-                     <span className="text-xs font-medium text-zinc-700 truncate w-full text-center px-1">{staff.first_name}</span>
+                     <span className="text-xs font-medium text-zinc-700 truncate w-full text-center px-1">{staff.full_name?.split(' ')[0]}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Date and Time */}
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-bold text-zinc-900 block mb-2">Tarix</label>
-                <Input 
-                  type="date" 
-                  value={appointmentDate}
-                  onChange={(e) => setAppointmentDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-bold text-zinc-900 block mb-2">Saat</label>
-                <Input 
-                  type="time" 
-                  value={appointmentTime}
-                  onChange={(e) => setAppointmentTime(e.target.value)}
-                />
-              </div>
+            {/* Date */}
+            <div>
+              <label className="text-sm font-bold text-zinc-900 block mb-2">Tarix</label>
+              <Input 
+                type="date" 
+                value={appointmentDate}
+                onChange={(e) => { setAppointmentDate(e.target.value); setAppointmentTime(''); }}
+                min={new Date().toISOString().split('T')[0]}
+              />
             </div>
+
+            {/* Time Slot Picker */}
+            {appointmentDate && (
+              <div>
+                <label className="text-sm font-bold text-zinc-900 block mb-3">Saat seçin</label>
+                {isSlotsLoading ? (
+                  <div className="flex items-center justify-center py-4">
+                    <Loader2 className="w-5 h-5 animate-spin text-zinc-400" />
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-4 gap-2">
+                    {timeSlots.map((slot) => {
+                      const booked = isSlotBooked(slot);
+                      const past = isSlotPast(slot);
+                      const disabled = booked || past;
+                      const selected = appointmentTime === slot;
+
+                      return (
+                        <button
+                          key={slot}
+                          onClick={() => !disabled && setAppointmentTime(slot)}
+                          disabled={disabled}
+                          className={`
+                            py-2.5 rounded-xl text-sm font-medium transition-all
+                            ${selected ? 'bg-zinc-900 text-white ring-2 ring-zinc-900 ring-offset-2' : ''}
+                            ${disabled ? 'bg-red-50 text-red-300 cursor-not-allowed line-through' : ''}
+                            ${!selected && !disabled ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 cursor-pointer' : ''}
+                          `}
+                        >
+                          {slot}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+                <div className="flex items-center gap-4 mt-3 text-xs text-zinc-500">
+                  <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-emerald-50 border border-emerald-200" /> Boş</div>
+                  <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-red-50 border border-red-200" /> Dolu</div>
+                  <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-zinc-900" /> Seçildi</div>
+                </div>
+              </div>
+            )}
 
             {bookMutation.isError && (
                <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm">

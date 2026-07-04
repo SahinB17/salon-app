@@ -1,5 +1,5 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Store, Scissors, CalendarCheck, LogOut } from 'lucide-react';
+import { LayoutDashboard, Store, Scissors, CalendarCheck, LogOut, Users } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 export default function AdminLayout() {
@@ -7,6 +7,7 @@ export default function AdminLayout() {
     { name: 'Panel', icon: LayoutDashboard, path: '/admin/dashboard' },
     { name: 'Salonlarım', icon: Store, path: '/admin/salons' },
     { name: 'Xidmətlər', icon: Scissors, path: '/admin/services' },
+    { name: 'İşçilər', icon: Users, path: '/admin/staff' },
     { name: 'Rezervasiyalar', icon: CalendarCheck, path: '/admin/appointments' },
   ];
 
