@@ -8,13 +8,24 @@ import { Scissors, CheckCircle2 } from 'lucide-react';
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [isSent, setIsSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate sending email since we don't have SMTP yet
+    setError('');
+    
+    if (!email.includes('@')) {
+      setError('Düzgün e-poçt ünvanı daxil edin');
+      return;
+    }
+    
+    setIsSubmitting(true);
+    // Simulate API delay for loading UX
     setTimeout(() => {
+      setIsSubmitting(false);
       setIsSent(true);
-    }, 600);
+    }, 1200);
   };
 
   return (
@@ -60,11 +71,13 @@ export default function ForgotPassword() {
                     placeholder="ad@numune.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    error={!!error}
                   />
+                  {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
                 </div>
               </div>
 
-              <Button type="submit" className="w-full mt-2">
+              <Button type="submit" className="w-full mt-2" isLoading={isSubmitting}>
                 Linki göndər
               </Button>
               

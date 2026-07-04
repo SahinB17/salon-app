@@ -15,6 +15,9 @@ export default function Register() {
     full_name: '',
     phone: '',
   });
+  
+  // Validation and Error states
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [errorMsg, setErrorMsg] = useState('');
 
   const registerMutation = useMutation({
@@ -42,7 +45,28 @@ export default function Register() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
     setErrorMsg('');
+    
+    const newErrors: Record<string, string> = {};
+    if (formData.full_name.trim().length < 3) {
+      newErrors.full_name = 'Ad ən azı 3 simvol olmalıdır';
+    }
+    if (formData.phone.length < 8) {
+      newErrors.phone = 'Düzgün mobil nömrə daxil edin';
+    }
+    if (!formData.email.includes('@')) {
+      newErrors.email = 'Düzgün e-poçt ünvanı daxil edin';
+    }
+    if (formData.password.length < 6) {
+      newErrors.password = 'Şifrə ən azı 6 simvol olmalıdır';
+    }
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     registerMutation.mutate();
   };
 
@@ -81,7 +105,9 @@ export default function Register() {
                     placeholder="Əli Əliyev"
                     value={formData.full_name}
                     onChange={handleChange}
+                    error={!!errors.full_name}
                   />
+                  {errors.full_name && <p className="text-xs text-red-500 mt-1">{errors.full_name}</p>}
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-zinc-700 block">Mobil nömrə</label>
@@ -91,7 +117,9 @@ export default function Register() {
                     placeholder="+994501234567"
                     value={formData.phone}
                     onChange={handleChange}
+                    error={!!errors.phone}
                   />
+                  {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
                 </div>
               </div>
               
@@ -105,7 +133,9 @@ export default function Register() {
                   placeholder="ad@numune.com"
                   value={formData.email}
                   onChange={handleChange}
+                  error={!!errors.email}
                 />
+                {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
               </div>
               
               <div className="space-y-1.5">
@@ -118,12 +148,14 @@ export default function Register() {
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleChange}
+                  error={!!errors.password}
                 />
+                {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password}</p>}
               </div>
             </div>
 
-            <Button type="submit" className="w-full mt-2" disabled={registerMutation.isPending}>
-              {registerMutation.isPending ? 'Qeydiyyat olunur...' : 'Hesab yarat'}
+            <Button type="submit" className="w-full mt-2" isLoading={registerMutation.isPending}>
+              Hesab yarat
             </Button>
             
             <p className="text-center text-sm text-zinc-500 mt-6">

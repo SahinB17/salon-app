@@ -11,6 +11,9 @@ export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  
+  // Validation and Error states
+  const [errors, setErrors] = useState<{email?: string, password?: string}>({});
   const [errorMsg, setErrorMsg] = useState('');
 
   const loginMutation = useMutation({
@@ -35,7 +38,22 @@ export default function Login() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
     setErrorMsg('');
+    
+    const newErrors: {email?: string, password?: string} = {};
+    if (!email.includes('@')) {
+      newErrors.email = 'Düzgün e-poçt ünvanı daxil edin';
+    }
+    if (password.length < 6) {
+      newErrors.password = 'Şifrə ən azı 6 simvol olmalıdır';
+    }
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     loginMutation.mutate();
   };
 
@@ -78,7 +96,9 @@ export default function Login() {
                   placeholder="ad@numune.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  error={!!errors.email}
                 />
+                {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
               </div>
               
               <div className="space-y-1.5">
@@ -97,12 +117,14 @@ export default function Login() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  error={!!errors.password}
                 />
+                {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password}</p>}
               </div>
             </div>
 
-            <Button type="submit" className="w-full mt-2" disabled={loginMutation.isPending}>
-              {loginMutation.isPending ? 'Daxil olunur...' : 'Daxil ol'}
+            <Button type="submit" className="w-full mt-2" isLoading={loginMutation.isPending}>
+              Daxil ol
             </Button>
             
             <p className="text-center text-sm text-zinc-500 mt-6">
