@@ -68,7 +68,7 @@ export default function Home() {
                   <div className="flex items-center justify-between mt-4">
                     <div className="flex items-center text-amber-500 font-medium text-sm">
                       <Star className="w-4 h-4 fill-current mr-1" />
-                      5.0
+                      {salon.average_rating ? salon.average_rating.toFixed(1) : '0.0'}
                     </div>
                     <div className="flex items-center text-zinc-400 text-xs font-medium">
                        <Clock className="w-3.5 h-3.5 mr-1" /> Bax

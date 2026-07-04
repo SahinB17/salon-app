@@ -19,3 +19,4 @@ class User(Base):
 
     salons = relationship("Salon", back_populates="owner", cascade="all, delete-orphan")
     appointments_as_customer = relationship("Appointment", foreign_keys="[Appointment.customer_id]", back_populates="customer")
+    reviews = relationship("Review", back_populates="customer", cascade="all, delete-orphan")

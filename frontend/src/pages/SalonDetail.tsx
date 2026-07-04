@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { ChevronLeft, MapPin, Star, Clock, Loader2 } from 'lucide-react';
+import { ChevronLeft, MapPin, Star, Clock, Loader2, MessageSquare } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import { Input } from '../components/ui/Input';
@@ -30,6 +30,30 @@ export default function SalonDetail() {
     queryFn: async () => {
       const response = await api.get(`/api/v1/salons/${id}`);
       return response.data;
+    }
+  });
+
+  const { data: reviews, refetch: refetchReviews } = useQuery({
+    queryKey: ['reviews', id],
+    queryFn: async () => {
+      const response = await api.get(`/api/v1/reviews/salon/${id}`);
+      return response.data;
+    }
+  });
+
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState('');
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+
+  const reviewMutation = useMutation({
+    mutationFn: async (data: { rating: number; comment: string }) => {
+      return api.post(`/api/v1/reviews/salon/${id}`, data);
+    },
+    onSuccess: () => {
+      setIsReviewModalOpen(false);
+      setReviewComment('');
+      setReviewRating(5);
+      refetchReviews();
     }
   });
 
@@ -149,7 +173,7 @@ export default function SalonDetail() {
             )}
           </div>
           <div className="bg-amber-100 text-amber-700 px-2 py-1 rounded-lg flex items-center font-bold text-sm">
-            <Star className="w-3.5 h-3.5 fill-current mr-1" /> 5.0
+            <Star className="w-3.5 h-3.5 fill-current mr-1" /> {salon.average_rating ? salon.average_rating.toFixed(1) : '0.0'}
           </div>
         </div>
       </div>
@@ -175,6 +199,44 @@ export default function SalonDetail() {
             ))
           ) : (
             <p className="text-zinc-500 text-center py-4">Hələ xidmət əlavə edilməyib.</p>
+          )}
+        </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="px-4 mt-8">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-bold text-zinc-900">Rəylər ({reviews?.length || 0})</h2>
+          <Button className="bg-white text-zinc-900 border border-zinc-200 hover:bg-zinc-50 h-8 px-3 text-xs rounded-full" onClick={() => setIsReviewModalOpen(true)}>
+            <MessageSquare className="w-3.5 h-3.5 mr-1" />
+            Rəy yaz
+          </Button>
+        </div>
+        <div className="space-y-4">
+          {reviews && reviews.length > 0 ? (
+            reviews.map((review: any) => (
+              <div key={review.id} className="bg-white p-4 rounded-2xl shadow-sm border border-zinc-100">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="font-bold text-sm text-zinc-900">{review.customer?.full_name || 'İstifadəçi'}</div>
+                  <div className="flex items-center text-amber-500 text-xs font-bold">
+                    <Star className="w-3 h-3 fill-current mr-0.5" />
+                    {review.rating}.0
+                  </div>
+                </div>
+                {review.comment && (
+                  <p className="text-sm text-zinc-600 mt-1">{review.comment}</p>
+                )}
+                <div className="text-[10px] text-zinc-400 mt-2">
+                  {new Date(review.created_at).toLocaleDateString('az-AZ')}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="bg-zinc-50 p-6 rounded-2xl border border-zinc-100 text-center">
+              <MessageSquare className="w-8 h-8 text-zinc-300 mx-auto mb-2" />
+              <p className="text-sm text-zinc-500 font-medium">Hələ rəy yazılmayıb</p>
+              <p className="text-xs text-zinc-400 mt-1">İlk rəyi siz yazın!</p>
+            </div>
           )}
         </div>
       </div>
@@ -294,6 +356,49 @@ export default function SalonDetail() {
             </Button>
           </div>
         )}
+      </BottomSheet>
+
+      {/* Review Bottom Sheet */}
+      <BottomSheet
+        isOpen={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
+        title="Rəy Bildir"
+      >
+        <div className="space-y-6">
+          <div>
+            <label className="text-sm font-bold text-zinc-900 block mb-3 text-center">Qiymətləndirin</label>
+            <div className="flex justify-center gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setReviewRating(star)}
+                  className="p-2 transition-transform active:scale-90"
+                >
+                  <Star 
+                    className={`w-8 h-8 ${reviewRating >= star ? 'text-amber-500 fill-amber-500' : 'text-zinc-200 fill-zinc-200'}`} 
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="text-sm font-bold text-zinc-900 block mb-2">Fikriniz (İstəyə bağlı)</label>
+            <textarea
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 resize-none h-24"
+              placeholder="Salon haqqında təəssüratlarınızı bölüşün..."
+              value={reviewComment}
+              onChange={(e) => setReviewComment(e.target.value)}
+            />
+          </div>
+          <Button 
+            className="w-full"
+            onClick={() => reviewMutation.mutate({ rating: reviewRating, comment: reviewComment })}
+            isLoading={reviewMutation.isPending}
+          >
+            Göndər
+          </Button>
+        </div>
       </BottomSheet>
     </div>
   );

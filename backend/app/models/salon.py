@@ -24,3 +24,10 @@ class Salon(Base):
     
     appointments = relationship("Appointment", back_populates="salon", cascade="all, delete-orphan")
     staffs = relationship("Staff", back_populates="salon", cascade="all, delete-orphan")
+    reviews = relationship("Review", back_populates="salon", cascade="all, delete-orphan")
+
+    @property
+    def average_rating(self) -> float:
+        if not self.reviews:
+            return 0.0
+        return round(sum(r.rating for r in self.reviews) / len(self.reviews), 1)

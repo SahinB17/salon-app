@@ -29,6 +29,7 @@ class SalonResponse(SalonBase):
     owner_id: int
     services: List[ServiceResponse] = []
     staffs: List[StaffResponse] = []
+    average_rating: float = 0.0
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 

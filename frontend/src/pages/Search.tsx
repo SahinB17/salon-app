@@ -87,7 +87,7 @@ export default function Search() {
                    </div>
                    <div className="flex items-center text-amber-500 font-medium text-sm mt-2">
                      <Star className="w-4 h-4 fill-current mr-1" />
-                     5.0
+                     {salon.average_rating ? salon.average_rating.toFixed(1) : '0.0'}
                    </div>
                  </div>
                </Card>

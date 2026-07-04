@@ -9,7 +9,8 @@ from app.schemas.salon import SalonCreate, SalonUpdate
 async def get_salon(db: AsyncSession, salon_id: int) -> Optional[Salon]:
     stmt = select(Salon).where(Salon.id == salon_id).options(
         selectinload(Salon.services),
-        selectinload(Salon.staffs)
+        selectinload(Salon.staffs),
+        selectinload(Salon.reviews)
     )
     result = await db.execute(stmt)
     return result.scalar_one_or_none()
@@ -17,7 +18,8 @@ async def get_salon(db: AsyncSession, salon_id: int) -> Optional[Salon]:
 async def get_salons(db: AsyncSession, skip: int = 0, limit: int = 100) -> List[Salon]:
     stmt = select(Salon).offset(skip).limit(limit).options(
         selectinload(Salon.services),
-        selectinload(Salon.staffs)
+        selectinload(Salon.staffs),
+        selectinload(Salon.reviews)
     )
     result = await db.execute(stmt)
     return list(result.scalars().all())
