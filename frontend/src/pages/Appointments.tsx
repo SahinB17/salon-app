@@ -3,6 +3,7 @@ import { Calendar as CalendarIcon, Clock, MapPin } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { EmptyState } from '../components/ui/EmptyState';
+import { PageWrapper } from '../components/ui/PageWrapper';
 import api from '../lib/api';
 
 const statusConfig: Record<string, { label: string; variant: 'default' | 'success' | 'warning' | 'danger' }> = {
@@ -22,18 +23,30 @@ export default function Appointments() {
   });
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FAFAFA] pb-24">
+    <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] pb-24 lg:pb-8">
       {/* Header */}
-      <div className="bg-white border-b border-zinc-100 px-4 pt-12 pb-4 shadow-sm sticky top-0 z-10">
+      <div className="max-w-7xl mx-auto w-full px-4 pt-12 lg:pt-16 shadow-sm sticky top-0 z-10">
         <h1 className="text-xl font-bold text-zinc-900">Rezervasiyalarım</h1>
       </div>
 
       <div className="px-4 mt-6">
         {isLoading ? (
           <div className="space-y-4">
-             {[1, 2].map(i => (
-                <div key={i} className="w-full h-36 bg-zinc-200 animate-pulse rounded-2xl" />
-             ))}
+            {[1, 2, 3].map(i => (
+               <div key={i} className="w-full bg-white rounded-2xl p-4 shadow-sm border-0">
+                 <div className="flex justify-between items-start mb-3">
+                   <div className="h-4 bg-zinc-200 animate-pulse rounded w-32" />
+                   <div className="h-5 bg-zinc-200 animate-pulse rounded w-16" />
+                 </div>
+                 <div className="bg-zinc-50 rounded-xl p-3 flex justify-between items-center">
+                   <div className="space-y-2">
+                     <div className="h-4 bg-zinc-200 animate-pulse rounded w-24" />
+                     <div className="h-3 bg-zinc-200 animate-pulse rounded w-16" />
+                   </div>
+                   <div className="w-10 h-10 bg-zinc-200 animate-pulse rounded-full" />
+                 </div>
+               </div>
+            ))}
           </div>
         ) : appointments.length === 0 ? (
           <EmptyState 
@@ -79,6 +92,6 @@ export default function Appointments() {
           </div>
         )}
       </div>
-    </div>
+    </PageWrapper>
   );
 }

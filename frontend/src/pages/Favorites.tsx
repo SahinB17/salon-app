@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { MapPin, Star, Heart } from 'lucide-react';
 import { EmptyState } from '../components/ui/EmptyState';
+import { PageWrapper } from '../components/ui/PageWrapper';
+import { SkeletonCard } from '../components/ui/SkeletonCard';
 import api from '../lib/api';
 import { motion } from 'framer-motion';
 
@@ -18,14 +20,14 @@ export default function Favorites() {
   });
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FAFAFA] pb-24 lg:pb-8">
+    <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] pb-24 lg:pb-8">
       <div className="max-w-7xl mx-auto w-full px-4 pt-12 lg:pt-16">
         <h1 className="text-xl font-bold text-zinc-900 mb-6">Seçilmiş Salonlarım</h1>
 
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3].map(i => (
-              <div key={i} className="w-full h-28 bg-zinc-200 animate-pulse rounded-2xl" />
+              <SkeletonCard key={i} />
             ))}
           </div>
         ) : favorites.length === 0 ? (
@@ -78,6 +80,6 @@ export default function Favorites() {
           </div>
         )}
       </div>
-    </div>
+    </PageWrapper>
   );
 }

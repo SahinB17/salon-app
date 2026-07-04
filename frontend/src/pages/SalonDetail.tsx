@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Button } from '../components/ui/Button';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import { Input } from '../components/ui/Input';
+import { PageWrapper } from '../components/ui/PageWrapper';
 import api from '../lib/api';
 
 // Generate time slots from 09:00 to 21:00 in 30-minute increments
@@ -199,7 +200,7 @@ export default function SalonDetail() {
   const timeSlots = generateTimeSlots(openHour, closeHour);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FAFAFA] pb-6">
+    <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] pb-6">
       {/* Top Header Image & Back Button */}
       <div className="relative h-64 bg-zinc-200">
         {salon.image_url && (
@@ -489,7 +490,6 @@ export default function SalonDetail() {
           </Button>
         </div>
       </BottomSheet>
-
       {/* Fullscreen Image Modal */}
       <AnimatePresence>
         {selectedImage && (
@@ -524,6 +524,6 @@ export default function SalonDetail() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </PageWrapper>
   );
 }

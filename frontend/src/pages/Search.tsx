@@ -6,6 +6,8 @@ import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Map } from '../components/ui/Map';
 import { EmptyState } from '../components/ui/EmptyState';
+import { PageWrapper } from '../components/ui/PageWrapper';
+import { SkeletonCard } from '../components/ui/SkeletonCard';
 import api from '../lib/api';
 
 // Simple debounce hook
@@ -37,7 +39,7 @@ export default function Search() {
   });
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FAFAFA] pb-24 lg:pb-8">
+    <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] pb-24 lg:pb-8">
       <div className="max-w-7xl mx-auto w-full">
         {/* Sticky Header with Search Input */}
         <div className="sticky top-0 z-10 bg-[#FAFAFA] pt-12 lg:pt-16 pb-4">
@@ -76,8 +78,8 @@ export default function Search() {
       <div className="px-4 mt-6 max-w-7xl mx-auto w-full">
         {isLoading ? (
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-             {[1, 2, 3].map(i => (
-                <div key={i} className="w-full h-28 bg-zinc-200 animate-pulse rounded-2xl" />
+             {[1, 2, 3, 4, 5, 6].map(i => (
+                <SkeletonCard key={i} />
              ))}
            </div>
         ) : isError ? (
@@ -127,6 +129,6 @@ export default function Search() {
            </div>
         )}
       </div>
-    </div>
+    </PageWrapper>
   );
 }

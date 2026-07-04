@@ -2,6 +2,8 @@ import { Search, MapPin, Star, Clock } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { PageWrapper } from '../components/ui/PageWrapper';
+import { SkeletonCard } from '../components/ui/SkeletonCard';
 import api from '../lib/api';
 
 export default function Home() {
@@ -16,7 +18,7 @@ export default function Home() {
   });
 
   return (
-    <div className="flex flex-col min-h-screen bg-zinc-50 font-sans pb-6">
+    <PageWrapper className="flex flex-col min-h-screen bg-zinc-50 font-sans pb-6">
       <div className="max-w-7xl mx-auto w-full">
         {/* Header / Greeting */}
         <div className="px-4 pt-12 lg:pt-16 pb-6 bg-white rounded-b-3xl shadow-sm border-b border-zinc-100">
@@ -45,7 +47,7 @@ export default function Home() {
             {isLoading ? (
               // Loading skeleton
               [1, 2, 3, 4].map((i) => (
-                <div key={i} className="min-w-[260px] lg:min-w-0 h-[240px] bg-zinc-200 animate-pulse rounded-2xl snap-center" />
+                <SkeletonCard key={i} />
               ))
             ) : (
             popularSalons.map((salon: any) => (
@@ -107,6 +109,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </div>
+    </PageWrapper>
   );
 }
