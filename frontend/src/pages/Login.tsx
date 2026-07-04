@@ -29,7 +29,7 @@ export default function Login() {
     },
     onSuccess: (data) => {
       localStorage.setItem('token', data.access_token);
-      navigate('/dashboard');
+      navigate('/');
     },
     onError: () => {
       setErrorMsg('E-poçt ünvanı və ya şifrə yanlışdır.');
