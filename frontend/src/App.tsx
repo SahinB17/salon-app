@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
@@ -10,6 +10,7 @@ import Search from './pages/Search';
 import SalonDetail from './pages/SalonDetail';
 import Appointments from './pages/Appointments';
 import Profile from './pages/Profile';
+import Favorites from './pages/Favorites';
 import AdminRoute from './components/auth/AdminRoute';
 import AdminLayout from './components/layout/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
@@ -37,6 +38,7 @@ function App() {
               <Route path="/salons/:id" element={<SalonDetail />} />
               <Route path="/appointments" element={<Appointments />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/favorites" element={<Favorites />} />
             </Route>
 
             {/* Admin Routes (Protected via AdminRoute & wrapped in AdminLayout) */}

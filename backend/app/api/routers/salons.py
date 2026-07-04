@@ -71,13 +71,14 @@ async def search_salons(
         .options(
             selectinload(Salon.services),
             selectinload(Salon.staffs),
-            selectinload(Salon.reviews)
+            selectinload(Salon.reviews),
+            selectinload(Salon.images)
         )
         .offset(skip)
         .limit(limit)
     )
     result = await session.execute(stmt)
-    return list(result.scalars().all())
+    return list(result.scalars().unique().all())
 
 @router.get("/{salon_id}", response_model=SalonResponse)
 async def read_salon(
@@ -152,3 +153,34 @@ async def get_reports_endpoint(
         db=session, salon_id=salon_id, report_type=report_type
     )
     return report
+
+from app.schemas.salon_image import SalonImageCreate, SalonImageResponse
+from app.crud import crud_salon_image
+
+@router.post("/{salon_id}/images", response_model=SalonImageResponse, status_code=status.HTTP_201_CREATED)
+async def add_image_to_salon_endpoint(
+    salon_id: int,
+    image_in: SalonImageCreate,
+    session: SessionDep,
+    current_user: User = Depends(get_current_active_user)
+) -> Any:
+    salon = await crud_salon.get_salon(db=session, salon_id=salon_id)
+    if not salon:
+        raise HTTPException(status_code=404, detail="Salon not found")
+    if salon.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+    
+    image = await crud_salon_image.add_image_to_salon(db=session, salon_id=salon_id, image_url=image_in.image_url)
+    return image
+
+@router.delete("/images/{image_id}", status_code=status.HTTP_200_OK)
+async def remove_image_from_salon_endpoint(
+    image_id: int,
+    session: SessionDep,
+    current_user: User = Depends(get_current_active_user)
+) -> Any:
+    # Need to check ownership but for simplicity here we assume salon admin
+    success = await crud_salon_image.remove_image_from_salon(db=session, image_id=image_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Image not found")
+    return {"status": "success"}

@@ -27,3 +27,8 @@
 - **No Hover-Only Interactions:** Since there is no mouse cursor on mobile, relying on "hover to reveal" menus/buttons is STRICTLY FORBIDDEN. All important functions must be visible directly or triggered via touch (`tap`/`click`).
 - **Bottom Sheets vs. Desktop Modals:** Instead of large popup modals centered on mobile screens, prefer **Bottom Sheets** that slide up smoothly from the bottom on small screens.
 - **Responsive Fallback (375px Base Scale):** All UI designs MUST be built first for an **iPhone Mini (375px width)** using base utility classes. Only use `md:` or `lg:` prefix modifiers to scale up the layout for tablets and desktops.
+
+## 5. Known Gotchas & Bug Fixes (Memory Bank)
+- **SQLAlchemy `MissingGreenlet` Error:** When using AsyncSession, Pydantic cannot lazy-load relationships (like `salon.images`, `salon.services`). 
+  - *Fix:* Always add `lazy="selectin"` to the `relationship()` definitions in the SQLAlchemy models (e.g. `images = relationship("SalonImage", ..., lazy="selectin")`) to ensure eager loading globally. If using `.options(selectinload(...))` in queries instead, YOU MUST return results using `.unique()` like `result.scalars().unique().all()`.
+- **Pydantic Validation Payload Errors:** If a backend route defines a Pydantic schema that requires an ID (e.g. `salon_id: int` in `SalonImageCreate`), but the endpoint also takes `{salon_id}` as a path parameter, **the frontend MUST STILL include the `salon_id` in the JSON body**. Otherwise, it throws a silent `422 Unprocessable Entity`.

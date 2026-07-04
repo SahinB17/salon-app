@@ -17,6 +17,7 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    salons = relationship("Salon", back_populates="owner", cascade="all, delete-orphan")
-    appointments_as_customer = relationship("Appointment", foreign_keys="[Appointment.customer_id]", back_populates="customer")
-    reviews = relationship("Review", back_populates="customer", cascade="all, delete-orphan")
+    salons = relationship("Salon", back_populates="owner", cascade="all, delete-orphan", lazy="selectin")
+    appointments_as_customer = relationship("Appointment", foreign_keys="[Appointment.customer_id]", back_populates="customer", lazy="selectin")
+    reviews = relationship("Review", back_populates="customer", cascade="all, delete-orphan", lazy="selectin")
+    favorites = relationship("Favorite", back_populates="user", cascade="all, delete-orphan", lazy="selectin")

@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
+import { Map } from '../components/ui/Map';
 import api from '../lib/api';
 
 // Simple debounce hook
@@ -21,6 +22,7 @@ function useDebounce<T>(value: T, delay: number): T {
 export default function Search() {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
+  const [viewMode, setViewMode] = useState<'list'|'map'>('list');
   const debouncedQuery = useDebounce(query, 500);
 
   const { data: results = [], isLoading, isError } = useQuery({
@@ -50,6 +52,21 @@ export default function Search() {
                 onChange={(e) => setQuery(e.target.value)}
               />
             </div>
+            {/* View Mode Toggle */}
+            <div className="flex bg-zinc-100 p-1 rounded-xl w-max mt-4">
+              <button 
+                onClick={() => setViewMode('list')}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${viewMode === 'list' ? 'bg-white shadow-sm text-zinc-900' : 'text-zinc-500'}`}
+              >
+                Siyahı
+              </button>
+              <button 
+                onClick={() => setViewMode('map')}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${viewMode === 'map' ? 'bg-white shadow-sm text-zinc-900' : 'text-zinc-500'}`}
+              >
+                Xəritə
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -73,6 +90,10 @@ export default function Search() {
         ) : !debouncedQuery ? (
            <div className="text-center text-zinc-400 mt-10">
              Axtarmaq üçün yuxarıdakı xanaya yazın
+           </div>
+        ) : viewMode === 'map' ? (
+           <div className="w-full rounded-2xl overflow-hidden shadow-sm border border-zinc-100 bg-white p-2">
+             <Map salons={results} className="w-full h-[60vh] rounded-xl z-0" />
            </div>
         ) : (
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

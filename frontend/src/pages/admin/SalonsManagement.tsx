@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Image as ImageIcon, MapPin, Edit2, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Image as ImageIcon, MapPin, Edit2, Trash2, Loader2, Images, X } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -16,9 +16,16 @@ export default function SalonsManagement() {
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
   const [description, setDescription] = useState('');
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+
+  // Gallery State
+  const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
+  const [activeGallerySalon, setActiveGallerySalon] = useState<any>(null);
+  const [isGalleryUploading, setIsGalleryUploading] = useState(false);
 
   // Get user to know owner_id
   const { data: user } = useQuery({
@@ -73,11 +80,67 @@ export default function SalonsManagement() {
     }
   });
 
+  const uploadGalleryImageMutation = useMutation({
+    mutationFn: async (data: { salonId: number; imageUrl: string }) => {
+      const res = await api.post(`/api/v1/salons/${data.salonId}/images`, { 
+        image_url: data.imageUrl, 
+        salon_id: data.salonId 
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminSalons'] });
+      // Update active gallery salon
+      if (activeGallerySalon) {
+        queryClient.fetchQuery({ queryKey: ['adminSalons'] }).then((data: any) => {
+          const updatedSalon = data?.find((s: any) => s.id === activeGallerySalon.id);
+          if (updatedSalon) setActiveGallerySalon(updatedSalon);
+        });
+      }
+    }
+  });
+
+  const deleteGalleryImageMutation = useMutation({
+    mutationFn: async (imageId: number) => {
+      const res = await api.delete(`/api/v1/salons/images/${imageId}`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminSalons'] });
+      if (activeGallerySalon) {
+        queryClient.fetchQuery({ queryKey: ['adminSalons'] }).then((data: any) => {
+          const updatedSalon = data?.find((s: any) => s.id === activeGallerySalon.id);
+          if (updatedSalon) setActiveGallerySalon(updatedSalon);
+        });
+      }
+    }
+  });
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleGalleryImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && activeGallerySalon) {
+      setIsGalleryUploading(true);
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const uploadRes = await api.post('/api/v1/upload/image', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        const uploadedImageUrl = uploadRes.data.image_url;
+        await uploadGalleryImageMutation.mutateAsync({ salonId: activeGallerySalon.id, imageUrl: uploadedImageUrl });
+      } catch (error) {
+        console.error("Şəkil yüklənərkən xəta:", error);
+      } finally {
+        setIsGalleryUploading(false);
+      }
     }
   };
 
@@ -109,13 +172,17 @@ export default function SalonsManagement() {
       contact_phone: phone,
       description,
       owner_id: user.id,
+      latitude: latitude ? parseFloat(latitude) : null,
+      longitude: longitude ? parseFloat(longitude) : null,
+      open_time: "09:00:00",
+      close_time: "21:00:00",
       ...(uploadedImageUrl ? { image_url: uploadedImageUrl } : {})
     };
 
     if (editSalonId) {
       updateSalonMutation.mutate({ id: editSalonId, salonData });
     } else {
-      createSalonMutation.mutate({ ...salonData, image_url: uploadedImageUrl });
+      createSalonMutation.mutate({ ...salonData });
     }
   };
 
@@ -124,6 +191,8 @@ export default function SalonsManagement() {
     setAddress('');
     setPhone('');
     setDescription('');
+    setLatitude('');
+    setLongitude('');
     setImageFile(null);
     setImagePreview(null);
     setEditSalonId(null);
@@ -136,9 +205,16 @@ export default function SalonsManagement() {
     setAddress(salon.address);
     setPhone(salon.contact_phone || '');
     setDescription(salon.description || '');
+    setLatitude(salon.latitude ? String(salon.latitude) : '');
+    setLongitude(salon.longitude ? String(salon.longitude) : '');
     setImagePreview(salon.image_url ? `http://localhost:8000${salon.image_url}` : null);
     setImageFile(null);
     setIsModalOpen(true);
+  };
+
+  const openGalleryModal = (salon: any) => {
+    setActiveGallerySalon(salon);
+    setIsGalleryModalOpen(true);
   };
 
   const handleDeleteSalon = (id: number) => {
@@ -185,6 +261,13 @@ export default function SalonsManagement() {
                     </div>
                   )}
                   <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      onClick={() => openGalleryModal(salon)}
+                      title="Qalereya"
+                      className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm text-blue-500 hover:text-blue-700 hover:bg-blue-50 transition-colors"
+                    >
+                      <Images className="w-4 h-4" />
+                    </button>
                     <button 
                       onClick={() => handleEditSalon(salon)}
                       className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm text-zinc-700 hover:text-zinc-950 transition-colors"
@@ -261,6 +344,17 @@ export default function SalonsManagement() {
                   <Input required placeholder="Nizami küç. 42" value={address} onChange={e => setAddress(e.target.value)} />
                 </div>
 
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-zinc-700 block">Enlik (Latitude)</label>
+                    <Input type="number" step="any" placeholder="40.4093" value={latitude} onChange={e => setLatitude(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-zinc-700 block">Uzunluq (Longitude)</label>
+                    <Input type="number" step="any" placeholder="49.8671" value={longitude} onChange={e => setLongitude(e.target.value)} />
+                  </div>
+                </div>
+
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-zinc-700 block">Haqqında (İxtiyari)</label>
                   <textarea 
@@ -286,6 +380,56 @@ export default function SalonsManagement() {
                 {(createSalonMutation.isPending || updateSalonMutation.isPending || isUploading) && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 {editSalonId ? "Yadda Saxla" : "Yarat"}
               </Button>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Gallery Modal */}
+      {isGalleryModalOpen && activeGallerySalon && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-zinc-950/40 backdrop-blur-sm">
+          <Card className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl flex flex-col max-h-[90vh]">
+            <div className="p-6 border-b border-zinc-100 flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-bold text-zinc-900">Qalereya</h2>
+                <p className="text-sm text-zinc-500 mt-1">{activeGallerySalon.name}</p>
+              </div>
+              <button onClick={() => setIsGalleryModalOpen(false)} className="p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-full transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {/* Add New Image Box */}
+                <label className="flex flex-col items-center justify-center h-32 border-2 border-zinc-200 border-dashed rounded-2xl cursor-pointer bg-zinc-50 hover:bg-zinc-100 transition-colors relative overflow-hidden">
+                  {isGalleryUploading ? (
+                    <Loader2 className="w-6 h-6 animate-spin text-zinc-400" />
+                  ) : (
+                    <>
+                      <Plus className="w-6 h-6 text-zinc-400 mb-2" />
+                      <span className="text-xs font-semibold text-zinc-500">Şəkil əlavə et</span>
+                    </>
+                  )}
+                  <input type="file" className="hidden" accept="image/*" onChange={handleGalleryImageUpload} disabled={isGalleryUploading} />
+                </label>
+
+                {/* Existing Images */}
+                {activeGallerySalon.images?.map((img: any) => (
+                  <div key={img.id} className="relative h-32 rounded-2xl overflow-hidden group border border-zinc-100">
+                    <img src={`http://localhost:8000${img.image_url}`} alt="Qalereya" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button 
+                        onClick={() => deleteGalleryImageMutation.mutate(img.id)}
+                        disabled={deleteGalleryImageMutation.isPending}
+                        className="w-8 h-8 bg-white text-red-500 rounded-full flex items-center justify-center hover:bg-red-50 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </Card>
         </div>

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ChevronLeft, MapPin, Star, Clock, Loader2, MessageSquare } from 'lucide-react';
+import { ChevronLeft, MapPin, Star, Clock, Loader2, MessageSquare, Heart, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../components/ui/Button';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import { Input } from '../components/ui/Input';
@@ -24,6 +25,7 @@ export default function SalonDetail() {
   const [selectedStaff, setSelectedStaff] = useState<number | null>(null);
   const [appointmentDate, setAppointmentDate] = useState('');
   const [appointmentTime, setAppointmentTime] = useState('');
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const { data: salon, isLoading } = useQuery({
     queryKey: ['salon', id],
@@ -56,6 +58,45 @@ export default function SalonDetail() {
       setReviewRating(5);
       refetchReviews();
     }
+  });
+
+  const { data: favorites = [] } = useQuery({
+    queryKey: ['favorites'],
+    queryFn: async () => {
+      const response = await api.get('/api/v1/favorites/me');
+      return response.data;
+    }
+  });
+
+  const isFavorite = favorites.some((fav: any) => fav.salon_id === parseInt(id!));
+
+  const toggleFavoriteMutation = useMutation({
+    mutationFn: async (isFav: boolean) => {
+      if (isFav) {
+        return api.delete(`/api/v1/favorites/${id}`);
+      } else {
+        return api.post(`/api/v1/favorites/${id}`);
+      }
+    },
+    onMutate: async (isFav) => {
+      await queryClient.cancelQueries({ queryKey: ['favorites'] });
+      const previousFavorites = queryClient.getQueryData(['favorites']);
+      
+      queryClient.setQueryData(['favorites'], (old: any) => {
+        if (isFav) {
+           return old?.filter((fav: any) => fav.salon_id !== parseInt(id!)) || [];
+        } else {
+           return [...(old || []), { salon_id: parseInt(id!) }];
+        }
+      });
+      return { previousFavorites };
+    },
+    onError: (_err, _newTodo, context) => {
+      queryClient.setQueryData(['favorites'], context?.previousFavorites);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['favorites'] });
+    },
   });
 
   // Fetch booked slots for the selected date, passing selectedStaff if active
@@ -160,6 +201,20 @@ export default function SalonDetail() {
         >
           <ChevronLeft className="w-6 h-6 text-zinc-900 pr-1" />
         </button>
+        <button 
+          onClick={() => toggleFavoriteMutation.mutate(isFavorite)}
+          className="absolute top-12 right-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm z-10 active:scale-95 transition-transform"
+        >
+          <motion.div
+            initial={false}
+            animate={{ scale: isFavorite ? [1, 1.3, 1] : 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Heart 
+              className={`w-5 h-5 transition-colors ${isFavorite ? 'fill-red-500 text-red-500' : 'text-zinc-500'}`} 
+            />
+          </motion.div>
+        </button>
       </div>
 
       {/* Info Section */}
@@ -183,6 +238,24 @@ export default function SalonDetail() {
           </div>
         </div>
       </div>
+
+      {/* Gallery Section */}
+      {salon.images && salon.images.length > 0 && (
+        <div className="px-4 mt-6">
+          <h2 className="text-lg font-bold text-zinc-900 mb-4">Qalereya</h2>
+          <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
+            {salon.images.map((img: any) => (
+              <div 
+                key={img.id} 
+                className="w-40 h-40 flex-shrink-0 rounded-2xl overflow-hidden shadow-sm border border-zinc-100 cursor-pointer active:scale-95 transition-transform"
+                onClick={() => setSelectedImage(img.image_url)}
+              >
+                <img src={`http://localhost:8000${img.image_url}`} alt="Qalereya" className="w-full h-full object-cover pointer-events-none" />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Services List */}
       <div className="px-4 mt-6">
@@ -406,6 +479,41 @@ export default function SalonDetail() {
           </Button>
         </div>
       </BottomSheet>
+
+      {/* Fullscreen Image Modal */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/95 flex flex-col backdrop-blur-sm"
+          >
+            <div className="p-4 flex justify-end">
+              <button 
+                onClick={() => setSelectedImage(null)}
+                className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <motion.div 
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="flex-1 p-4 flex items-center justify-center overflow-hidden"
+              onClick={() => setSelectedImage(null)} // Close when clicking outside image
+            >
+              <img 
+                src={`http://localhost:8000${selectedImage}`} 
+                alt="Fullscreen" 
+                className="max-w-full max-h-full object-contain rounded-xl"
+                onClick={(e) => e.stopPropagation()} // Prevent close when clicking image
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
