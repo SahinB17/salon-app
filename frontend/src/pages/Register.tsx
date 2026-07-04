@@ -7,55 +7,60 @@ import { Button } from '../components/ui/Button';
 import { Scissors } from 'lucide-react';
 import api from '../lib/api';
 
-export default function Login() {
+export default function Register() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    full_name: '',
+    phone: '',
+  });
   const [errorMsg, setErrorMsg] = useState('');
 
-  const loginMutation = useMutation({
+  const registerMutation = useMutation({
     mutationFn: async () => {
-      const formData = new URLSearchParams();
-      formData.append('username', email); // FastAPI OAuth2 expects 'username'
-      formData.append('password', password);
-      
-      const response = await api.post('/api/v1/login/access-token', formData, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      const response = await api.post('/api/v1/users/', {
+        ...formData,
+        role: "salon_admin" // Defaulting to salon_admin for this interface
       });
       return response.data;
     },
-    onSuccess: (data) => {
-      localStorage.setItem('token', data.access_token);
-      navigate('/dashboard');
+    onSuccess: () => {
+      // Pushing them back to login page
+      navigate('/login');
     },
-    onError: () => {
-      setErrorMsg('E-poçt ünvanı və ya şifrə yanlışdır.');
+    onError: (error: any) => {
+      setErrorMsg(
+        error.response?.data?.detail || 'Qeydiyyat zamanı xəta baş verdi. Zəhmət olmasa təkrar cəhd edin.'
+      );
     }
   });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
-    loginMutation.mutate();
+    registerMutation.mutate();
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      
-      {/* Subtle modern background gradient circles */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-zinc-200/50 blur-[100px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-zinc-200/50 blur-[100px] pointer-events-none" />
 
-      <Card className="max-w-[400px] w-full relative z-10">
+      <Card className="max-w-[450px] w-full relative z-10">
         <CardHeader className="items-center pb-6">
           <div className="h-12 w-12 bg-zinc-950 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-zinc-950/20">
             <Scissors className="h-6 w-6 text-white" />
           </div>
           <h2 className="text-2xl font-semibold tracking-tight text-zinc-950 text-center">
-            Xoş gəlmisiniz
+            Qeydiyyatdan keçin
           </h2>
           <p className="text-sm text-zinc-500 text-center mt-2">
-            Salona daxil olmaq üçün məlumatlarınızı daxil edin
+            Yeni salon hesabınızı yaratmaq üçün formanı doldurun
           </p>
         </CardHeader>
         
@@ -67,48 +72,64 @@ export default function Login() {
           )}
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-zinc-700 block">Ad və Soyad</label>
+                  <Input
+                    name="full_name"
+                    required
+                    placeholder="Əli Əliyev"
+                    value={formData.full_name}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-zinc-700 block">Mobil nömrə</label>
+                  <Input
+                    name="phone"
+                    required
+                    placeholder="+994501234567"
+                    value={formData.phone}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+              
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-zinc-700 block">E-poçt ünvanı</label>
                 <Input
-                  id="email-address"
                   name="email"
                   type="email"
                   autoComplete="email"
                   required
                   placeholder="ad@numune.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={handleChange}
                 />
               </div>
               
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-zinc-700 block">Şifrə</label>
-                  <Link to="/forgot-password" className="text-xs text-zinc-500 hover:text-zinc-950 transition-colors">
-                    Şifrəni unutmusunuz?
-                  </Link>
-                </div>
+                <label className="text-sm font-medium text-zinc-700 block">Şifrə</label>
                 <Input
-                  id="password"
                   name="password"
                   type="password"
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   required
                   placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={handleChange}
                 />
               </div>
             </div>
 
-            <Button type="submit" className="w-full mt-2" disabled={loginMutation.isPending}>
-              {loginMutation.isPending ? 'Daxil olunur...' : 'Daxil ol'}
+            <Button type="submit" className="w-full mt-2" disabled={registerMutation.isPending}>
+              {registerMutation.isPending ? 'Qeydiyyat olunur...' : 'Hesab yarat'}
             </Button>
             
             <p className="text-center text-sm text-zinc-500 mt-6">
-              Hesabınız yoxdur?{' '}
-              <Link to="/register" className="font-medium text-zinc-950 hover:underline underline-offset-4">
-                Qeydiyyatdan keçin
+              Artıq hesabınız var?{' '}
+              <Link to="/login" className="font-medium text-zinc-950 hover:underline underline-offset-4">
+                Daxil olun
               </Link>
             </p>
           </form>

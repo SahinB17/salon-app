@@ -4,7 +4,8 @@ from app.api.deps import SessionDep, get_current_active_user
 from app.models.user import User
 from app.schemas.salon import SalonCreate, SalonUpdate, SalonResponse
 from app.schemas.salon import SalonBase
-from app.crud import crud_salon
+from app.schemas.report import ReportResponse
+from app.crud import crud_salon, crud_report
 from sqlalchemy.future import select
 from sqlalchemy import or_
 from app.models.salon import Salon
@@ -89,6 +90,31 @@ async def delete_salon_endpoint(
         raise HTTPException(status_code=403, detail="Not enough permissions")
     await crud_salon.delete_salon(db=session, salon_id=salon_id)
     return {"status": "success", "message": "Salon deleted successfully"}
+
+@router.get("/{salon_id}/reports", response_model=ReportResponse)
+async def get_reports_endpoint(
+    salon_id: int,
+    session: SessionDep,
+    report_type: str = "daily",
+    current_user: User = Depends(get_current_active_user)
+) -> Any:
+    """
+    Get daily or monthly revenue and customer reports for a salon.
+    Only the owner of the salon can view these reports.
+    """
+    if report_type not in ["daily", "monthly"]:
+        raise HTTPException(status_code=400, detail="Invalid report_type. Use 'daily' or 'monthly'")
+        
+    salon = await crud_salon.get_salon(db=session, salon_id=salon_id)
+    if not salon:
+        raise HTTPException(status_code=404, detail="Salon not found")
+    if salon.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not enough permissions to view reports")
+        
+    report = await crud_report.get_salon_reports(
+        db=session, salon_id=salon_id, report_type=report_type
+    )
+    return report
 
 @router.get("/search/", response_model=List[SalonResponse])
 async def search_salons(
