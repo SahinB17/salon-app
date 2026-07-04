@@ -1,4 +1,4 @@
-from typing import List, Any
+from typing import List, Any, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.api.deps import SessionDep, get_current_active_user
 from app.models.user import User
@@ -33,6 +33,26 @@ async def create_appointment_endpoint(
         staff = await crud_staff.get_staff(db=session, staff_id=appointment_in.staff_id)
         if not staff or staff.salon_id != salon.id or not staff.is_active:
             raise HTTPException(status_code=400, detail="Invalid or inactive staff for this salon")
+        
+        # Check working days (Python weekday(): 0=Mon, ..., 6=Sun. Our database: 1=Mon, ..., 7=Sun)
+        day_of_week = str(appointment_in.start_time.weekday() + 1)
+        if staff.working_days:
+            working_days_list = [d.strip() for d in staff.working_days.split(',')]
+            if day_of_week not in working_days_list:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Usta bu gün işləmir."
+                )
+        
+        # Check working hours
+        if staff.work_start and staff.work_end:
+            start_t = appointment_in.start_time.time()
+            end_t = appointment_in.end_time.time()
+            if start_t < staff.work_start or end_t > staff.work_end:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Ustanın fərdi iş saatlarından kənardır ({staff.work_start.strftime('%H:%M')} - {staff.work_end.strftime('%H:%M')})"
+                )
 
     # Check working hours
     if salon.open_time and salon.close_time:
@@ -159,10 +179,10 @@ async def get_booked_slots(
     salon_id: int,
     date: str,
     session: SessionDep,
+    staff_id: Optional[int] = None,
 ) -> Any:
     """
-    Get booked time slots for a salon on a specific date.
-    Returns a list of {start_time, end_time} for all active appointments.
+    Get booked time slots and staff working shifts for a salon on a specific date.
     """
     from datetime import datetime, timedelta
     
@@ -186,7 +206,7 @@ async def get_booked_slots(
     result = await session.execute(stmt)
     appointments = result.scalars().all()
     
-    return [
+    booked = [
         {
             "start_time": apt.start_time.isoformat(),
             "end_time": apt.end_time.isoformat(),
@@ -194,4 +214,32 @@ async def get_booked_slots(
         }
         for apt in appointments
     ]
+
+    # Staff work shift metadata
+    work_start = None
+    work_end = None
+    is_working_day = True
+
+    if staff_id:
+        from app.crud import crud_staff
+        staff = await crud_staff.get_staff(db=session, staff_id=staff_id)
+        if staff:
+            if staff.work_start:
+                work_start = staff.work_start.strftime("%H:%M")
+            if staff.work_end:
+                work_end = staff.work_end.strftime("%H:%M")
+            
+            # Check working day (1=Mon, ..., 7=Sun)
+            day_of_week = str(target_date.weekday() + 1)
+            if staff.working_days:
+                working_days_list = [d.strip() for d in staff.working_days.split(',')]
+                is_working_day = day_of_week in working_days_list
+
+    return {
+        "booked_slots": booked,
+        "work_start": work_start,
+        "work_end": work_end,
+        "is_working_day": is_working_day
+    }
+
 

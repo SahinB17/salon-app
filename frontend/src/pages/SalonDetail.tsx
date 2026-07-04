@@ -33,16 +33,22 @@ export default function SalonDetail() {
     }
   });
 
-  // Fetch booked slots for the selected date
-  const { data: bookedSlots = [], isLoading: isSlotsLoading } = useQuery({
-    queryKey: ['bookedSlots', id, appointmentDate],
+  // Fetch booked slots for the selected date, passing selectedStaff if active
+  const { data: slotsData, isLoading: isSlotsLoading } = useQuery({
+    queryKey: ['bookedSlots', id, appointmentDate, selectedStaff],
     queryFn: async () => {
-      if (!appointmentDate) return [];
-      const res = await api.get(`/api/v1/appointments/salon/${id}/slots?date=${appointmentDate}`);
+      if (!appointmentDate) return null;
+      const staffParam = selectedStaff ? `&staff_id=${selectedStaff}` : '';
+      const res = await api.get(`/api/v1/appointments/salon/${id}/slots?date=${appointmentDate}${staffParam}`);
       return res.data;
     },
     enabled: !!appointmentDate && !!id
   });
+
+  const bookedSlots = slotsData?.booked_slots || [];
+  const staffWorkStart = slotsData?.work_start;
+  const staffWorkEnd = slotsData?.work_end;
+  const isWorkingDay = slotsData?.is_working_day ?? true;
 
   const bookMutation = useMutation({
     mutationFn: async () => {
@@ -228,12 +234,22 @@ export default function SalonDetail() {
                   <div className="flex items-center justify-center py-4">
                     <Loader2 className="w-5 h-5 animate-spin text-zinc-400" />
                   </div>
+                ) : !isWorkingDay ? (
+                  <div className="p-4 bg-amber-50 border border-amber-100 rounded-xl text-center text-amber-700 text-sm">
+                    Ustanın bu gün istirahət günüdür. Digər günləri seçin.
+                  </div>
                 ) : (
                   <div className="grid grid-cols-4 gap-2">
                     {timeSlots.map((slot) => {
                       const booked = isSlotBooked(slot);
                       const past = isSlotPast(slot);
-                      const disabled = booked || past;
+                      
+                      // Check if slot falls outside staff custom shift times
+                      const outsideShift = 
+                        (staffWorkStart && slot < staffWorkStart) || 
+                        (staffWorkEnd && slot >= staffWorkEnd);
+
+                      const disabled = booked || past || outsideShift;
                       const selected = appointmentTime === slot;
 
                       return (

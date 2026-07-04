@@ -15,6 +15,19 @@ export default function StaffManagement() {
   // Form State
   const [fullName, setFullName] = useState('');
   const [specialty, setSpecialty] = useState('');
+  const [workStart, setWorkStart] = useState('09:00');
+  const [workEnd, setWorkEnd] = useState('18:00');
+  const [workingDays, setWorkingDays] = useState<number[]>([1, 2, 3, 4, 5]);
+
+  const weekDayNames = [
+    { label: 'B.e.', value: 1 },
+    { label: 'Ç.a.', value: 2 },
+    { label: 'Ç.', value: 3 },
+    { label: 'C.a.', value: 4 },
+    { label: 'C.', value: 5 },
+    { label: 'Ş.', value: 6 },
+    { label: 'B.', value: 7 },
+  ];
 
   // Get user
   const { data: user } = useQuery({
@@ -97,15 +110,22 @@ export default function StaffManagement() {
     e.preventDefault();
     if (!selectedSalonId) return;
 
+    const staffPayload = {
+      full_name: fullName,
+      specialty: specialty || null,
+      work_start: workStart ? `${workStart}:00` : null,
+      work_end: workEnd ? `${workEnd}:00` : null,
+      working_days: workingDays.sort((a, b) => a - b).join(','),
+    };
+
     if (editStaffId) {
       updateStaffMutation.mutate({
         id: editStaffId,
-        staffData: { full_name: fullName, specialty: specialty || null }
+        staffData: staffPayload
       });
     } else {
       createStaffMutation.mutate({
-        full_name: fullName,
-        specialty: specialty || null,
+        ...staffPayload,
         salon_id: selectedSalonId
       });
     }
@@ -115,6 +135,15 @@ export default function StaffManagement() {
     setEditStaffId(staff.id);
     setFullName(staff.full_name);
     setSpecialty(staff.specialty || '');
+    setWorkStart(staff.work_start ? staff.work_start.substring(0, 5) : '09:00');
+    setWorkEnd(staff.work_end ? staff.work_end.substring(0, 5) : '18:00');
+    
+    if (staff.working_days) {
+      setWorkingDays(staff.working_days.split(',').map(Number));
+    } else {
+      setWorkingDays([1, 2, 3, 4, 5]);
+    }
+    
     setIsModalOpen(true);
   };
 
@@ -127,6 +156,9 @@ export default function StaffManagement() {
   const resetForm = () => {
     setFullName('');
     setSpecialty('');
+    setWorkStart('09:00');
+    setWorkEnd('18:00');
+    setWorkingDays([1, 2, 3, 4, 5]);
     setEditStaffId(null);
     setIsModalOpen(false);
   };
@@ -220,7 +252,28 @@ export default function StaffManagement() {
               {staff.specialty && (
                 <p className="text-sm text-zinc-500 mb-2">{staff.specialty}</p>
               )}
-              <div className="mt-auto pt-3 border-t border-zinc-100">
+              
+              <div className="mt-2 space-y-1 text-xs text-zinc-500 bg-zinc-50 p-2.5 rounded-xl border border-zinc-100">
+                <div className="flex justify-between">
+                  <span className="font-medium text-zinc-400">İş vaxtı:</span>
+                  <span className="font-semibold text-zinc-700">
+                    {staff.work_start ? staff.work_start.substring(0, 5) : '09:00'} - {staff.work_end ? staff.work_end.substring(0, 5) : '18:00'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-zinc-400">İş günləri:</span>
+                  <span className="font-semibold text-zinc-700">
+                    {staff.working_days
+                      ? staff.working_days.split(',').map((d: string) => {
+                          const matched = weekDayNames.find(w => w.value === Number(d));
+                          return matched ? matched.label : '';
+                        }).join(', ')
+                      : 'Məlumat yoxdur'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-auto pt-3 border-t border-zinc-100 flex items-center justify-between">
                 <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${staff.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-zinc-100 text-zinc-500'}`}>
                   {staff.is_active ? '● Aktiv' : '○ Deaktiv'}
                 </span>
@@ -250,6 +303,42 @@ export default function StaffManagement() {
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-zinc-700 block">İxtisas (İxtiyari)</label>
                   <Input placeholder="Məs: Saç ustası, Dırnaq ustası" value={specialty} onChange={e => setSpecialty(e.target.value)} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-zinc-700 block">İşin başlanğıcı</label>
+                    <Input type="time" value={workStart} onChange={e => setWorkStart(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-zinc-700 block">İşin bitməsi</label>
+                    <Input type="time" value={workEnd} onChange={e => setWorkEnd(e.target.value)} />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-zinc-700 block">İş günləri</label>
+                  <div className="flex flex-wrap gap-2">
+                    {weekDayNames.map((day) => {
+                      const isChecked = workingDays.includes(day.value);
+                      return (
+                        <button
+                          key={day.value}
+                          type="button"
+                          onClick={() => {
+                            if (isChecked) {
+                              setWorkingDays(workingDays.filter(v => v !== day.value));
+                            } else {
+                              setWorkingDays([...workingDays, day.value]);
+                            }
+                          }}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${isChecked ? 'bg-zinc-900 border-zinc-900 text-white shadow-sm' : 'bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50'}`}
+                        >
+                          {day.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </form>
             </div>
