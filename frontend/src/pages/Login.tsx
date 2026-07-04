@@ -29,7 +29,13 @@ export default function Login() {
     },
     onSuccess: (data) => {
       localStorage.setItem('token', data.access_token);
-      navigate('/');
+      localStorage.setItem('role', data.role);
+      
+      if (data.role === 'salon_admin') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/');
+      }
     },
     onError: () => {
       setErrorMsg('E-poçt ünvanı və ya şifrə yanlışdır.');

@@ -14,6 +14,7 @@ export default function Register() {
     password: '',
     full_name: '',
     phone: '',
+    role: 'customer',
   });
   
   // Validation and Error states
@@ -22,10 +23,7 @@ export default function Register() {
 
   const registerMutation = useMutation({
     mutationFn: async () => {
-      const response = await api.post('/api/v1/users/', {
-        ...formData,
-        role: "salon_admin" // Defaulting to salon_admin for this interface
-      });
+      const response = await api.post('/api/v1/users/', formData);
       return response.data;
     },
     onSuccess: () => {
@@ -96,6 +94,23 @@ export default function Register() {
           )}
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="space-y-4">
+              <div className="flex gap-4 p-1 bg-zinc-100 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, role: 'customer' }))}
+                  className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${formData.role === 'customer' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'}`}
+                >
+                  Müştəri
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, role: 'salon_admin' }))}
+                  className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${formData.role === 'salon_admin' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'}`}
+                >
+                  Salon Sahibi
+                </button>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-zinc-700 block">Ad və Soyad</label>

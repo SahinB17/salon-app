@@ -14,6 +14,7 @@ router = APIRouter(tags=["Login"])
 class Token(BaseModel):
     access_token: str
     token_type: str
+    role: str
 
 @router.post("/login/access-token", response_model=Token)
 async def login_access_token(
@@ -41,4 +42,4 @@ async def login_access_token(
     access_token = create_access_token(
         subject=user.id, expires_delta=access_token_expires
     )
-    return Token(access_token=access_token, token_type="bearer")
+    return Token(access_token=access_token, token_type="bearer", role=user.role)

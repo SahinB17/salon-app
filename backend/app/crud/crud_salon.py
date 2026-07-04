@@ -23,17 +23,15 @@ async def get_salons(db: AsyncSession, skip: int = 0, limit: int = 100) -> List[
     return list(result.scalars().all())
 
 async def create_salon(db: AsyncSession, salon_in: SalonCreate) -> Salon:
-    db_salon = Salon(
-        owner_id=salon_in.owner_id,
-        name=salon_in.name,
-        address=salon_in.address,
-        description=salon_in.description,
-        contact_phone=salon_in.contact_phone
-    )
+    # Use model_dump to map fields directly to handle optional fields like image_url automatically
+    create_data = salon_in.model_dump()
+    db_salon = Salon(**create_data)
+    
     db.add(db_salon)
     await db.commit()
-    await db.refresh(db_salon)
-    return db_salon
+    # Fetch again to load relationships like services and staffs
+    loaded_salon = await get_salon(db, db_salon.id)
+    return loaded_salon
 
 async def update_salon(db: AsyncSession, db_salon: Salon, salon_in: SalonUpdate) -> Salon:
     update_data = salon_in.model_dump(exclude_unset=True)
@@ -42,8 +40,10 @@ async def update_salon(db: AsyncSession, db_salon: Salon, salon_in: SalonUpdate)
     
     db.add(db_salon)
     await db.commit()
-    await db.refresh(db_salon)
-    return db_salon
+    
+    # Fetch again to load relationships like services and staffs
+    loaded_salon = await get_salon(db, db_salon.id)
+    return loaded_salon
 
 async def delete_salon(db: AsyncSession, salon_id: int) -> bool:
     salon = await get_salon(db, salon_id=salon_id)

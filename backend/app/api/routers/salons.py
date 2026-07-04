@@ -10,7 +10,7 @@ from sqlalchemy.future import select
 from sqlalchemy import or_
 from app.models.salon import Salon
 from app.models.service import Service
-
+from sqlalchemy.orm import selectinload
 router = APIRouter(prefix="/salons", tags=["Salons"])
 
 class SalonCreateRequest(SalonBase):
@@ -142,6 +142,10 @@ async def search_salons(
             )
         )
         .distinct()
+        .options(
+            selectinload(Salon.services),
+            selectinload(Salon.staffs)
+        )
         .offset(skip)
         .limit(limit)
     )
