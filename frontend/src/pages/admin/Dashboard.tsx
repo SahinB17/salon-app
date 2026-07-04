@@ -1,11 +1,24 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '../../components/ui/Card';
 import api from '../../lib/api';
-import { Users, Calendar, DollarSign, TrendingUp, Store, Loader2 } from 'lucide-react';
+import { Users, Calendar, DollarSign, TrendingUp, Store, Loader2, ChevronDown, Check } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 
 export default function Dashboard() {
-  const [selectedSalonId, setSelectedSalonId] = useState<number | null>(null);
+  const [selectedSalonId, setSelectedSalonId] = useState<number | 'all' | null>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -22,7 +35,7 @@ export default function Dashboard() {
       const res = await api.get('/api/v1/salons/');
       const mySalons = res.data.filter((s: any) => s.owner_id === user?.id);
       if (mySalons.length > 0 && !selectedSalonId) {
-        setSelectedSalonId(mySalons[0].id);
+        setSelectedSalonId(mySalons.length > 1 ? 'all' : mySalons[0].id);
       }
       return mySalons;
     },
@@ -33,20 +46,62 @@ export default function Dashboard() {
   const { data: dailyReport, isLoading: isDailyLoading } = useQuery({
     queryKey: ['dailyReport', selectedSalonId],
     queryFn: async () => {
+      if (selectedSalonId === 'all') {
+        const promises = salons.map((s: any) => api.get(`/api/v1/salons/${s.id}/reports?report_type=daily`));
+        const results = await Promise.all(promises);
+        
+        const mergedData: any = {};
+        let totalRev = 0;
+        let totalCust = 0;
+        
+        for (const res of results) {
+          totalRev += res.data.total_revenue;
+          totalCust += res.data.total_customers;
+          for (const d of res.data.data) {
+            if (!mergedData[d.date]) mergedData[d.date] = { date: d.date, revenue: 0, customers: 0 };
+            mergedData[d.date].revenue += d.revenue;
+            mergedData[d.date].customers += d.customers;
+          }
+        }
+        
+        const sortedData = Object.values(mergedData).sort((a: any, b: any) => a.date.localeCompare(b.date));
+        return { data: sortedData, total_revenue: totalRev, total_customers: totalCust };
+      }
       const res = await api.get(`/api/v1/salons/${selectedSalonId}/reports?report_type=daily`);
       return res.data;
     },
-    enabled: !!selectedSalonId
+    enabled: !!selectedSalonId && salons.length > 0
   });
 
   // Fetch monthly report
   const { data: monthlyReport, isLoading: isMonthlyLoading } = useQuery({
     queryKey: ['monthlyReport', selectedSalonId],
     queryFn: async () => {
+      if (selectedSalonId === 'all') {
+        const promises = salons.map((s: any) => api.get(`/api/v1/salons/${s.id}/reports?report_type=monthly`));
+        const results = await Promise.all(promises);
+        
+        const mergedData: any = {};
+        let totalRev = 0;
+        let totalCust = 0;
+        
+        for (const res of results) {
+          totalRev += res.data.total_revenue;
+          totalCust += res.data.total_customers;
+          for (const d of res.data.data) {
+            if (!mergedData[d.date]) mergedData[d.date] = { date: d.date, revenue: 0, customers: 0 };
+            mergedData[d.date].revenue += d.revenue;
+            mergedData[d.date].customers += d.customers;
+          }
+        }
+        
+        const sortedData = Object.values(mergedData).sort((a: any, b: any) => a.date.localeCompare(b.date));
+        return { data: sortedData, total_revenue: totalRev, total_customers: totalCust };
+      }
       const res = await api.get(`/api/v1/salons/${selectedSalonId}/reports?report_type=monthly`);
       return res.data;
     },
-    enabled: !!selectedSalonId
+    enabled: !!selectedSalonId && salons.length > 0
   });
 
   // Fetch today's appointments count
@@ -54,12 +109,19 @@ export default function Dashboard() {
     queryKey: ['todayAppointments', selectedSalonId],
     queryFn: async () => {
       if (!selectedSalonId) return [];
-      const res = await api.get(`/api/v1/appointments/salon/${selectedSalonId}`);
-      // Get local date in YYYY-MM-DD format
       const today = new Date().toLocaleDateString('en-CA');
+      
+      if (selectedSalonId === 'all') {
+        const promises = salons.map((s: any) => api.get(`/api/v1/appointments/salon/${s.id}`));
+        const results = await Promise.all(promises);
+        const allAppointments = results.flatMap((res: any) => res.data);
+        return allAppointments.filter((a: any) => a.start_time?.startsWith(today));
+      }
+      
+      const res = await api.get(`/api/v1/appointments/salon/${selectedSalonId}`);
       return res.data.filter((a: any) => a.start_time?.startsWith(today));
     },
-    enabled: !!selectedSalonId
+    enabled: !!selectedSalonId && salons.length > 0
   });
 
   const isLoading = isDailyLoading || isMonthlyLoading;
@@ -78,16 +140,45 @@ export default function Dashboard() {
         </div>
 
         {salons.length > 1 && (
-          <select
-            className="h-11 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 px-4 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-50 min-w-[200px] transition-colors"
-            value={selectedSalonId || ''}
-            onChange={(e) => setSelectedSalonId(Number(e.target.value))}
-            disabled={isSalonsLoading}
-          >
-            {salons.map((s: any) => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
+          <div className="relative mt-2 sm:mt-0" ref={dropdownRef}>
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center justify-between h-11 w-full sm:w-[240px] px-4 rounded-xl border border-zinc-800 hover:border-zinc-700 bg-zinc-900/80 text-white font-medium text-sm transition-all shadow-sm"
+            >
+              <span className="truncate">
+                {selectedSalonId === 'all' ? '📊 Bütün Salonların Cəmi' : `🏪 ${salons.find((s: any) => s.id === selectedSalonId)?.name || 'Salon Seçin'}`}
+              </span>
+              <ChevronDown className={`w-4 h-4 text-zinc-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {isDropdownOpen && (
+              <div className="absolute top-full mt-2 w-full z-50 bg-zinc-900/95 backdrop-blur-md border border-zinc-800 rounded-xl shadow-2xl p-1">
+                <button
+                  onClick={() => {
+                    setSelectedSalonId('all');
+                    setIsDropdownOpen(false);
+                  }}
+                  className="w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center justify-between transition-colors hover:bg-zinc-800/80 text-zinc-300 hover:text-white"
+                >
+                  <span className={selectedSalonId === 'all' ? 'font-medium text-white' : ''}>📊 Bütün Salonların Cəmi</span>
+                  {selectedSalonId === 'all' && <Check className="w-4 h-4 text-white" />}
+                </button>
+                {salons.map((s: any) => (
+                  <button
+                    key={s.id}
+                    onClick={() => {
+                      setSelectedSalonId(s.id);
+                      setIsDropdownOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center justify-between transition-colors hover:bg-zinc-800/80 text-zinc-300 hover:text-white mt-1"
+                  >
+                    <span className={selectedSalonId === s.id ? 'font-medium text-white' : ''}>🏪 {s.name}</span>
+                    {selectedSalonId === s.id && <Check className="w-4 h-4 text-white" />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         )}
       </div>
 
@@ -164,6 +255,73 @@ export default function Dashboard() {
                 <div className="h-8 bg-zinc-100 dark:bg-zinc-800 rounded-lg animate-pulse w-20 transition-colors" />
               ) : (
                 <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 transition-colors">{(monthlyReport?.total_revenue || 0).toFixed(0)} ₼</p>
+              )}
+            </Card>
+          </div>
+
+          {/* Revenue Chart */}
+          <div className="mt-8">
+            <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-4 transition-colors">Gəlir Dinamikası</h2>
+            <Card className="p-4 sm:p-6 border-0 shadow-sm rounded-2xl dark:bg-zinc-900 transition-colors">
+              {isLoading ? (
+                <div className="h-[320px] flex items-center justify-center">
+                  <Loader2 className="w-8 h-8 animate-spin text-zinc-400 dark:text-zinc-500" />
+                </div>
+              ) : !dailyReport?.data?.length ? (
+                <div className="h-[320px] flex items-center justify-center text-zinc-500 dark:text-zinc-400">
+                  Hələ kifayət qədər məlumat yoxdur.
+                </div>
+              ) : (
+                <div className="h-[320px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart
+                      data={dailyReport.data}
+                      margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                    >
+                      <defs>
+                        <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-zinc-200 dark:text-zinc-800" />
+                      <XAxis 
+                        dataKey="date" 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{ fill: '#71717a', fontSize: 12 }} 
+                        dy={10}
+                      />
+                      <YAxis 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{ fill: '#71717a', fontSize: 12 }}
+                        tickFormatter={(value) => `${value} ₼`}
+                      />
+                      <RechartsTooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'rgba(24, 24, 27, 0.95)', 
+                          border: 'none',
+                          borderRadius: '12px',
+                          color: '#fff',
+                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                        }}
+                        itemStyle={{ color: '#10b981', fontWeight: 'bold' }}
+                        labelStyle={{ color: '#a1a1aa', marginBottom: '4px' }}
+                        formatter={(value: number) => [`${value} ₼`, 'Gəlir']}
+                        labelFormatter={(label) => `Tarix: ${label}`}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="revenue" 
+                        stroke="#10b981" 
+                        strokeWidth={3}
+                        fillOpacity={1} 
+                        fill="url(#colorRevenue)" 
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
               )}
             </Card>
           </div>
