@@ -4,6 +4,7 @@ import { Plus, Image as ImageIcon, MapPin, Edit2, Trash2, Loader2, Images, X } f
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
+import { toast } from 'sonner';
 import api from '../../lib/api';
 
 export default function SalonsManagement() {
@@ -56,7 +57,9 @@ export default function SalonsManagement() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminSalons'] });
       resetForm();
-    }
+      toast.success("Salon uğurla yaradıldı!");
+    },
+    onError: () => toast.error("Salon yaradılarkən xəta baş verdi.")
   });
 
   const updateSalonMutation = useMutation({
@@ -67,7 +70,9 @@ export default function SalonsManagement() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminSalons'] });
       resetForm();
-    }
+      toast.success("Salon məlumatları yeniləndi!");
+    },
+    onError: () => toast.error("Salon yenilənərkən xəta baş verdi.")
   });
 
   const deleteSalonMutation = useMutation({
@@ -77,7 +82,9 @@ export default function SalonsManagement() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminSalons'] });
-    }
+      toast.success("Salon uğurla silindi!");
+    },
+    onError: () => toast.error("Salon silinərkən xəta baş verdi.")
   });
 
   const uploadGalleryImageMutation = useMutation({
@@ -97,7 +104,9 @@ export default function SalonsManagement() {
           if (updatedSalon) setActiveGallerySalon(updatedSalon);
         });
       }
-    }
+      toast.success("Şəkil qalereyaya əlavə edildi!");
+    },
+    onError: () => toast.error("Şəkil yüklənərkən xəta baş verdi.")
   });
 
   const deleteGalleryImageMutation = useMutation({
@@ -113,7 +122,9 @@ export default function SalonsManagement() {
           if (updatedSalon) setActiveGallerySalon(updatedSalon);
         });
       }
-    }
+      toast.success("Şəkil qalereyadan silindi!");
+    },
+    onError: () => toast.error("Şəkil silinərkən xəta baş verdi.")
   });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {

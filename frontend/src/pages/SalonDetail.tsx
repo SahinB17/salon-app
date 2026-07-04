@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ChevronLeft, MapPin, Star, Clock, Loader2, MessageSquare, Heart, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 import { Button } from '../components/ui/Button';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import { Input } from '../components/ui/Input';
@@ -57,6 +58,10 @@ export default function SalonDetail() {
       setReviewComment('');
       setReviewRating(5);
       refetchReviews();
+      toast.success("Rəyiniz uğurla əlavə edildi!");
+    },
+    onError: () => {
+      toast.error("Rəy əlavə edərkən xəta baş verdi.");
     }
   });
 
@@ -73,9 +78,11 @@ export default function SalonDetail() {
   const toggleFavoriteMutation = useMutation({
     mutationFn: async (isFav: boolean) => {
       if (isFav) {
-        return api.delete(`/api/v1/favorites/${id}`);
+        await api.delete(`/api/v1/favorites/${id}`);
+        return { isFav: false };
       } else {
-        return api.post(`/api/v1/favorites/${id}`);
+        await api.post(`/api/v1/favorites/${id}`);
+        return { isFav: true };
       }
     },
     onMutate: async (isFav) => {
@@ -93,6 +100,7 @@ export default function SalonDetail() {
     },
     onError: (_err, _newTodo, context) => {
       queryClient.setQueryData(['favorites'], context?.previousFavorites);
+      toast.error("Əməliyyat zamanı xəta baş verdi.");
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['favorites'] });
@@ -138,10 +146,12 @@ export default function SalonDetail() {
       queryClient.invalidateQueries({ queryKey: ['bookedSlots', id, appointmentDate, selectedStaff] });
       setSelectedService(null);
       navigate('/appointments');
+      toast.success("Rezervasiya uğurla tamamlandı!");
     },
-    onError: () => {
+    onError: (error: any) => {
       // Refresh booked slots so the user sees updated availability
       queryClient.invalidateQueries({ queryKey: ['bookedSlots', id, appointmentDate, selectedStaff] });
+      toast.error(error.response?.data?.detail || "Rezervasiya zamanı xəta baş verdi.");
     }
   });
 

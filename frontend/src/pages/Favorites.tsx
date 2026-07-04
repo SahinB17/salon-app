@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { MapPin, Star, Heart } from 'lucide-react';
+import { EmptyState } from '../components/ui/EmptyState';
 import api from '../lib/api';
 import { motion } from 'framer-motion';
 
@@ -28,10 +29,13 @@ export default function Favorites() {
             ))}
           </div>
         ) : favorites.length === 0 ? (
-          <div className="text-center text-zinc-500 mt-10">
-            <Heart className="w-12 h-12 text-zinc-300 mx-auto mb-4" />
-            <p>Hələ heç bir salonu seçilmişlərə əlavə etməmisiniz.</p>
-          </div>
+          <EmptyState 
+            icon={Heart}
+            title="Siyahı boşdur"
+            description="Hələ heç bir salonu seçilmişlərə əlavə etməmisiniz."
+            buttonText="Kəşf etməyə başla"
+            buttonLink="/salons"
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {favorites.map((fav: any) => {

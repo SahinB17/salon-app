@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { Calendar as CalendarIcon, Clock, MapPin, Search } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Calendar as CalendarIcon, Clock, MapPin } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
-import { Button } from '../components/ui/Button';
+import { EmptyState } from '../components/ui/EmptyState';
 import api from '../lib/api';
 
 const statusConfig: Record<string, { label: string; variant: 'default' | 'success' | 'warning' | 'danger' }> = {
@@ -14,15 +13,10 @@ const statusConfig: Record<string, { label: string; variant: 'default' | 'succes
 };
 
 export default function Appointments() {
-  const navigate = useNavigate();
-  
   const { data: appointments = [], isLoading } = useQuery({
     queryKey: ['myAppointments'],
     queryFn: async () => {
       const response = await api.get('/api/v1/appointments/me');
-      // Assuming backend returns a list of appointments.
-      // We might need to fetch salon details for each, or assume backend includes it.
-      // For now we will render what is available.
       return response.data;
     }
   });
@@ -42,17 +36,13 @@ export default function Appointments() {
              ))}
           </div>
         ) : appointments.length === 0 ? (
-          <div className="flex flex-col items-center justify-center mt-20 text-center">
-            <div className="w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center mb-4">
-               <CalendarIcon className="w-8 h-8 text-zinc-300" />
-            </div>
-            <h2 className="text-lg font-bold text-zinc-900 mb-2">Heç bir rezervasiya yoxdur</h2>
-            <p className="text-sm text-zinc-500 mb-6">Siz hələ heç bir salona yazılmamısınız.</p>
-            <Button onClick={() => navigate('/salons')}>
-               <Search className="w-4 h-4 mr-2" />
-               Salon Axtar
-            </Button>
-          </div>
+          <EmptyState 
+            icon={CalendarIcon}
+            title="Rezervasiya yoxdur"
+            description="Siz hələ heç bir salona yazılmamısınız."
+            buttonText="Salon Axtar"
+            buttonLink="/salons"
+          />
         ) : (
           <div className="space-y-4">
             {appointments.map((apt: any) => {

@@ -19,12 +19,15 @@ import AppointmentsManagement from './pages/admin/AppointmentsManagement';
 import ServicesManagement from './pages/admin/ServicesManagement';
 import StaffManagement from './pages/admin/StaffManagement';
 
+import { Toaster } from 'sonner';
+
 // Create a client
 const queryClient = new QueryClient();
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <Toaster position="bottom-center" richColors theme="light" />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />

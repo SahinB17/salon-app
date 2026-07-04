@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Map } from '../components/ui/Map';
+import { EmptyState } from '../components/ui/EmptyState';
 import api from '../lib/api';
 
 // Simple debounce hook
@@ -84,9 +85,11 @@ export default function Search() {
              Axtarış zamanı xəta baş verdi. Yenidən cəhd edin.
            </div>
         ) : debouncedQuery && results.length === 0 ? (
-           <div className="text-center text-zinc-500 mt-10">
-             "{debouncedQuery}" üzrə heç nə tapılmadı
-           </div>
+           <EmptyState 
+             icon={SearchIcon}
+             title="Heç nə tapılmadı"
+             description={`"${debouncedQuery}" üzrə salon və ya xidmət yoxdur.`}
+           />
         ) : !debouncedQuery ? (
            <div className="text-center text-zinc-400 mt-10">
              Axtarmaq üçün yuxarıdakı xanaya yazın
