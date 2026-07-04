@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ChevronLeft, MapPin, Star, Clock, Loader2, MessageSquare, Heart, X } from 'lucide-react';
@@ -36,6 +36,24 @@ export default function SalonDetail() {
       return response.data;
     }
   });
+
+  useEffect(() => {
+    if (salon) {
+      const saved = localStorage.getItem('recentlyViewedSalons');
+      let viewed = saved ? JSON.parse(saved) : [];
+      // Remove if already exists
+      viewed = viewed.filter((s: any) => s.id !== salon.id);
+      // Add to beginning
+      viewed.unshift({
+        id: salon.id,
+        name: salon.name,
+        image_url: salon.image_url
+      });
+      // Keep only last 5
+      if (viewed.length > 5) viewed = viewed.slice(0, 5);
+      localStorage.setItem('recentlyViewedSalons', JSON.stringify(viewed));
+    }
+  }, [salon]);
 
   const { data: reviews, refetch: refetchReviews } = useQuery({
     queryKey: ['reviews', id],
@@ -200,21 +218,21 @@ export default function SalonDetail() {
   const timeSlots = generateTimeSlots(openHour, closeHour);
 
   return (
-    <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] pb-6">
+    <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-[#121212] pb-6 transition-colors">
       {/* Top Header Image & Back Button */}
-      <div className="relative h-64 bg-zinc-200">
+      <div className="relative h-64 bg-zinc-200 dark:bg-zinc-800 transition-colors">
         {salon.image_url && (
           <img src={`http://localhost:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
         )}
         <button 
           onClick={() => navigate(-1)}
-          className="absolute top-12 left-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm z-10 active:scale-95"
+          className="absolute top-12 left-4 w-10 h-10 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm z-10 active:scale-95"
         >
-          <ChevronLeft className="w-6 h-6 text-zinc-900 pr-1" />
+          <ChevronLeft className="w-6 h-6 text-zinc-900 dark:text-zinc-50 pr-1" />
         </button>
         <button 
           onClick={() => toggleFavoriteMutation.mutate(isFavorite)}
-          className="absolute top-12 right-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm z-10 active:scale-95 transition-transform"
+          className="absolute top-12 right-4 w-10 h-10 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm z-10 active:scale-95 transition-transform"
         >
           <motion.div
             initial={false}
@@ -222,29 +240,29 @@ export default function SalonDetail() {
             transition={{ duration: 0.3 }}
           >
             <Heart 
-              className={`w-5 h-5 transition-colors ${isFavorite ? 'fill-red-500 text-red-500' : 'text-zinc-500'}`} 
+              className={`w-5 h-5 transition-colors ${isFavorite ? 'fill-red-500 text-red-500' : 'text-zinc-500 dark:text-zinc-400'}`} 
             />
           </motion.div>
         </button>
       </div>
 
       {/* Info Section */}
-      <div className="px-5 pt-6 pb-4 bg-white rounded-t-3xl -mt-6 relative z-10 shadow-sm border-b border-zinc-100">
+      <div className="px-5 pt-6 pb-4 bg-white dark:bg-zinc-900 rounded-t-3xl -mt-6 relative z-10 shadow-sm border-b border-zinc-100 dark:border-zinc-800 transition-colors">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">{salon.name}</h1>
-            <div className="flex items-center text-zinc-500 mt-2 text-sm">
+            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{salon.name}</h1>
+            <div className="flex items-center text-zinc-500 dark:text-zinc-400 mt-2 text-sm">
               <MapPin className="w-4 h-4 mr-1" />
               <span>{salon.address || 'Ünvan yoxdur'}</span>
             </div>
             {salon.open_time && salon.close_time && (
-              <div className="flex items-center text-zinc-500 mt-1.5 text-sm">
+              <div className="flex items-center text-zinc-500 dark:text-zinc-400 mt-1.5 text-sm">
                 <Clock className="w-4 h-4 mr-1" />
                 <span>{salon.open_time.substring(0,5)} - {salon.close_time.substring(0,5)}</span>
               </div>
             )}
           </div>
-          <div className="bg-amber-100 text-amber-700 px-2 py-1 rounded-lg flex items-center font-bold text-sm">
+          <div className="bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-500 px-2 py-1 rounded-lg flex items-center font-bold text-sm">
             <Star className="w-3.5 h-3.5 fill-current mr-1" /> {salon.average_rating ? salon.average_rating.toFixed(1) : '0.0'}
           </div>
         </div>
@@ -253,12 +271,12 @@ export default function SalonDetail() {
       {/* Gallery Section */}
       {salon.images && salon.images.length > 0 && (
         <div className="px-4 mt-6">
-          <h2 className="text-lg font-bold text-zinc-900 mb-4">Qalereya</h2>
+          <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-4">Qalereya</h2>
           <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
             {salon.images.map((img: any) => (
               <div 
                 key={img.id} 
-                className="w-40 h-40 flex-shrink-0 rounded-2xl overflow-hidden shadow-sm border border-zinc-100 cursor-pointer active:scale-95 transition-transform"
+                className="w-40 h-40 flex-shrink-0 rounded-2xl overflow-hidden shadow-sm border border-zinc-100 dark:border-zinc-800 cursor-pointer active:scale-95 transition-transform"
                 onClick={() => setSelectedImage(img.image_url)}
               >
                 <img src={`http://localhost:8000${img.image_url}`} alt="Qalereya" className="w-full h-full object-cover pointer-events-none" />
@@ -270,14 +288,14 @@ export default function SalonDetail() {
 
       {/* Services List */}
       <div className="px-4 mt-6">
-        <h2 className="text-lg font-bold text-zinc-900 mb-4">Xidmətlər</h2>
+        <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-4">Xidmətlər</h2>
         <div className="space-y-3">
           {salon.services && salon.services.length > 0 ? (
             salon.services.map((service: any) => (
-              <div key={service.id} className="bg-white p-4 rounded-2xl shadow-sm border border-zinc-100 flex justify-between items-center">
+              <div key={service.id} className="bg-white dark:bg-zinc-900 p-4 rounded-2xl shadow-sm border border-zinc-100 dark:border-zinc-800 flex justify-between items-center transition-colors">
                 <div>
-                  <h3 className="font-bold text-zinc-900">{service.name}</h3>
-                  <p className="text-sm text-zinc-500 mt-1">{service.price} ₼ • {service.duration_minutes} dəq.</p>
+                  <h3 className="font-bold text-zinc-900 dark:text-zinc-50">{service.name}</h3>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{service.price} ₼ • {service.duration_minutes} dəq.</p>
                 </div>
                 <Button 
                   onClick={() => handleBookClick(service)}
@@ -288,7 +306,7 @@ export default function SalonDetail() {
               </div>
             ))
           ) : (
-            <p className="text-zinc-500 text-center py-4">Hələ xidmət əlavə edilməyib.</p>
+            <p className="text-zinc-500 dark:text-zinc-400 text-center py-4">Hələ xidmət əlavə edilməyib.</p>
           )}
         </div>
       </div>
@@ -296,8 +314,8 @@ export default function SalonDetail() {
       {/* Reviews Section */}
       <div className="px-4 mt-8">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-bold text-zinc-900">Rəylər ({reviews?.length || 0})</h2>
-          <Button className="bg-white text-zinc-900 border border-zinc-200 hover:bg-zinc-50 h-8 px-3 text-xs rounded-full" onClick={() => setIsReviewModalOpen(true)}>
+          <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">Rəylər ({reviews?.length || 0})</h2>
+          <Button className="bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 h-8 px-3 text-xs rounded-full transition-colors" onClick={() => setIsReviewModalOpen(true)}>
             <MessageSquare className="w-3.5 h-3.5 mr-1" />
             Rəy yaz
           </Button>
@@ -305,27 +323,27 @@ export default function SalonDetail() {
         <div className="space-y-4">
           {reviews && reviews.length > 0 ? (
             reviews.map((review: any) => (
-              <div key={review.id} className="bg-white p-4 rounded-2xl shadow-sm border border-zinc-100">
+              <div key={review.id} className="bg-white dark:bg-zinc-900 p-4 rounded-2xl shadow-sm border border-zinc-100 dark:border-zinc-800 transition-colors">
                 <div className="flex justify-between items-start mb-2">
-                  <div className="font-bold text-sm text-zinc-900">{review.customer?.full_name || 'İstifadəçi'}</div>
+                  <div className="font-bold text-sm text-zinc-900 dark:text-zinc-50">{review.customer?.full_name || 'İstifadəçi'}</div>
                   <div className="flex items-center text-amber-500 text-xs font-bold">
                     <Star className="w-3 h-3 fill-current mr-0.5" />
                     {review.rating}.0
                   </div>
                 </div>
                 {review.comment && (
-                  <p className="text-sm text-zinc-600 mt-1">{review.comment}</p>
+                  <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">{review.comment}</p>
                 )}
-                <div className="text-[10px] text-zinc-400 mt-2">
+                <div className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-2">
                   {new Date(review.created_at).toLocaleDateString('az-AZ')}
                 </div>
               </div>
             ))
           ) : (
-            <div className="bg-zinc-50 p-6 rounded-2xl border border-zinc-100 text-center">
-              <MessageSquare className="w-8 h-8 text-zinc-300 mx-auto mb-2" />
-              <p className="text-sm text-zinc-500 font-medium">Hələ rəy yazılmayıb</p>
-              <p className="text-xs text-zinc-400 mt-1">İlk rəyi siz yazın!</p>
+            <div className="bg-zinc-50 dark:bg-zinc-800/50 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-800 text-center transition-colors">
+              <MessageSquare className="w-8 h-8 text-zinc-300 dark:text-zinc-600 mx-auto mb-2" />
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">Hələ rəy yazılmayıb</p>
+              <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">İlk rəyi siz yazın!</p>
             </div>
           )}
         </div>
@@ -339,29 +357,29 @@ export default function SalonDetail() {
       >
         {selectedService && (
           <div className="space-y-6">
-            <div className="bg-zinc-50 p-4 rounded-xl">
-              <div className="font-bold text-zinc-900">{selectedService.name}</div>
-              <div className="text-zinc-500 text-sm mt-1">{selectedService.price} ₼ • {selectedService.duration_minutes} dəq.</div>
+            <div className="bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-xl transition-colors">
+              <div className="font-bold text-zinc-900 dark:text-zinc-50">{selectedService.name}</div>
+              <div className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">{selectedService.price} ₼ • {selectedService.duration_minutes} dəq.</div>
             </div>
 
             {/* Staff Selection (Optional) */}
             <div>
-              <label className="text-sm font-bold text-zinc-900 block mb-3">Usta seçin (İstəyə bağlı)</label>
+              <label className="text-sm font-bold text-zinc-900 dark:text-zinc-50 block mb-3">Usta seçin (İstəyə bağlı)</label>
               <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
                 <div 
                   onClick={() => setSelectedStaff(null)}
-                  className={`flex flex-col items-center justify-center min-w-[72px] h-[72px] rounded-2xl border-2 transition-all cursor-pointer ${selectedStaff === null ? 'border-zinc-900 bg-zinc-50' : 'border-zinc-100 bg-white'}`}
+                  className={`flex flex-col items-center justify-center min-w-[72px] h-[72px] rounded-2xl border-2 transition-all cursor-pointer ${selectedStaff === null ? 'border-zinc-900 dark:border-zinc-100 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50' : 'border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-300'}`}
                 >
-                  <span className="text-xs font-semibold text-zinc-800">Fərq etməz</span>
+                  <span className="text-xs font-semibold">Fərq etməz</span>
                 </div>
                 {salon.staffs && salon.staffs.filter((s: any) => s.is_active).map((staff: any) => (
                   <div 
                     key={staff.id}
                     onClick={() => setSelectedStaff(staff.id)}
-                    className={`flex flex-col items-center justify-center min-w-[72px] h-[72px] rounded-2xl border-2 transition-all cursor-pointer ${selectedStaff === staff.id ? 'border-zinc-900 bg-zinc-50' : 'border-zinc-100 bg-white'}`}
+                    className={`flex flex-col items-center justify-center min-w-[72px] h-[72px] rounded-2xl border-2 transition-all cursor-pointer ${selectedStaff === staff.id ? 'border-zinc-900 dark:border-zinc-100 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50' : 'border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-400'}`}
                   >
-                     <div className="w-8 h-8 bg-zinc-200 rounded-full mb-1"></div>
-                     <span className="text-xs font-medium text-zinc-700 truncate w-full text-center px-1">{staff.full_name?.split(' ')[0]}</span>
+                     <div className="w-8 h-8 bg-zinc-200 dark:bg-zinc-700 rounded-full mb-1"></div>
+                     <span className="text-xs font-medium truncate w-full text-center px-1">{staff.full_name?.split(' ')[0]}</span>
                   </div>
                 ))}
               </div>
@@ -369,7 +387,7 @@ export default function SalonDetail() {
 
             {/* Date */}
             <div>
-              <label className="text-sm font-bold text-zinc-900 block mb-2">Tarix</label>
+              <label className="text-sm font-bold text-zinc-900 dark:text-zinc-50 block mb-2">Tarix</label>
               <Input 
                 type="date" 
                 value={appointmentDate}
@@ -381,13 +399,13 @@ export default function SalonDetail() {
             {/* Time Slot Picker */}
             {appointmentDate && (
               <div>
-                <label className="text-sm font-bold text-zinc-900 block mb-3">Saat seçin</label>
+                <label className="text-sm font-bold text-zinc-900 dark:text-zinc-50 block mb-3">Saat seçin</label>
                 {isSlotsLoading ? (
                   <div className="flex items-center justify-center py-4">
-                    <Loader2 className="w-5 h-5 animate-spin text-zinc-400" />
+                    <Loader2 className="w-5 h-5 animate-spin text-zinc-400 dark:text-zinc-500" />
                   </div>
                 ) : !isWorkingDay ? (
-                  <div className="p-4 bg-amber-50 border border-amber-100 rounded-xl text-center text-amber-700 text-sm">
+                  <div className="p-4 bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 rounded-xl text-center text-amber-700 dark:text-amber-500 text-sm transition-colors">
                     Ustanın bu gün istirahət günüdür. Digər günləri seçin.
                   </div>
                 ) : (
@@ -411,9 +429,9 @@ export default function SalonDetail() {
                           disabled={disabled}
                           className={`
                             py-2.5 rounded-xl text-sm font-medium transition-all
-                            ${selected ? 'bg-zinc-900 text-white ring-2 ring-zinc-900 ring-offset-2' : ''}
-                            ${disabled ? 'bg-red-50 text-red-300 cursor-not-allowed line-through' : ''}
-                            ${!selected && !disabled ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 cursor-pointer' : ''}
+                            ${selected ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 ring-2 ring-zinc-900 dark:ring-zinc-100 ring-offset-2 dark:ring-offset-zinc-950' : ''}
+                            ${disabled ? 'bg-red-50 dark:bg-red-500/10 text-red-300 dark:text-red-400 cursor-not-allowed line-through' : ''}
+                            ${!selected && !disabled ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 cursor-pointer' : ''}
                           `}
                         >
                           {slot}
@@ -422,16 +440,16 @@ export default function SalonDetail() {
                     })}
                   </div>
                 )}
-                <div className="flex items-center gap-4 mt-3 text-xs text-zinc-500">
-                  <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-emerald-50 border border-emerald-200" /> Boş</div>
-                  <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-red-50 border border-red-200" /> Dolu</div>
-                  <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-zinc-900" /> Seçildi</div>
+                <div className="flex items-center gap-4 mt-3 text-xs text-zinc-500 dark:text-zinc-400">
+                  <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20" /> Boş</div>
+                  <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20" /> Dolu</div>
+                  <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-zinc-900 dark:bg-zinc-100" /> Seçildi</div>
                 </div>
               </div>
             )}
 
             {bookMutation.isError && (
-               <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+               <div className="p-3 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-lg text-sm transition-colors">
                  {(bookMutation.error as any).response?.data?.detail || "Rezervasiya zamanı xəta baş verdi. Saatları yoxlayın."}
                </div>
             )}
@@ -456,7 +474,7 @@ export default function SalonDetail() {
       >
         <div className="space-y-6">
           <div>
-            <label className="text-sm font-bold text-zinc-900 block mb-3 text-center">Qiymətləndirin</label>
+            <label className="text-sm font-bold text-zinc-900 dark:text-zinc-50 block mb-3 text-center">Qiymətləndirin</label>
             <div className="flex justify-center gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -466,16 +484,16 @@ export default function SalonDetail() {
                   className="p-2 transition-transform active:scale-90"
                 >
                   <Star 
-                    className={`w-8 h-8 ${reviewRating >= star ? 'text-amber-500 fill-amber-500' : 'text-zinc-200 fill-zinc-200'}`} 
+                    className={`w-8 h-8 transition-colors ${reviewRating >= star ? 'text-amber-500 fill-amber-500' : 'text-zinc-200 dark:text-zinc-800 fill-zinc-200 dark:fill-zinc-800'}`} 
                   />
                 </button>
               ))}
             </div>
           </div>
           <div>
-            <label className="text-sm font-bold text-zinc-900 block mb-2">Fikriniz (İstəyə bağlı)</label>
+            <label className="text-sm font-bold text-zinc-900 dark:text-zinc-50 block mb-2">Fikriniz (İstəyə bağlı)</label>
             <textarea
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 resize-none h-24"
+              className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-700 resize-none h-24 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition-colors"
               placeholder="Salon haqqında təəssüratlarınızı bölüşün..."
               value={reviewComment}
               onChange={(e) => setReviewComment(e.target.value)}

@@ -20,14 +20,16 @@ import ServicesManagement from './pages/admin/ServicesManagement';
 import StaffManagement from './pages/admin/StaffManagement';
 
 import { Toaster } from 'sonner';
+import { ThemeProvider } from './components/ThemeProvider';
 
 // Create a client
 const queryClient = new QueryClient();
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Toaster position="bottom-center" richColors theme="light" />
+    <ThemeProvider defaultTheme="light" storageKey="salon-app-theme">
+      <QueryClientProvider client={queryClient}>
+        <Toaster position="bottom-center" richColors theme="light" />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -58,6 +60,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 

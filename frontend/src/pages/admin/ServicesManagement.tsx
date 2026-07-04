@@ -134,13 +134,13 @@ export default function ServicesManagement() {
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">Xidmətlər</h1>
-          <p className="text-zinc-500 mt-1">Salonunuzdakı xidmətləri idarə edin</p>
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight transition-colors">Xidmətlər</h1>
+          <p className="text-zinc-500 dark:text-zinc-400 mt-1 transition-colors">Salonunuzdakı xidmətləri idarə edin</p>
         </div>
         
         <div className="flex items-center gap-4">
           <select 
-            className="h-11 rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 min-w-[200px]"
+            className="h-11 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 px-4 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-50 min-w-[200px] transition-colors"
             value={selectedSalonId || ''}
             onChange={(e) => setSelectedSalonId(Number(e.target.value))}
             disabled={isSalonsLoading || salons.length === 0}
@@ -164,63 +164,63 @@ export default function ServicesManagement() {
 
       {isSalonsLoading ? (
         <div className="animate-pulse space-y-4">
-          <div className="h-20 bg-zinc-200 rounded-2xl w-full" />
-          <div className="h-20 bg-zinc-200 rounded-2xl w-full" />
+          <div className="h-20 bg-zinc-200 dark:bg-zinc-800 rounded-2xl w-full transition-colors" />
+          <div className="h-20 bg-zinc-200 dark:bg-zinc-800 rounded-2xl w-full transition-colors" />
         </div>
       ) : salons.length === 0 ? (
-        <div className="py-12 text-center text-zinc-500 bg-zinc-50 rounded-2xl border border-zinc-200 border-dashed">
+        <div className="py-12 text-center text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800 border-dashed transition-colors">
           Hələ heç bir salonunuz yoxdur. Əvvəlcə "Salonlarım" bölməsindən salon yaradın.
         </div>
       ) : !selectedSalonId ? (
-        <div className="py-12 text-center text-zinc-500 bg-zinc-50 rounded-2xl border border-zinc-200 border-dashed">
+        <div className="py-12 text-center text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800 border-dashed transition-colors">
           Xidmətləri görmək üçün yuxarıdan salon seçin.
         </div>
       ) : isServicesLoading ? (
         <div className="animate-pulse space-y-4">
-          <div className="h-24 bg-zinc-200 rounded-2xl w-full" />
-          <div className="h-24 bg-zinc-200 rounded-2xl w-full" />
+          <div className="h-24 bg-zinc-200 dark:bg-zinc-800 rounded-2xl w-full transition-colors" />
+          <div className="h-24 bg-zinc-200 dark:bg-zinc-800 rounded-2xl w-full transition-colors" />
         </div>
       ) : services.length === 0 ? (
-        <div className="py-12 text-center text-zinc-500 bg-zinc-50 rounded-2xl border border-zinc-200 border-dashed">
+        <div className="py-12 text-center text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800 border-dashed transition-colors">
           Bu salon üçün hələ heç bir xidmət əlavə edilməyib.
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {services.map((service: any) => (
-            <Card key={service.id} className="p-5 border-0 shadow-sm rounded-2xl flex flex-col group relative">
+            <Card key={service.id} className="p-5 border-0 shadow-sm rounded-2xl flex flex-col group relative dark:bg-zinc-900 transition-colors">
               <div className="flex justify-between items-start mb-3">
-                <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center transition-colors">
                   <Scissors className="w-6 h-6" />
                 </div>
                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button 
                     onClick={() => handleEditService(service)}
-                    className="w-8 h-8 rounded-full bg-zinc-100 text-zinc-600 flex items-center justify-center hover:bg-zinc-200 hover:text-zinc-900 transition-colors"
+                    className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button 
                     onClick={() => handleDeleteService(service.id)}
-                    className="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors disabled:opacity-50"
+                    className="w-8 h-8 rounded-full bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors disabled:opacity-50"
                     disabled={deleteServiceMutation.isPending}
                   >
                     {deleteServiceMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
-              <h3 className="text-lg font-bold text-zinc-900 mb-1">{service.name}</h3>
+              <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-1 transition-colors">{service.name}</h3>
               {service.description && (
-                <p className="text-sm text-zinc-500 line-clamp-2 mb-4 flex-1">
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 line-clamp-2 mb-4 flex-1 transition-colors">
                   {service.description}
                 </p>
               )}
-              <div className="mt-auto pt-4 border-t border-zinc-100 flex items-center justify-between">
-                <div className="flex items-center text-sm font-medium text-zinc-900">
-                  <DollarSign className="w-4 h-4 text-zinc-400 mr-1" />
+              <div className="mt-auto pt-4 border-t border-zinc-100 dark:border-zinc-800/50 flex items-center justify-between transition-colors">
+                <div className="flex items-center text-sm font-medium text-zinc-900 dark:text-zinc-100 transition-colors">
+                  <DollarSign className="w-4 h-4 text-zinc-400 dark:text-zinc-500 mr-1 transition-colors" />
                   {service.price} ₼
                 </div>
-                <div className="flex items-center text-sm font-medium text-zinc-500">
-                  <Clock className="w-4 h-4 text-zinc-400 mr-1" />
+                <div className="flex items-center text-sm font-medium text-zinc-500 dark:text-zinc-400 transition-colors">
+                  <Clock className="w-4 h-4 text-zinc-400 dark:text-zinc-500 mr-1 transition-colors" />
                   {service.duration_minutes} dəq.
                 </div>
               </div>
@@ -231,10 +231,10 @@ export default function ServicesManagement() {
 
       {/* Create/Edit Service Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-zinc-950/40 backdrop-blur-sm">
-          <Card className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[90vh]">
-            <div className="p-6 border-b border-zinc-100">
-              <h2 className="text-xl font-bold text-zinc-900">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-zinc-950/40 dark:bg-zinc-950/60 backdrop-blur-sm transition-colors">
+          <Card className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl flex flex-col max-h-[90vh] transition-colors border-0 dark:border dark:border-zinc-800">
+            <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 transition-colors">
+              <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 transition-colors">
                 {editServiceId ? "Xidməti Redaktə et" : "Yeni Xidmət Yarat"}
               </h2>
             </div>
@@ -243,25 +243,25 @@ export default function ServicesManagement() {
               <form id="service-form" onSubmit={handleSubmit} className="space-y-5">
                 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-zinc-700 block">Xidmətin Adı</label>
+                  <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Xidmətin Adı</label>
                   <Input required placeholder="Məs: Saç kəsimi" value={name} onChange={e => setName(e.target.value)} />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-zinc-700 block">Qiymət (₼)</label>
+                    <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Qiymət (₼)</label>
                     <Input required type="number" step="0.1" min="0" placeholder="25.00" value={price} onChange={e => setPrice(e.target.value)} />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-zinc-700 block">Müddət (dəq.)</label>
+                    <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Müddət (dəq.)</label>
                     <Input required type="number" step="1" min="1" placeholder="45" value={duration} onChange={e => setDuration(e.target.value)} />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-zinc-700 block">Haqqında (İxtiyari)</label>
+                  <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Haqqında (İxtiyari)</label>
                   <textarea 
-                    className="flex w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 min-h-[100px] resize-none"
+                    className="flex w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 px-3 py-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-50 disabled:cursor-not-allowed disabled:opacity-50 min-h-[100px] resize-none"
                     placeholder="Xidmət barədə əlavə məlumat..."
                     value={description}
                     onChange={e => setDescription(e.target.value)}
@@ -270,10 +270,10 @@ export default function ServicesManagement() {
               </form>
             </div>
             
-            <div className="p-6 border-t border-zinc-100 flex justify-end space-x-3 bg-zinc-50/50 rounded-b-3xl">
+            <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 flex justify-end space-x-3 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-b-3xl transition-colors">
               <Button 
                 type="button" 
-                className="bg-white text-zinc-900 border border-zinc-200 hover:bg-zinc-50" 
+                className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors" 
                 onClick={resetForm} 
                 disabled={createServiceMutation.isPending || updateServiceMutation.isPending}
               >

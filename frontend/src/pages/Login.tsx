@@ -64,35 +64,35 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] dark:bg-zinc-950 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden transition-colors">
       
       {/* Subtle modern background gradient circles */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-zinc-200/50 blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-zinc-200/50 blur-[100px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-zinc-200/50 dark:bg-zinc-800/20 blur-[100px] pointer-events-none transition-colors" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-zinc-200/50 dark:bg-zinc-800/20 blur-[100px] pointer-events-none transition-colors" />
 
-      <Card className="max-w-[400px] w-full relative z-10">
+      <Card className="max-w-[400px] w-full relative z-10 dark:bg-zinc-900 dark:border-zinc-800">
         <CardHeader className="items-center pb-6">
-          <div className="h-12 w-12 bg-zinc-950 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-zinc-950/20">
-            <Scissors className="h-6 w-6 text-white" />
+          <div className="h-12 w-12 bg-zinc-950 dark:bg-zinc-50 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-zinc-950/20 dark:shadow-zinc-50/10 transition-colors">
+            <Scissors className="h-6 w-6 text-white dark:text-zinc-900" />
           </div>
-          <h2 className="text-2xl font-semibold tracking-tight text-zinc-950 text-center">
+          <h2 className="text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50 text-center transition-colors">
             Xoş gəlmisiniz
           </h2>
-          <p className="text-sm text-zinc-500 text-center mt-2">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 text-center mt-2 transition-colors">
             Salona daxil olmaq üçün məlumatlarınızı daxil edin
           </p>
         </CardHeader>
         
         <CardContent>
           {errorMsg && (
-            <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm text-center">
+            <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-sm text-center transition-colors">
               {errorMsg}
             </div>
           )}
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-zinc-700 block">E-poçt ünvanı</label>
+                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">E-poçt ünvanı</label>
                 <Input
                   id="email-address"
                   name="email"
@@ -109,8 +109,8 @@ export default function Login() {
               
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-zinc-700 block">Şifrə</label>
-                  <Link to="/forgot-password" className="text-xs text-zinc-500 hover:text-zinc-950 transition-colors">
+                  <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Şifrə</label>
+                  <Link to="/forgot-password" className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-50 transition-colors">
                     Şifrəni unutmusunuz?
                   </Link>
                 </div>
@@ -133,9 +133,9 @@ export default function Login() {
               Daxil ol
             </Button>
             
-            <p className="text-center text-sm text-zinc-500 mt-6">
+            <p className="text-center text-sm text-zinc-500 dark:text-zinc-400 mt-6 transition-colors">
               Hesabınız yoxdur?{' '}
-              <Link to="/register" className="font-medium text-zinc-950 hover:underline underline-offset-4">
+              <Link to="/register" className="font-medium text-zinc-950 dark:text-zinc-50 hover:underline underline-offset-4 transition-colors">
                 Qeydiyyatdan keçin
               </Link>
             </p>

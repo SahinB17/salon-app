@@ -1,7 +1,8 @@
 import { Outlet, NavLink } from 'react-router-dom';
-import { Home, Search, Calendar, User } from 'lucide-react';
+import { Home, Search, Calendar, User, Sun, Moon } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { NotificationBell } from '../ui/NotificationBell';
+import { useTheme } from '../ThemeProvider';
 
 export default function MainLayout() {
   const navItems = [
@@ -11,12 +12,15 @@ export default function MainLayout() {
     { name: 'Profil', icon: User, path: '/profile' },
   ];
 
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
   return (
-    <div className="min-h-screen bg-zinc-50 lg:flex">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 lg:flex transition-colors">
       {/* Desktop Sidebar (Hidden on mobile) */}
-      <aside className="hidden lg:flex lg:w-64 lg:flex-col fixed inset-y-0 left-0 bg-white border-r border-zinc-200 z-50">
-        <div className="flex h-16 items-center px-6 border-b border-zinc-100">
-          <h1 className="text-xl font-bold text-zinc-900 tracking-tight">SalonApp</h1>
+      <aside className="hidden lg:flex lg:w-64 lg:flex-col fixed inset-y-0 left-0 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 z-50 transition-colors">
+        <div className="flex h-16 items-center px-6 border-b border-zinc-100 dark:border-zinc-800">
+          <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">SalonApp</h1>
         </div>
         <nav className="flex-1 px-4 py-6 space-y-2">
           {navItems.map((item) => (
@@ -26,7 +30,7 @@ export default function MainLayout() {
               className={({ isActive }) =>
                 cn(
                   "flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors font-medium",
-                  isActive ? "bg-zinc-100 text-zinc-950" : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50"
+                  isActive ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-zinc-50" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
                 )
               }
             >
@@ -43,7 +47,13 @@ export default function MainLayout() {
 
       {/* Main Content Area */}
       <div className="flex-1 lg:pl-64 flex flex-col min-h-screen pb-20 lg:pb-0 relative">
-        <div className="fixed top-3 right-4 lg:top-4 lg:right-6 z-50">
+        <div className="fixed top-3 right-4 lg:top-4 lg:right-6 z-50 flex items-center gap-3">
+          <button 
+            onClick={() => setTheme(isDark ? 'light' : 'dark')}
+            className="p-2 rounded-full bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 shadow-sm transition-colors active:scale-95"
+          >
+            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
           <NotificationBell />
         </div>
         <main className="flex-1">
@@ -51,7 +61,7 @@ export default function MainLayout() {
         </main>
 
         {/* Mobile Bottom Navigation (Hidden on desktop) */}
-        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-zinc-200 px-2 pb-safe pt-1 z-50">
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 px-2 pb-safe pt-1 z-50 transition-colors">
         <div className="flex justify-around items-center h-16 max-w-md mx-auto">
           {navItems.map((item) => (
             <NavLink
@@ -60,7 +70,7 @@ export default function MainLayout() {
               className={({ isActive }) =>
                 cn(
                   "flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors min-w-[64px]",
-                  isActive ? "text-zinc-950" : "text-zinc-400 hover:text-zinc-600"
+                  isActive ? "text-zinc-950 dark:text-zinc-50" : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300"
                 )
               }
             >

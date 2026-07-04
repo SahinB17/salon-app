@@ -238,10 +238,10 @@ export default function SalonsManagement() {
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">Salonlarım</h1>
-          <p className="text-zinc-500 mt-1">Bizneslərinizi buradan idarə edin</p>
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight transition-colors">Salonlarım</h1>
+          <p className="text-zinc-500 dark:text-zinc-400 mt-1 transition-colors">Bizneslərinizi buradan idarə edin</p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)} className="rounded-xl px-5">
+        <Button onClick={() => setIsModalOpen(true)} className="rounded-xl px-5 transition-colors">
           <Plus className="w-5 h-5 mr-2" />
           Yeni Salon
         </Button>
@@ -250,19 +250,19 @@ export default function SalonsManagement() {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2].map((i) => (
-            <div key={i} className="h-64 bg-zinc-200 animate-pulse rounded-2xl" />
+            <div key={i} className="h-64 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded-2xl transition-colors" />
           ))}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {salons.length === 0 ? (
-             <div className="col-span-full py-12 text-center text-zinc-500">
+             <div className="col-span-full py-12 text-center text-zinc-500 dark:text-zinc-400 transition-colors">
                Hələ heç bir salonunuz yoxdur.
              </div>
           ) : (
             salons.map((salon: any) => (
-              <Card key={salon.id} className="rounded-2xl border-0 shadow-sm overflow-hidden flex flex-col group relative">
-                <div className="h-48 bg-zinc-200 relative overflow-hidden">
+              <Card key={salon.id} className="rounded-2xl border-0 shadow-sm overflow-hidden flex flex-col group relative dark:bg-zinc-900 transition-colors">
+                <div className="h-48 bg-zinc-200 dark:bg-zinc-800 relative overflow-hidden transition-colors">
                   {salon.image_url ? (
                     <img src={`http://localhost:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
                   ) : (
@@ -295,8 +295,8 @@ export default function SalonsManagement() {
                   </div>
                 </div>
                 <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="text-xl font-bold text-zinc-900 mb-1">{salon.name}</h3>
-                  <div className="flex items-center text-zinc-500 text-sm mb-3">
+                  <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-1 transition-colors">{salon.name}</h3>
+                  <div className="flex items-center text-zinc-500 dark:text-zinc-400 text-sm mb-3 transition-colors">
                     <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
                     <span className="line-clamp-1">{salon.address}</span>
                   </div>
@@ -309,10 +309,10 @@ export default function SalonsManagement() {
 
       {/* Create Salon Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-zinc-950/40 backdrop-blur-sm">
-          <Card className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl flex flex-col max-h-[90vh]">
-            <div className="p-6 border-b border-zinc-100">
-              <h2 className="text-xl font-bold text-zinc-900">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-zinc-950/40 dark:bg-zinc-950/60 backdrop-blur-sm transition-colors">
+          <Card className="w-full max-w-2xl bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl flex flex-col max-h-[90vh] transition-colors border-0 dark:border dark:border-zinc-800">
+            <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 transition-colors">
+              <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 transition-colors">
                 {editSalonId ? "Salonu Redaktə et" : "Yeni Salon Yarat"}
               </h2>
             </div>
@@ -322,14 +322,14 @@ export default function SalonsManagement() {
                 
                 {/* Image Upload Section */}
                 <div>
-                  <label className="text-sm font-medium text-zinc-700 block mb-2">Salonun Şəkli</label>
+                  <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block mb-2 transition-colors">Salonun Şəkli</label>
                   <div className="flex items-center justify-center w-full">
-                      <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-48 border-2 border-zinc-200 border-dashed rounded-2xl cursor-pointer bg-zinc-50 hover:bg-zinc-100 transition-colors relative overflow-hidden">
+                      <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-48 border-2 border-zinc-200 dark:border-zinc-800 border-dashed rounded-2xl cursor-pointer bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors relative overflow-hidden">
                           {imagePreview ? (
                             <img src={imagePreview} className="w-full h-full object-cover" />
                           ) : (
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6 text-zinc-500">
-                                <ImageIcon className="w-10 h-10 mb-3 text-zinc-400" />
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6 text-zinc-500 dark:text-zinc-400 transition-colors">
+                                <ImageIcon className="w-10 h-10 mb-3 text-zinc-400 dark:text-zinc-500 transition-colors" />
                                 <p className="mb-1 text-sm font-semibold">Yükləmək üçün klikləyin</p>
                                 <p className="text-xs">PNG, JPG or WEBP (Max: 5MB)</p>
                             </div>
@@ -341,35 +341,35 @@ export default function SalonsManagement() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-zinc-700 block">Salon Adı</label>
+                    <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Salon Adı</label>
                     <Input required placeholder="Məs: Beauty Lounge" value={name} onChange={e => setName(e.target.value)} />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-zinc-700 block">Telefon</label>
+                    <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Telefon</label>
                     <Input required placeholder="+994501234567" value={phone} onChange={e => setPhone(e.target.value)} />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-zinc-700 block">Ünvan</label>
+                  <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Ünvan</label>
                   <Input required placeholder="Nizami küç. 42" value={address} onChange={e => setAddress(e.target.value)} />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-zinc-700 block">Enlik (Latitude)</label>
+                    <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Enlik (Latitude)</label>
                     <Input type="number" step="any" placeholder="40.4093" value={latitude} onChange={e => setLatitude(e.target.value)} />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-zinc-700 block">Uzunluq (Longitude)</label>
+                    <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Uzunluq (Longitude)</label>
                     <Input type="number" step="any" placeholder="49.8671" value={longitude} onChange={e => setLongitude(e.target.value)} />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-zinc-700 block">Haqqında (İxtiyari)</label>
+                  <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Haqqında (İxtiyari)</label>
                   <textarea 
-                    className="flex w-full rounded-xl border border-zinc-200 bg-white px-3 py-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 min-h-[100px] resize-none"
+                    className="flex w-full rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 px-3 py-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-50 disabled:cursor-not-allowed disabled:opacity-50 min-h-[100px] resize-none"
                     placeholder="Salon barədə qısa məlumat..."
                     value={description}
                     onChange={e => setDescription(e.target.value)}
@@ -378,10 +378,10 @@ export default function SalonsManagement() {
               </form>
             </div>
             
-            <div className="p-6 border-t border-zinc-100 flex justify-end space-x-3 bg-zinc-50/50 rounded-b-3xl">
+            <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 flex justify-end space-x-3 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-b-3xl transition-colors">
               <Button 
                 type="button" 
-                className="bg-white text-zinc-900 border border-zinc-200 hover:bg-zinc-50" 
+                className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors" 
                 onClick={resetForm} 
                 disabled={createSalonMutation.isPending || updateSalonMutation.isPending || isUploading}
               >
@@ -398,14 +398,14 @@ export default function SalonsManagement() {
 
       {/* Gallery Modal */}
       {isGalleryModalOpen && activeGallerySalon && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-zinc-950/40 backdrop-blur-sm">
-          <Card className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl flex flex-col max-h-[90vh]">
-            <div className="p-6 border-b border-zinc-100 flex justify-between items-center">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-zinc-950/40 dark:bg-zinc-950/60 backdrop-blur-sm transition-colors">
+          <Card className="w-full max-w-3xl bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl flex flex-col max-h-[90vh] transition-colors border-0 dark:border dark:border-zinc-800">
+            <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center transition-colors">
               <div>
-                <h2 className="text-xl font-bold text-zinc-900">Qalereya</h2>
-                <p className="text-sm text-zinc-500 mt-1">{activeGallerySalon.name}</p>
+                <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 transition-colors">Qalereya</h2>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 transition-colors">{activeGallerySalon.name}</p>
               </div>
-              <button onClick={() => setIsGalleryModalOpen(false)} className="p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 rounded-full transition-colors">
+              <button onClick={() => setIsGalleryModalOpen(false)} className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -413,13 +413,13 @@ export default function SalonsManagement() {
             <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {/* Add New Image Box */}
-                <label className="flex flex-col items-center justify-center h-32 border-2 border-zinc-200 border-dashed rounded-2xl cursor-pointer bg-zinc-50 hover:bg-zinc-100 transition-colors relative overflow-hidden">
+                <label className="flex flex-col items-center justify-center h-32 border-2 border-zinc-200 dark:border-zinc-800 border-dashed rounded-2xl cursor-pointer bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors relative overflow-hidden">
                   {isGalleryUploading ? (
-                    <Loader2 className="w-6 h-6 animate-spin text-zinc-400" />
+                    <Loader2 className="w-6 h-6 animate-spin text-zinc-400 dark:text-zinc-500 transition-colors" />
                   ) : (
                     <>
-                      <Plus className="w-6 h-6 text-zinc-400 mb-2" />
-                      <span className="text-xs font-semibold text-zinc-500">Şəkil əlavə et</span>
+                      <Plus className="w-6 h-6 text-zinc-400 dark:text-zinc-500 mb-2 transition-colors" />
+                      <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 transition-colors">Şəkil əlavə et</span>
                     </>
                   )}
                   <input type="file" className="hidden" accept="image/*" onChange={handleGalleryImageUpload} disabled={isGalleryUploading} />
@@ -427,7 +427,7 @@ export default function SalonsManagement() {
 
                 {/* Existing Images */}
                 {activeGallerySalon.images?.map((img: any) => (
-                  <div key={img.id} className="relative h-32 rounded-2xl overflow-hidden group border border-zinc-100">
+                  <div key={img.id} className="relative h-32 rounded-2xl overflow-hidden group border border-zinc-100 dark:border-zinc-800 transition-colors">
                     <img src={`http://localhost:8000${img.image_url}`} alt="Qalereya" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <button 

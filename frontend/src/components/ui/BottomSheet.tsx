@@ -36,20 +36,20 @@ export function BottomSheet({ isOpen, onClose, title, children }: BottomSheetPro
       {/* Sheet / Modal Content */}
       <div 
         className={cn(
-          "relative bg-white w-full lg:w-auto lg:min-w-[500px] lg:max-w-xl transition-transform duration-300 transform lg:m-auto lg:rounded-3xl lg:shadow-xl lg:scale-100",
+          "relative bg-white dark:bg-zinc-950 w-full lg:w-auto lg:min-w-[500px] lg:max-w-xl transition-all duration-300 transform lg:m-auto lg:rounded-3xl lg:shadow-xl lg:scale-100",
           isOpen ? "translate-y-0 opacity-100" : "translate-y-full lg:translate-y-0 lg:scale-95 lg:opacity-0",
-          "rounded-t-[32px] px-4 lg:px-6 pt-6 lg:pt-8 pb-safe pb-8"
+          "rounded-t-[32px] px-4 lg:px-6 pt-6 lg:pt-8 pb-safe pb-8 border lg:border-0 border-transparent dark:border-zinc-800"
         )}
         onTransitionEnd={handleAnimationEnd}
       >
         {/* Mobile drag handle (hidden on desktop) */}
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-zinc-200 rounded-full lg:hidden" />
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full lg:hidden" />
         
         <div className="flex items-center justify-between lg:mt-0 mt-4 mb-6">
-          <h2 className="text-xl font-bold text-zinc-900">{title}</h2>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">{title}</h2>
           <button 
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-100 text-zinc-500 active:bg-zinc-200 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 active:bg-zinc-200 dark:active:bg-zinc-700 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>

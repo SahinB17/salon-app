@@ -39,33 +39,33 @@ export default function Search() {
   });
 
   return (
-    <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] pb-24 lg:pb-8">
+    <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-[#121212] pb-24 lg:pb-8 transition-colors">
       <div className="max-w-7xl mx-auto w-full">
         {/* Sticky Header with Search Input */}
-        <div className="sticky top-0 z-10 bg-[#FAFAFA] pt-12 lg:pt-16 pb-4">
+        <div className="sticky top-0 z-10 bg-[#FAFAFA] dark:bg-[#121212] pt-12 lg:pt-16 pb-4 transition-colors">
           <div className="px-4">
-            <h1 className="text-xl font-bold text-zinc-900 mb-4">Axtarış</h1>
+            <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-4">Axtarış</h1>
             <div className="relative max-w-2xl">
-              <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
+              <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 dark:text-zinc-500" />
               <Input 
                 autoFocus
-                className="pl-12 h-12 bg-zinc-100/80 border-transparent focus:bg-white"
+                className="pl-12 h-12 bg-zinc-100/80 dark:bg-zinc-800/50 border-transparent focus:bg-white dark:focus:bg-zinc-900"
                 placeholder="Salon adı, xidmət və ya ünvan..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
             </div>
             {/* View Mode Toggle */}
-            <div className="flex bg-zinc-100 p-1 rounded-xl w-max mt-4">
+            <div className="flex bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl w-max mt-4 transition-colors">
               <button 
                 onClick={() => setViewMode('list')}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${viewMode === 'list' ? 'bg-white shadow-sm text-zinc-900' : 'text-zinc-500'}`}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${viewMode === 'list' ? 'bg-white dark:bg-zinc-900 shadow-sm text-zinc-900 dark:text-zinc-50' : 'text-zinc-500 dark:text-zinc-400'}`}
               >
                 Siyahı
               </button>
               <button 
                 onClick={() => setViewMode('map')}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${viewMode === 'map' ? 'bg-white shadow-sm text-zinc-900' : 'text-zinc-500'}`}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${viewMode === 'map' ? 'bg-white dark:bg-zinc-900 shadow-sm text-zinc-900 dark:text-zinc-50' : 'text-zinc-500 dark:text-zinc-400'}`}
               >
                 Xəritə
               </button>
@@ -93,11 +93,11 @@ export default function Search() {
              description={`"${debouncedQuery}" üzrə salon və ya xidmət yoxdur.`}
            />
         ) : !debouncedQuery ? (
-           <div className="text-center text-zinc-400 mt-10">
+           <div className="text-center text-zinc-400 dark:text-zinc-500 mt-10">
              Axtarmaq üçün yuxarıdakı xanaya yazın
            </div>
         ) : viewMode === 'map' ? (
-           <div className="w-full rounded-2xl overflow-hidden shadow-sm border border-zinc-100 bg-white p-2">
+           <div className="w-full rounded-2xl overflow-hidden shadow-sm border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-2">
              <Map salons={results} className="w-full h-[60vh] rounded-xl z-0" />
            </div>
         ) : (
@@ -106,16 +106,20 @@ export default function Search() {
                <Card 
                  key={salon.id} 
                  onClick={() => navigate(`/salons/${salon.id}`)}
-                 className="flex flex-row p-3 rounded-2xl border-0 shadow-sm active:scale-[0.98] transition-transform cursor-pointer bg-white"
+                 className="flex flex-row p-3 rounded-2xl border-0 shadow-sm active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer bg-white dark:bg-zinc-900"
                >
-                 <div className="w-24 h-24 bg-zinc-200 rounded-xl flex-shrink-0 overflow-hidden">
-                   {salon.image_url && (
-                     <img src={`http://localhost:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
-                   )}
+                 <div className="w-24 h-24 bg-zinc-200 dark:bg-zinc-800 rounded-xl flex-shrink-0 overflow-hidden relative">
+                    {salon.image_url ? (
+                      <img src={`http://localhost:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-zinc-400 dark:text-zinc-500">
+                         <MapPin className="w-6 h-6" />
+                      </div>
+                    )}
                  </div>
                  <div className="ml-4 flex flex-col justify-center flex-1">
-                   <h3 className="font-bold text-zinc-900 line-clamp-1">{salon.name}</h3>
-                   <div className="flex items-center text-zinc-500 mt-1 text-sm">
+                   <h3 className="font-bold text-zinc-900 dark:text-zinc-50 line-clamp-1">{salon.name}</h3>
+                   <div className="flex items-center text-zinc-500 dark:text-zinc-400 mt-1 text-sm">
                      <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
                      <span className="line-clamp-1">{salon.address || 'Ünvan yoxdur'}</span>
                    </div>

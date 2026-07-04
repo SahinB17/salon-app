@@ -167,13 +167,13 @@ export default function StaffManagement() {
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">İşçilər</h1>
-          <p className="text-zinc-500 mt-1">Salonlarınızdakı ustaları idarə edin</p>
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight transition-colors">İşçilər</h1>
+          <p className="text-zinc-500 dark:text-zinc-400 mt-1 transition-colors">Salonlarınızdakı ustaları idarə edin</p>
         </div>
 
         <div className="flex items-center gap-4">
           <select
-            className="h-11 rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 min-w-[200px]"
+            className="h-11 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 px-4 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-50 min-w-[200px] transition-colors"
             value={selectedSalonId || ''}
             onChange={(e) => setSelectedSalonId(Number(e.target.value))}
             disabled={isSalonsLoading || salons.length === 0}
@@ -197,72 +197,72 @@ export default function StaffManagement() {
 
       {isSalonsLoading ? (
         <div className="animate-pulse space-y-4">
-          <div className="h-20 bg-zinc-200 rounded-2xl w-full" />
-          <div className="h-20 bg-zinc-200 rounded-2xl w-full" />
+          <div className="h-20 bg-zinc-200 dark:bg-zinc-800 rounded-2xl w-full transition-colors" />
+          <div className="h-20 bg-zinc-200 dark:bg-zinc-800 rounded-2xl w-full transition-colors" />
         </div>
       ) : salons.length === 0 ? (
-        <div className="py-12 text-center text-zinc-500 bg-zinc-50 rounded-2xl border border-zinc-200 border-dashed">
+        <div className="py-12 text-center text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800 border-dashed transition-colors">
           Hələ heç bir salonunuz yoxdur. Əvvəlcə "Salonlarım" bölməsindən salon yaradın.
         </div>
       ) : !selectedSalonId ? (
-        <div className="py-12 text-center text-zinc-500 bg-zinc-50 rounded-2xl border border-zinc-200 border-dashed">
+        <div className="py-12 text-center text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800 border-dashed transition-colors">
           İşçiləri görmək üçün yuxarıdan salon seçin.
         </div>
       ) : isStaffLoading ? (
         <div className="animate-pulse space-y-4">
-          <div className="h-24 bg-zinc-200 rounded-2xl w-full" />
-          <div className="h-24 bg-zinc-200 rounded-2xl w-full" />
+          <div className="h-24 bg-zinc-200 dark:bg-zinc-800 rounded-2xl w-full transition-colors" />
+          <div className="h-24 bg-zinc-200 dark:bg-zinc-800 rounded-2xl w-full transition-colors" />
         </div>
       ) : staffList.length === 0 ? (
-        <div className="py-12 text-center text-zinc-500 bg-zinc-50 rounded-2xl border border-zinc-200 border-dashed">
+        <div className="py-12 text-center text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800 border-dashed transition-colors">
           Bu salon üçün hələ heç bir işçi əlavə edilməyib.
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {staffList.map((staff: any) => (
-            <Card key={staff.id} className="p-5 border-0 shadow-sm rounded-2xl flex flex-col group relative">
+            <Card key={staff.id} className="p-5 border-0 shadow-sm rounded-2xl flex flex-col group relative dark:bg-zinc-900 transition-colors">
               <div className="flex justify-between items-start mb-3">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${staff.is_active ? 'bg-emerald-50 text-emerald-600' : 'bg-zinc-100 text-zinc-400'}`}>
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${staff.is_active ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500'}`}>
                   <User className="w-6 h-6" />
                 </div>
                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => toggleActiveMutation.mutate({ id: staff.id, is_active: !staff.is_active })}
-                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${staff.is_active ? 'bg-amber-50 text-amber-500 hover:bg-amber-100' : 'bg-emerald-50 text-emerald-500 hover:bg-emerald-100'}`}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${staff.is_active ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-500 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40' : 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40'}`}
                     title={staff.is_active ? 'Deaktiv et' : 'Aktiv et'}
                   >
                     {staff.is_active ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                   </button>
                   <button
                     onClick={() => handleEditStaff(staff)}
-                    className="w-8 h-8 rounded-full bg-zinc-100 text-zinc-600 flex items-center justify-center hover:bg-zinc-200 hover:text-zinc-900 transition-colors"
+                    className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDeleteStaff(staff.id)}
-                    className="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors disabled:opacity-50"
+                    className="w-8 h-8 rounded-full bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors disabled:opacity-50"
                     disabled={deleteStaffMutation.isPending}
                   >
                     {deleteStaffMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
-              <h3 className="text-lg font-bold text-zinc-900 mb-1">{staff.full_name}</h3>
+              <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-1 transition-colors">{staff.full_name}</h3>
               {staff.specialty && (
-                <p className="text-sm text-zinc-500 mb-2">{staff.specialty}</p>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-2 transition-colors">{staff.specialty}</p>
               )}
               
-              <div className="mt-2 space-y-1 text-xs text-zinc-500 bg-zinc-50 p-2.5 rounded-xl border border-zinc-100">
+              <div className="mt-2 space-y-1 text-xs text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/50 p-2.5 rounded-xl border border-zinc-100 dark:border-zinc-800 transition-colors">
                 <div className="flex justify-between">
-                  <span className="font-medium text-zinc-400">İş vaxtı:</span>
-                  <span className="font-semibold text-zinc-700">
+                  <span className="font-medium text-zinc-400 dark:text-zinc-500 transition-colors">İş vaxtı:</span>
+                  <span className="font-semibold text-zinc-700 dark:text-zinc-300 transition-colors">
                     {staff.work_start ? staff.work_start.substring(0, 5) : '09:00'} - {staff.work_end ? staff.work_end.substring(0, 5) : '18:00'}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium text-zinc-400">İş günləri:</span>
-                  <span className="font-semibold text-zinc-700">
+                  <span className="font-medium text-zinc-400 dark:text-zinc-500 transition-colors">İş günləri:</span>
+                  <span className="font-semibold text-zinc-700 dark:text-zinc-300 transition-colors">
                     {staff.working_days
                       ? staff.working_days.split(',').map((d: string) => {
                           const matched = weekDayNames.find(w => w.value === Number(d));
@@ -273,8 +273,8 @@ export default function StaffManagement() {
                 </div>
               </div>
 
-              <div className="mt-auto pt-3 border-t border-zinc-100 flex items-center justify-between">
-                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${staff.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-zinc-100 text-zinc-500'}`}>
+              <div className="mt-auto pt-3 border-t border-zinc-100 dark:border-zinc-800/50 flex items-center justify-between transition-colors">
+                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${staff.is_active ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'}`}>
                   {staff.is_active ? '● Aktiv' : '○ Deaktiv'}
                 </span>
               </div>
@@ -285,10 +285,10 @@ export default function StaffManagement() {
 
       {/* Create/Edit Staff Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-zinc-950/40 backdrop-blur-sm">
-          <Card className="w-full max-w-md bg-white rounded-3xl shadow-2xl flex flex-col max-h-[90vh]">
-            <div className="p-6 border-b border-zinc-100">
-              <h2 className="text-xl font-bold text-zinc-900">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-zinc-950/40 dark:bg-zinc-950/60 backdrop-blur-sm transition-colors">
+          <Card className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl flex flex-col max-h-[90vh] transition-colors border-0 dark:border dark:border-zinc-800">
+            <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 transition-colors">
+              <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 transition-colors">
                 {editStaffId ? "İşçini Redaktə et" : "Yeni İşçi Əlavə Et"}
               </h2>
             </div>
@@ -296,28 +296,28 @@ export default function StaffManagement() {
             <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
               <form id="staff-form" onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-zinc-700 block">Ad və Soyad</label>
+                  <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Ad və Soyad</label>
                   <Input required placeholder="Məs: Əli Əliyev" value={fullName} onChange={e => setFullName(e.target.value)} />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-zinc-700 block">İxtisas (İxtiyari)</label>
+                  <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">İxtisas (İxtiyari)</label>
                   <Input placeholder="Məs: Saç ustası, Dırnaq ustası" value={specialty} onChange={e => setSpecialty(e.target.value)} />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-zinc-700 block">İşin başlanğıcı</label>
+                    <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">İşin başlanğıcı</label>
                     <Input type="time" value={workStart} onChange={e => setWorkStart(e.target.value)} />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-zinc-700 block">İşin bitməsi</label>
+                    <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">İşin bitməsi</label>
                     <Input type="time" value={workEnd} onChange={e => setWorkEnd(e.target.value)} />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-zinc-700 block">İş günləri</label>
+                  <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">İş günləri</label>
                   <div className="flex flex-wrap gap-2">
                     {weekDayNames.map((day) => {
                       const isChecked = workingDays.includes(day.value);
@@ -332,7 +332,7 @@ export default function StaffManagement() {
                               setWorkingDays([...workingDays, day.value]);
                             }
                           }}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${isChecked ? 'bg-zinc-900 border-zinc-900 text-white shadow-sm' : 'bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50'}`}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${isChecked ? 'bg-zinc-900 dark:bg-zinc-50 border-zinc-900 dark:border-zinc-50 text-white dark:text-zinc-900 shadow-sm' : 'bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-900'}`}
                         >
                           {day.label}
                         </button>
@@ -343,10 +343,10 @@ export default function StaffManagement() {
               </form>
             </div>
 
-            <div className="p-6 border-t border-zinc-100 flex justify-end space-x-3 bg-zinc-50/50 rounded-b-3xl">
+            <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 flex justify-end space-x-3 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-b-3xl transition-colors">
               <Button
                 type="button"
-                className="bg-white text-zinc-900 border border-zinc-200 hover:bg-zinc-50"
+                className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
                 onClick={resetForm}
                 disabled={createStaffMutation.isPending || updateStaffMutation.isPending}
               >

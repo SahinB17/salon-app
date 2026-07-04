@@ -23,27 +23,27 @@ export default function Appointments() {
   });
 
   return (
-    <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] pb-24 lg:pb-8">
+    <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-[#121212] pb-24 lg:pb-8 transition-colors">
       {/* Header */}
-      <div className="max-w-7xl mx-auto w-full px-4 pt-12 lg:pt-16 shadow-sm sticky top-0 z-10">
-        <h1 className="text-xl font-bold text-zinc-900">Rezervasiyalarım</h1>
+      <div className="max-w-7xl mx-auto w-full px-4 pt-12 lg:pt-16 pb-4 bg-[#FAFAFA] dark:bg-[#121212] shadow-sm sticky top-0 z-10 transition-colors">
+        <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">Rezervasiyalarım</h1>
       </div>
 
       <div className="px-4 mt-6">
         {isLoading ? (
           <div className="space-y-4">
             {[1, 2, 3].map(i => (
-               <div key={i} className="w-full bg-white rounded-2xl p-4 shadow-sm border-0">
+               <div key={i} className="w-full bg-white dark:bg-zinc-900 rounded-2xl p-4 shadow-sm border-0 transition-colors">
                  <div className="flex justify-between items-start mb-3">
-                   <div className="h-4 bg-zinc-200 animate-pulse rounded w-32" />
-                   <div className="h-5 bg-zinc-200 animate-pulse rounded w-16" />
+                   <div className="h-4 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded w-32" />
+                   <div className="h-5 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded w-16" />
                  </div>
-                 <div className="bg-zinc-50 rounded-xl p-3 flex justify-between items-center">
+                 <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-3 flex justify-between items-center">
                    <div className="space-y-2">
-                     <div className="h-4 bg-zinc-200 animate-pulse rounded w-24" />
-                     <div className="h-3 bg-zinc-200 animate-pulse rounded w-16" />
+                     <div className="h-4 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded w-24" />
+                     <div className="h-3 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded w-16" />
                    </div>
-                   <div className="w-10 h-10 bg-zinc-200 animate-pulse rounded-full" />
+                   <div className="w-10 h-10 bg-zinc-200 dark:bg-zinc-800 animate-pulse rounded-full" />
                  </div>
                </div>
             ))}
@@ -63,26 +63,26 @@ export default function Appointments() {
               const config = statusConfig[apt.status] || { label: apt.status, variant: 'default' };
 
               return (
-                <Card key={apt.id} className="p-4 rounded-2xl border-0 shadow-sm bg-white">
+                <Card key={apt.id} className="p-4 rounded-2xl border-0 shadow-sm bg-white dark:bg-zinc-900 transition-colors">
                   <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center text-zinc-900 font-bold">
-                       <CalendarIcon className="w-4 h-4 mr-1.5 text-zinc-400" />
+                    <div className="flex items-center text-zinc-900 dark:text-zinc-50 font-bold">
+                       <CalendarIcon className="w-4 h-4 mr-1.5 text-zinc-400 dark:text-zinc-500" />
                        {start.toLocaleDateString('az-AZ', { day: 'numeric', month: 'long', year: 'numeric' })}
                     </div>
                     <Badge variant={config.variant}>{config.label}</Badge>
                   </div>
                   
-                  <div className="bg-zinc-50 rounded-xl p-3 flex justify-between items-center">
+                  <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-3 flex justify-between items-center">
                     <div>
-                      <div className="font-semibold text-zinc-900 text-sm">{apt.service_id} (Xidmət)</div>
-                      <div className="flex items-center text-zinc-500 text-xs mt-1">
+                      <div className="font-semibold text-zinc-900 dark:text-zinc-50 text-sm">{apt.service_id} (Xidmət)</div>
+                      <div className="flex items-center text-zinc-500 dark:text-zinc-400 text-xs mt-1">
                         <Clock className="w-3 h-3 mr-1" />
                         {start.toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </div>
                   </div>
                   
-                  <div className="mt-3 flex items-center text-zinc-500 text-xs font-medium">
+                  <div className="mt-3 flex items-center text-zinc-500 dark:text-zinc-400 text-xs font-medium">
                      <MapPin className="w-3.5 h-3.5 mr-1" />
                      Salon ID: {apt.salon_id}
                   </div>

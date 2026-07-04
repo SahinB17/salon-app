@@ -69,43 +69,43 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-zinc-200/50 blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-zinc-200/50 blur-[100px] pointer-events-none" />
+    <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] dark:bg-zinc-950 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden transition-colors">
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-zinc-200/50 dark:bg-zinc-800/20 blur-[100px] pointer-events-none transition-colors" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-zinc-200/50 dark:bg-zinc-800/20 blur-[100px] pointer-events-none transition-colors" />
 
-      <Card className="max-w-[450px] w-full relative z-10">
+      <Card className="max-w-[450px] w-full relative z-10 dark:bg-zinc-900 dark:border-zinc-800">
         <CardHeader className="items-center pb-6">
-          <div className="h-12 w-12 bg-zinc-950 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-zinc-950/20">
-            <Scissors className="h-6 w-6 text-white" />
+          <div className="h-12 w-12 bg-zinc-950 dark:bg-zinc-50 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-zinc-950/20 dark:shadow-zinc-50/10 transition-colors">
+            <Scissors className="h-6 w-6 text-white dark:text-zinc-900" />
           </div>
-          <h2 className="text-2xl font-semibold tracking-tight text-zinc-950 text-center">
+          <h2 className="text-2xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50 text-center transition-colors">
             Qeydiyyatdan keçin
           </h2>
-          <p className="text-sm text-zinc-500 text-center mt-2">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 text-center mt-2 transition-colors">
             Yeni salon hesabınızı yaratmaq üçün formanı doldurun
           </p>
         </CardHeader>
         
         <CardContent>
           {errorMsg && (
-            <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm text-center">
+            <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-sm text-center transition-colors">
               {errorMsg}
             </div>
           )}
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="space-y-4">
-              <div className="flex gap-4 p-1 bg-zinc-100 rounded-xl">
+              <div className="flex gap-4 p-1 bg-zinc-100 dark:bg-zinc-800/50 rounded-xl transition-colors">
                 <button
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, role: 'customer' }))}
-                  className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${formData.role === 'customer' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'}`}
+                  className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${formData.role === 'customer' ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-50 shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
                 >
                   Müştəri
                 </button>
                 <button
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, role: 'salon_admin' }))}
-                  className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${formData.role === 'salon_admin' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'}`}
+                  className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${formData.role === 'salon_admin' ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-50 shadow-sm' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'}`}
                 >
                   Salon Sahibi
                 </button>
@@ -113,7 +113,7 @@ export default function Register() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-zinc-700 block">Ad və Soyad</label>
+                  <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Ad və Soyad</label>
                   <Input
                     name="full_name"
                     required
@@ -125,7 +125,7 @@ export default function Register() {
                   {errors.full_name && <p className="text-xs text-red-500 mt-1">{errors.full_name}</p>}
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-zinc-700 block">Mobil nömrə</label>
+                  <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Mobil nömrə</label>
                   <Input
                     name="phone"
                     required
@@ -139,7 +139,7 @@ export default function Register() {
               </div>
               
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-zinc-700 block">E-poçt ünvanı</label>
+                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">E-poçt ünvanı</label>
                 <Input
                   name="email"
                   type="email"
@@ -154,7 +154,7 @@ export default function Register() {
               </div>
               
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-zinc-700 block">Şifrə</label>
+                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Şifrə</label>
                 <Input
                   name="password"
                   type="password"
@@ -173,9 +173,9 @@ export default function Register() {
               Hesab yarat
             </Button>
             
-            <p className="text-center text-sm text-zinc-500 mt-6">
+            <p className="text-center text-sm text-zinc-500 dark:text-zinc-400 mt-6 transition-colors">
               Artıq hesabınız var?{' '}
-              <Link to="/login" className="font-medium text-zinc-950 hover:underline underline-offset-4">
+              <Link to="/login" className="font-medium text-zinc-950 dark:text-zinc-50 hover:underline underline-offset-4 transition-colors">
                 Daxil olun
               </Link>
             </p>
