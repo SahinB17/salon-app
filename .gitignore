@@ -1,0 +1,21 @@
+# ---- Backend (Python / FastAPI) ----
+venv/
+backend/venv/
+*.env
+*.env.*
+__pycache__/
+*.py[cod]
+*$py.class
+alembic.ini
+
+# ---- Frontend (React / Node.js) ----
+node_modules/
+frontend/node_modules/
+dist/
+build/
+*.log
+
+# ---- IDE & OS ----
+.vscode/
+.idea/
+.DS_Store
