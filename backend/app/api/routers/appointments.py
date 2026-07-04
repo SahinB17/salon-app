@@ -73,8 +73,8 @@ async def create_appointment_endpoint(
     )
     if is_overlapping:
         raise HTTPException(
-            status_code=400, 
-            detail="The requested time slot is not available. It overlaps with an existing appointment."
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This time slot is already booked."
         )
         
     appointment = await crud_appointment.create_appointment(
@@ -203,6 +203,11 @@ async def get_booked_slots(
         Appointment.start_time >= day_start,
         Appointment.start_time < day_end
     )
+
+    # Filter by staff_id when a specific staff is selected
+    if staff_id is not None:
+        stmt = stmt.where(Appointment.staff_id == staff_id)
+
     result = await session.execute(stmt)
     appointments = result.scalars().all()
     

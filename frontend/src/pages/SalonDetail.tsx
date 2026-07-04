@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ChevronLeft, MapPin, Star, Clock, Loader2, MessageSquare } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { BottomSheet } from '../components/ui/BottomSheet';
@@ -44,6 +44,7 @@ export default function SalonDetail() {
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const reviewMutation = useMutation({
     mutationFn: async (data: { rating: number; comment: string }) => {
@@ -93,8 +94,13 @@ export default function SalonDetail() {
       return response.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookedSlots', id, appointmentDate, selectedStaff] });
       setSelectedService(null);
       navigate('/appointments');
+    },
+    onError: () => {
+      // Refresh booked slots so the user sees updated availability
+      queryClient.invalidateQueries({ queryKey: ['bookedSlots', id, appointmentDate, selectedStaff] });
     }
   });
 

@@ -40,6 +40,22 @@ async def check_overlapping(
     return overlapping is not None
 
 async def create_appointment(db: AsyncSession, appointment_in: AppointmentCreate, customer_id: int) -> Appointment:
+    # Re-check for overlapping appointments just before creating,
+    # minimizing the race-condition window against concurrent requests.
+    still_overlapping = await check_overlapping(
+        db=db,
+        salon_id=appointment_in.salon_id,
+        staff_id=appointment_in.staff_id,
+        start_time=appointment_in.start_time,
+        end_time=appointment_in.end_time
+    )
+    if still_overlapping:
+        from fastapi import HTTPException, status
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This time slot is already booked."
+        )
+
     db_obj = Appointment(
         customer_id=customer_id,
         salon_id=appointment_in.salon_id,
