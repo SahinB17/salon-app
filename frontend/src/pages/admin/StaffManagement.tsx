@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit2, Trash2, Loader2, UserCheck, UserX, User } from 'lucide-react';
+import { Plus, Edit2, Trash2, Loader2, UserCheck, UserX, User, ChevronDown, Check } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -11,6 +11,18 @@ export default function StaffManagement() {
   const [selectedSalonId, setSelectedSalonId] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editStaffId, setEditStaffId] = useState<number | null>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Form State
   const [fullName, setFullName] = useState('');
@@ -172,17 +184,40 @@ export default function StaffManagement() {
         </div>
 
         <div className="flex items-center gap-4">
-          <select
-            className="h-11 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 px-4 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-50 min-w-[200px] transition-colors"
-            value={selectedSalonId || ''}
-            onChange={(e) => setSelectedSalonId(Number(e.target.value))}
-            disabled={isSalonsLoading || salons.length === 0}
-          >
-            <option value="" disabled>Salon seçin</option>
-            {salons.map((s: any) => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className={`flex items-center justify-between h-11 w-[200px] sm:w-[240px] px-4 rounded-xl border transition-all shadow-sm ${
+                isSalonsLoading || salons.length === 0 
+                  ? 'border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed'
+                  : 'border-zinc-800 hover:border-zinc-700 bg-zinc-900/80 text-white font-medium cursor-pointer'
+              } text-sm`}
+              disabled={isSalonsLoading || salons.length === 0}
+            >
+              <span className="truncate">
+                {selectedSalonId ? `🏪 ${salons.find((s: any) => s.id === selectedSalonId)?.name || 'Salon Seçin'}` : 'Salon Seçin'}
+              </span>
+              <ChevronDown className={`w-4 h-4 text-zinc-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {isDropdownOpen && !isSalonsLoading && salons.length > 0 && (
+              <div className="absolute top-full right-0 mt-2 w-full sm:w-[240px] z-50 bg-zinc-900/95 backdrop-blur-md border border-zinc-800 rounded-xl shadow-2xl p-1">
+                {salons.map((s: any) => (
+                  <button
+                    key={s.id}
+                    onClick={() => {
+                      setSelectedSalonId(s.id);
+                      setIsDropdownOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center justify-between transition-colors hover:bg-zinc-800/80 text-zinc-300 hover:text-white mt-1"
+                  >
+                    <span className={selectedSalonId === s.id ? 'font-medium text-white' : ''}>🏪 {s.name}</span>
+                    {selectedSalonId === s.id && <Check className="w-4 h-4 text-white" />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           <Button
             onClick={() => setIsModalOpen(true)}
