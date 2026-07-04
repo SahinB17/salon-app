@@ -5,7 +5,7 @@ from app.models.user import User
 from app.schemas.review import ReviewCreate, ReviewResponse
 from app.crud import crud_review, crud_salon
 
-router = APIRouter()
+router = APIRouter(prefix="/reviews", tags=["Reviews"])
 
 @router.post("/salon/{salon_id}", response_model=ReviewResponse)
 async def create_salon_review(

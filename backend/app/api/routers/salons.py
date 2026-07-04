@@ -42,6 +42,43 @@ async def read_salons(
     salons = await crud_salon.get_salons(db=session, skip=skip, limit=limit)
     return salons
 
+@router.get("/search/", response_model=List[SalonResponse])
+async def search_salons(
+    session: SessionDep,
+    query: str = "",
+    skip: int = 0,
+    limit: int = 100
+) -> Any:
+    """
+    Search salons by name, address, or service name.
+    """
+    if not query:
+        return []
+
+    search_term = f"%{query}%"
+
+    stmt = (
+        select(Salon)
+        .outerjoin(Salon.services)
+        .where(
+            or_(
+                Salon.name.ilike(search_term),
+                Salon.address.ilike(search_term),
+                Service.name.ilike(search_term)
+            )
+        )
+        .distinct()
+        .options(
+            selectinload(Salon.services),
+            selectinload(Salon.staffs),
+            selectinload(Salon.reviews)
+        )
+        .offset(skip)
+        .limit(limit)
+    )
+    result = await session.execute(stmt)
+    return list(result.scalars().all())
+
 @router.get("/{salon_id}", response_model=SalonResponse)
 async def read_salon(
     salon_id: int,
@@ -115,39 +152,3 @@ async def get_reports_endpoint(
         db=session, salon_id=salon_id, report_type=report_type
     )
     return report
-
-@router.get("/search/", response_model=List[SalonResponse])
-async def search_salons(
-    session: SessionDep,
-    query: str = "",
-    skip: int = 0,
-    limit: int = 100
-) -> Any:
-    """
-    Search salons by name, address, or service name.
-    """
-    if not query:
-        return []
-    
-    search_term = f"%{query}%"
-    
-    stmt = (
-        select(Salon)
-        .outerjoin(Salon.services)
-        .where(
-            or_(
-                Salon.name.ilike(search_term),
-                Salon.address.ilike(search_term),
-                Service.name.ilike(search_term)
-            )
-        )
-        .distinct()
-        .options(
-            selectinload(Salon.services),
-            selectinload(Salon.staffs)
-        )
-        .offset(skip)
-        .limit(limit)
-    )
-    result = await session.execute(stmt)
-    return list(result.scalars().all())

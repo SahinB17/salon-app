@@ -23,7 +23,7 @@ export default function Search() {
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebounce(query, 500);
 
-  const { data: results = [], isLoading } = useQuery({
+  const { data: results = [], isLoading, isError } = useQuery({
     queryKey: ['searchSalons', debouncedQuery],
     queryFn: async () => {
       if (!debouncedQuery.trim()) return [];
@@ -62,6 +62,10 @@ export default function Search() {
                 <div key={i} className="w-full h-28 bg-zinc-200 animate-pulse rounded-2xl" />
              ))}
            </div>
+        ) : isError ? (
+           <div className="text-center text-red-500 mt-10">
+             Axtarış zamanı xəta baş verdi. Yenidən cəhd edin.
+           </div>
         ) : debouncedQuery && results.length === 0 ? (
            <div className="text-center text-zinc-500 mt-10">
              "{debouncedQuery}" üzrə heç nə tapılmadı
@@ -78,7 +82,11 @@ export default function Search() {
                  onClick={() => navigate(`/salons/${salon.id}`)}
                  className="flex flex-row p-3 rounded-2xl border-0 shadow-sm active:scale-[0.98] transition-transform cursor-pointer bg-white"
                >
-                 <div className="w-24 h-24 bg-zinc-200 rounded-xl flex-shrink-0" />
+                 <div className="w-24 h-24 bg-zinc-200 rounded-xl flex-shrink-0 overflow-hidden">
+                   {salon.image_url && (
+                     <img src={`http://localhost:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
+                   )}
+                 </div>
                  <div className="ml-4 flex flex-col justify-center flex-1">
                    <h3 className="font-bold text-zinc-900 line-clamp-1">{salon.name}</h3>
                    <div className="flex items-center text-zinc-500 mt-1 text-sm">

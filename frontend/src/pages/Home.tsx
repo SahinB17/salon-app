@@ -55,9 +55,13 @@ export default function Home() {
                 className="min-w-[260px] lg:min-w-0 snap-center rounded-2xl overflow-hidden border-0 shadow-sm active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer"
               >
                 <div className="h-32 bg-zinc-200 w-full relative">
-                   <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-bold text-zinc-800">
-                     Salon
-                   </div>
+                   {salon.image_url ? (
+                     <img src={`http://localhost:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
+                   ) : (
+                     <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-bold text-zinc-800">
+                       Salon
+                     </div>
+                   )}
                 </div>
                 <div className="p-4 bg-white">
                   <h3 className="font-bold text-zinc-900 truncate">{salon.name}</h3>
