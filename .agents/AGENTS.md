@@ -9,6 +9,7 @@
 - **No Direct Commits to `main`:** Writing code or pushing directly to the `main` branch is strictly forbidden.
 - **Branch Workflow:** All new features, bug fixes, and development must occur on separate branch scopes (e.g., `dev`, `feature/<feature-name>`, `bugfix/<bug-name>`).
 - **Merge/Release:** Code must be fully tested locally before being merged into `main`. Merges to `main` trigger the production CI/CD deployment.
+- **No Unapproved AI Pushes:** The AI agent MUST NOT run git commit or push commands without the user's explicit consent. All code modifications must first be left locally for the user to review and test.
 
 ## 3. Frontend Architecture Standards (React + TS + Tailwind v3)
 - **Atomic UI Components (`src/components/ui/`):**
