@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: `http://${window.location.hostname}:8000`,
+  baseURL: `http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}`,
 });
 
 api.interceptors.request.use((config) => {

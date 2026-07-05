@@ -228,12 +228,12 @@ export default function SalonDetail() {
           <div className="flex h-full">
             {salon.image_url && (
               <div className="flex-[0_0_100%] min-w-0">
-                <img src={`http://${window.location.hostname}:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
+                <img src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
               </div>
             )}
             {salon.images?.map((img: any) => (
               <div key={img.id} className="flex-[0_0_100%] min-w-0">
-                <img src={`http://${window.location.hostname}:8000${img.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
+                <img src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${img.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
               </div>
             ))}
           </div>
@@ -293,7 +293,7 @@ export default function SalonDetail() {
                 className="w-40 h-40 flex-shrink-0 rounded-2xl overflow-hidden shadow-sm border border-zinc-100 dark:border-zinc-800 cursor-pointer active:scale-95 transition-transform"
                 onClick={() => setSelectedImage(img.image_url)}
               >
-                <img src={`http://${window.location.hostname}:8000${img.image_url}`} alt="Qalereya" className="w-full h-full object-cover pointer-events-none" />
+                <img src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${img.image_url}`} alt="Qalereya" className="w-full h-full object-cover pointer-events-none" />
               </div>
             ))}
           </div>
@@ -555,7 +555,7 @@ export default function SalonDetail() {
               onClick={() => setSelectedImage(null)} // Close when clicking outside image
             >
               <img 
-                src={`http://${window.location.hostname}:8000${selectedImage}`} 
+                src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${selectedImage}`} 
                 alt="Fullscreen" 
                 className="max-w-full max-h-full object-contain rounded-xl"
                 onClick={(e) => e.stopPropagation()} // Prevent close when clicking image
