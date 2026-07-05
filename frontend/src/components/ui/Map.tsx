@@ -44,7 +44,7 @@ export function Map({ salons, center = [40.4093, 49.8671], zoom = 12, className 
         : center;
 
     return (
-        <MapContainer center={mapCenter} zoom={zoom} scrollWheelZoom={false} className={className}>
+        <MapContainer center={mapCenter} zoom={zoom} scrollWheelZoom={false} className={className} attributionControl={false}>
             <ChangeView center={mapCenter} zoom={zoom} />
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
