@@ -19,7 +19,6 @@ htmlcov/
 # ---- Frontend (React / Node.js) ----
 node_modules/
 frontend/node_modules/
-dist/
 build/
 *.log
 npm-debug.log*

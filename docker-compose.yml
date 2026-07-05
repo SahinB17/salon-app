@@ -34,14 +34,13 @@ services:
       - db
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: nginx:alpine
     container_name: salon_frontend
     ports:
       - "80:80"
-    # Note: Volumes are not mounted here because we use multi-stage build (Nginx) for production-like frontend.
-    # If you want hot-reloading for local dev, you'd use a different dev-specific command and volumes.
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html
+      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf
     restart: unless-stopped
     depends_on:
       - backend
