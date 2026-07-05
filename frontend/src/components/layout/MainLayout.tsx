@@ -1,10 +1,12 @@
-import { Outlet, NavLink } from 'react-router-dom';
-import { Home, Search, Calendar, User, Sun, Moon } from 'lucide-react';
+import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Home, Search, Calendar, User, Sun, Moon, Heart } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { NotificationBell } from '../ui/NotificationBell';
 import { useTheme } from '../ThemeProvider';
 
 export default function MainLayout() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const navItems = [
     { name: 'Ana Səhifə', icon: Home, path: '/' },
     { name: 'Axtarış', icon: Search, path: '/salons' },
@@ -14,6 +16,7 @@ export default function MainLayout() {
 
   const { theme, setTheme } = useTheme();
   const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  const isSalonDetailPage = location.pathname.match(/\/salons\/\d+/);
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 lg:flex transition-colors">
@@ -47,16 +50,25 @@ export default function MainLayout() {
 
       {/* Main Content Area */}
       <div className="flex-1 lg:pl-64 flex flex-col min-h-screen pb-20 lg:pb-0 relative">
-        <div className="fixed top-3 right-4 lg:top-4 lg:right-6 z-50 flex items-center gap-3">
-          <button 
-            onClick={() => setTheme(isDark ? 'light' : 'dark')}
-            className="p-2 rounded-xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm text-zinc-600 dark:text-zinc-300 border border-zinc-200/50 dark:border-zinc-800 shadow-sm transition-all active:scale-95"
-            title={isDark ? 'Açıq rejim' : 'Qaranlıq rejim'}
-          >
-            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button>
-          <NotificationBell />
-        </div>
+        {!isSalonDetailPage && (
+          <div className="fixed top-3 right-4 lg:top-4 lg:right-6 z-50 flex items-center gap-3">
+            <button 
+              onClick={() => navigate('/favorites')}
+              className="p-2 rounded-xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm text-zinc-500 hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400 border border-zinc-200/50 dark:border-zinc-800 shadow-sm transition-all active:scale-95"
+              title="Seçilmişlər"
+            >
+              <Heart className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={() => setTheme(isDark ? 'light' : 'dark')}
+              className="p-2 rounded-xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm text-zinc-600 dark:text-zinc-300 border border-zinc-200/50 dark:border-zinc-800 shadow-sm transition-all active:scale-95"
+              title={isDark ? 'Açıq rejim' : 'Qaranlıq rejim'}
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+            <NotificationBell />
+          </div>
+        )}
 
         <main className="flex-1">
           <Outlet />

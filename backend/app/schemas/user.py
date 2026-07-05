@@ -1,11 +1,11 @@
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict, Field
 from typing import Optional
 from datetime import datetime
 
 class UserBase(BaseModel):
     email: EmailStr
     full_name: Optional[str] = None
-    phone: Optional[str] = None
+    phone: Optional[str] = Field(None, pattern=r"^(?:\+994|0)(10|50|51|55|70|77|99)\d{7}$", description="Phone must be in format +994501234567 or 0501234567")
     role: Optional[str] = "customer"
     is_active: Optional[bool] = True
 

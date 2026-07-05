@@ -19,7 +19,7 @@ class Appointment(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    customer = relationship("User", foreign_keys=[customer_id], back_populates="appointments_as_customer")
-    salon = relationship("Salon", back_populates="appointments")
-    service = relationship("Service", back_populates="appointments")
-    staff = relationship("Staff", back_populates="appointments")
+    customer = relationship("User", foreign_keys=[customer_id], back_populates="appointments_as_customer", lazy="selectin")
+    salon = relationship("Salon", back_populates="appointments", lazy="selectin")
+    service = relationship("Service", back_populates="appointments", lazy="selectin")
+    staff = relationship("Staff", back_populates="appointments", lazy="selectin")

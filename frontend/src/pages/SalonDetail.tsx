@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ChevronLeft, MapPin, Star, Clock, Loader2, MessageSquare, Heart, X } from 'lucide-react';
+import { ChevronLeft, MapPin, Star, Clock, Loader2, MessageSquare, Heart, X, Phone } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useEmblaCarousel from 'embla-carousel-react';
 import { toast } from 'sonner';
@@ -285,6 +285,14 @@ export default function SalonDetail() {
               <div className="flex items-center text-zinc-500 dark:text-zinc-400 mt-1.5 text-sm">
                 <Clock className="w-4 h-4 mr-1" />
                 <span>{salon.open_time.substring(0,5)} - {salon.close_time.substring(0,5)}</span>
+              </div>
+            )}
+            {salon.contact_phone && (
+              <div className="flex items-center text-zinc-500 dark:text-zinc-400 mt-1.5 text-sm">
+                <Phone className="w-4 h-4 mr-1" />
+                <a href={`tel:${salon.contact_phone}`} className="hover:text-amber-600 dark:hover:text-amber-400 transition-colors">
+                  {salon.contact_phone}
+                </a>
               </div>
             )}
           </div>

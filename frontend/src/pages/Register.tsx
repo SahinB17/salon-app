@@ -50,8 +50,9 @@ export default function Register() {
     if (formData.full_name.trim().length < 3) {
       newErrors.full_name = 'Ad ən azı 3 simvol olmalıdır';
     }
-    if (formData.phone.length < 8) {
-      newErrors.phone = 'Düzgün mobil nömrə daxil edin';
+    const phoneRegex = /^(?:\+994|0)(10|50|51|55|70|77|99)\d{7}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      newErrors.phone = 'Format: 0501234567 və ya +99450...';
     }
     if (!formData.email.includes('@')) {
       newErrors.email = 'Düzgün e-poçt ünvanı daxil edin';

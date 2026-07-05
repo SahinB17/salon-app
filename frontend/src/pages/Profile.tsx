@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { User as UserIcon, LogOut, Settings, ChevronRight, Lock, Trash2, Sun, Moon, Laptop, UserPen } from 'lucide-react';
+import { User as UserIcon, LogOut, Settings, ChevronRight, Lock, Trash2, Sun, Moon, Laptop, UserPen, Heart } from 'lucide-react';
 import { toast } from 'sonner';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -141,6 +141,17 @@ export default function Profile() {
             <div className="flex items-center text-zinc-700 dark:text-zinc-300 font-medium">
               <Settings className="w-5 h-5 mr-3 text-zinc-400 dark:text-zinc-500" />
               Tənzimləmələr
+            </div>
+            <ChevronRight className="w-5 h-5 text-zinc-300 dark:text-zinc-600" />
+          </Card>
+
+          <Card 
+            onClick={() => navigate('/favorites')}
+            className="p-4 rounded-2xl border-0 shadow-sm flex justify-between items-center bg-white dark:bg-zinc-900 cursor-pointer active:scale-[0.98] transition-all"
+          >
+            <div className="flex items-center text-zinc-700 dark:text-zinc-300 font-medium">
+              <Heart className="w-5 h-5 mr-3 text-red-500/80 dark:text-red-400/80" />
+              Seçilmişlər (Favoritlər)
             </div>
             <ChevronRight className="w-5 h-5 text-zinc-300 dark:text-zinc-600" />
           </Card>
