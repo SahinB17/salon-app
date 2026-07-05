@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Time
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, Time, Float
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.db.database import Base
@@ -17,6 +17,9 @@ class Staff(Base):
     work_start = Column(Time, nullable=True, default="09:00:00")
     work_end = Column(Time, nullable=True, default="18:00:00")
     working_days = Column(String, nullable=True, default="1,2,3,4,5") # 1=Mon, ..., 7=Sun
+
+    image_url = Column(String, nullable=True)
+    rating = Column(Float, nullable=True, default=5.0)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

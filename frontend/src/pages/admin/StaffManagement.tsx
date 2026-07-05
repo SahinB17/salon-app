@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit2, Trash2, Loader2, UserCheck, UserX, User, ChevronDown, Check } from 'lucide-react';
+import { Plus, Edit2, Trash2, Loader2, UserCheck, UserX, User, ChevronDown, Check, Star, Camera } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import api from '../../lib/api';
+import { toast } from 'sonner';
 
 export default function StaffManagement() {
   const queryClient = useQueryClient();
@@ -31,6 +32,9 @@ export default function StaffManagement() {
   const [workEnd, setWorkEnd] = useState('18:00');
   const [workingDays, setWorkingDays] = useState<number[]>([1, 2, 3, 4, 5]);
   const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>([]);
+  const [imageUrl, setImageUrl] = useState('');
+  const [rating, setRating] = useState('5.0');
+  const [isUploading, setIsUploading] = useState(false);
 
   const weekDayNames = [
     { label: 'B.e.', value: 1 },
@@ -130,6 +134,29 @@ export default function StaffManagement() {
     }
   });
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setIsUploading(true);
+    try {
+      const res = await api.post('/api/v1/upload/image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      setImageUrl(res.data.image_url);
+      toast.success('Şəkil uğurla yükləndi!');
+    } catch (err) {
+      toast.error('Şəkil yüklənərkən xəta baş verdi.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedSalonId) return;
@@ -141,6 +168,8 @@ export default function StaffManagement() {
       work_end: workEnd ? `${workEnd}:00` : null,
       working_days: workingDays.sort((a, b) => a - b).join(','),
       service_ids: selectedServiceIds,
+      image_url: imageUrl || null,
+      rating: parseFloat(rating) || 5.0,
     };
 
     if (editStaffId) {
@@ -163,6 +192,8 @@ export default function StaffManagement() {
     setWorkStart(staff.work_start ? staff.work_start.substring(0, 5) : '09:00');
     setWorkEnd(staff.work_end ? staff.work_end.substring(0, 5) : '18:00');
     setSelectedServiceIds(staff.services ? staff.services.map((s: any) => s.id) : []);
+    setImageUrl(staff.image_url || '');
+    setRating(staff.rating !== undefined && staff.rating !== null ? String(staff.rating) : '5.0');
     
     if (staff.working_days) {
       setWorkingDays(staff.working_days.split(',').map(Number));
@@ -186,6 +217,8 @@ export default function StaffManagement() {
     setWorkEnd('18:00');
     setWorkingDays([1, 2, 3, 4, 5]);
     setSelectedServiceIds([]);
+    setImageUrl('');
+    setRating('5.0');
     setEditStaffId(null);
     setIsModalOpen(false);
   };
@@ -272,8 +305,18 @@ export default function StaffManagement() {
           {staffList.map((staff: any) => (
             <Card key={staff.id} className="p-5 border-0 shadow-sm rounded-2xl flex flex-col group relative dark:bg-zinc-900 transition-colors">
               <div className="flex justify-between items-start mb-3">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${staff.is_active ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500'}`}>
-                  <User className="w-6 h-6" />
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden transition-colors ${staff.is_active ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500'}`}>
+                  {staff.image_url ? (
+                    <img 
+                      src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${staff.image_url}`} 
+                      alt={staff.full_name} 
+                      className="w-full h-full object-cover" 
+                    />
+                  ) : (
+                    <div className="font-bold text-sm">
+                      {staff.full_name ? staff.full_name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : <User className="w-6 h-6" />}
+                    </div>
+                  )}
                 </div>
                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
@@ -298,7 +341,14 @@ export default function StaffManagement() {
                   </button>
                 </div>
               </div>
-              <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-1 transition-colors">{staff.full_name}</h3>
+              
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 transition-colors truncate">{staff.full_name}</h3>
+                <span className="flex items-center text-xs font-semibold text-amber-500 dark:text-amber-400 shrink-0">
+                  <Star className="w-3.5 h-3.5 fill-current mr-0.5" />
+                  {staff.rating !== undefined && staff.rating !== null ? staff.rating.toFixed(1) : '5.0'}
+                </span>
+              </div>
               {staff.specialty && (
                 <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-2 transition-colors">{staff.specialty}</p>
               )}
@@ -355,14 +405,55 @@ export default function StaffManagement() {
 
             <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
               <form id="staff-form" onSubmit={handleSubmit} className="space-y-5">
+                <div className="flex flex-col items-center justify-center pb-4">
+                  <div className="relative group w-24 h-24 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 transition-all flex items-center justify-center">
+                    {imageUrl ? (
+                      <img 
+                        src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${imageUrl}`} 
+                        alt="Profil" 
+                        className="w-full h-full object-cover" 
+                      />
+                    ) : (
+                      <div className="text-zinc-400 dark:text-zinc-600 font-bold text-2xl flex flex-col items-center justify-center">
+                        {fullName ? fullName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : <User className="w-8 h-8" />}
+                      </div>
+                    )}
+                    <label className="absolute inset-0 bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-xs font-semibold">
+                      {isUploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={handleImageUpload} 
+                        className="hidden" 
+                        disabled={isUploading}
+                      />
+                    </label>
+                  </div>
+                  <span className="text-xs text-zinc-400 dark:text-zinc-500 mt-2">Profil Şəkli</span>
+                </div>
+
                 <div className="space-y-1.5">
                   <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Ad və Soyad</label>
                   <Input required placeholder="Məs: Əli Əliyev" value={fullName} onChange={e => setFullName(e.target.value)} />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">İxtisas (İxtiyari)</label>
-                  <Input placeholder="Məs: Saç ustası, Dırnaq ustası" value={specialty} onChange={e => setSpecialty(e.target.value)} />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">İxtisas (İxtiyari)</label>
+                    <Input placeholder="Məs: Saç ustası" value={specialty} onChange={e => setSpecialty(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Ulduz Balı (1.0 - 5.0)</label>
+                    <Input 
+                      type="number" 
+                      step="0.1" 
+                      min="1.0" 
+                      max="5.0" 
+                      placeholder="5.0" 
+                      value={rating} 
+                      onChange={e => setRating(e.target.value)} 
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

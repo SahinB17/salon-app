@@ -10,6 +10,8 @@ class StaffBase(BaseModel):
     work_start: Optional[time] = None
     work_end: Optional[time] = None
     working_days: Optional[str] = None
+    image_url: Optional[str] = None
+    rating: Optional[float] = 5.0
 
 class StaffCreate(StaffBase):
     salon_id: int
@@ -23,6 +25,8 @@ class StaffUpdate(BaseModel):
     work_end: Optional[time] = None
     working_days: Optional[str] = None
     service_ids: Optional[List[int]] = None
+    image_url: Optional[str] = None
+    rating: Optional[float] = None
 
 class StaffResponse(BaseModel):
     id: int
@@ -33,6 +37,8 @@ class StaffResponse(BaseModel):
     work_start: Optional[time] = None
     work_end: Optional[time] = None
     working_days: Optional[str] = None
+    image_url: Optional[str] = None
+    rating: Optional[float] = 5.0
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     services: Optional[List[ServiceResponse]] = []

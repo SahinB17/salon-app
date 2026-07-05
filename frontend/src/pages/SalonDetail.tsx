@@ -399,18 +399,37 @@ export default function SalonDetail() {
               <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
                 <div 
                   onClick={() => setSelectedStaff(null)}
-                  className={`flex flex-col items-center justify-center min-w-[72px] h-[72px] rounded-2xl border-2 transition-all cursor-pointer ${selectedStaff === null ? 'border-zinc-900 dark:border-zinc-100 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50' : 'border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-300'}`}
+                  className={`flex flex-col items-center justify-center min-w-[76px] h-[92px] p-2 rounded-2xl border-2 transition-all cursor-pointer ${selectedStaff === null ? 'border-zinc-900 dark:border-zinc-100 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50' : 'border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-300'}`}
                 >
-                  <span className="text-xs font-semibold">Fərq etməz</span>
+                  <div className="w-9 h-9 rounded-full mb-1 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shrink-0">
+                    <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">All</span>
+                  </div>
+                  <span className="text-xs font-semibold truncate w-full text-center px-0.5">Fərq etməz</span>
                 </div>
                 {filteredStaffs.map((staff: any) => (
                   <div 
                     key={staff.id}
                     onClick={() => setSelectedStaff(staff.id)}
-                    className={`flex flex-col items-center justify-center min-w-[72px] h-[72px] rounded-2xl border-2 transition-all cursor-pointer ${selectedStaff === staff.id ? 'border-zinc-900 dark:border-zinc-100 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50' : 'border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-400'}`}
+                    className={`flex flex-col items-center justify-center min-w-[76px] h-[92px] p-2 rounded-2xl border-2 transition-all cursor-pointer shrink-0 ${selectedStaff === staff.id ? 'border-zinc-900 dark:border-zinc-100 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50' : 'border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-400'}`}
                   >
-                     <div className="w-8 h-8 bg-zinc-200 dark:bg-zinc-700 rounded-full mb-1"></div>
-                     <span className="text-xs font-medium truncate w-full text-center px-1">{staff.full_name?.split(' ')[0]}</span>
+                    <div className="w-9 h-9 rounded-full mb-1 overflow-hidden flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/50 dark:border-zinc-700/50 shrink-0">
+                      {staff.image_url ? (
+                        <img 
+                          src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${staff.image_url}`} 
+                          alt={staff.full_name} 
+                          className="w-full h-full object-cover" 
+                        />
+                      ) : (
+                        <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400">
+                          {staff.full_name ? staff.full_name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase() : '?'}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-xs font-semibold truncate w-full text-center px-0.5 mb-0.5">{staff.full_name?.split(' ')[0]}</span>
+                    <span className="flex items-center text-[10px] font-bold text-amber-500 dark:text-amber-400">
+                      <Star className="w-2.5 h-2.5 fill-current mr-0.5" />
+                      {staff.rating !== undefined && staff.rating !== null ? staff.rating.toFixed(1) : '5.0'}
+                    </span>
                   </div>
                 ))}
               </div>
