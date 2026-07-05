@@ -9,9 +9,11 @@ class Review(Base):
     id = Column(Integer, primary_key=True, index=True)
     salon_id = Column(Integer, ForeignKey("salons.id", ondelete="CASCADE"), nullable=False)
     customer_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    staff_id = Column(Integer, ForeignKey("staffs.id", ondelete="SET NULL"), nullable=True)
     rating = Column(Integer, nullable=False)
     comment = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     salon = relationship("Salon", back_populates="reviews")
     customer = relationship("User", back_populates="reviews")
+    staff = relationship("Staff", lazy="selectin")

@@ -68,18 +68,21 @@ export default function SalonDetail() {
 
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState('');
+  const [reviewStaffId, setReviewStaffId] = useState<number | null>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const reviewMutation = useMutation({
-    mutationFn: async (data: { rating: number; comment: string }) => {
+    mutationFn: async (data: { rating: number; comment: string; staff_id: number | null }) => {
       return api.post(`/api/v1/reviews/salon/${id}`, data);
     },
     onSuccess: () => {
       setIsReviewModalOpen(false);
       setReviewComment('');
       setReviewRating(5);
+      setReviewStaffId(null);
       refetchReviews();
+      queryClient.invalidateQueries({ queryKey: ['staff', id] });
       toast.success("Rəyiniz uğurla əlavə edildi!");
     },
     onError: () => {
@@ -523,6 +526,7 @@ export default function SalonDetail() {
         title="Rəy Bildir"
       >
         <div className="space-y-6">
+          {/* Star Rating */}
           <div>
             <label className="text-sm font-bold text-zinc-900 dark:text-zinc-50 block mb-3 text-center">Qiymətləndirin</label>
             <div className="flex justify-center gap-2">
@@ -540,18 +544,72 @@ export default function SalonDetail() {
               ))}
             </div>
           </div>
+
+          {/* Staff Selector */}
+          {salon?.staffs && salon.staffs.length > 0 && (
+            <div>
+              <label className="text-sm font-bold text-zinc-900 dark:text-zinc-50 block mb-3">Xidmət edən usta (İstəyə bağlı)</label>
+              <div className="flex overflow-x-auto gap-2 pb-1 scrollbar-hide">
+                <button
+                  type="button"
+                  onClick={() => setReviewStaffId(null)}
+                  className={`flex flex-col items-center justify-center min-w-[64px] h-[72px] p-1.5 rounded-xl border-2 transition-all shrink-0 ${
+                    reviewStaffId === null
+                      ? 'border-zinc-900 dark:border-zinc-100 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50'
+                      : 'border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400'
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center mb-0.5">
+                    <span className="text-[9px] font-bold text-zinc-500 dark:text-zinc-400">Hamı</span>
+                  </div>
+                  <span className="text-[10px] font-semibold">Fərq etməz</span>
+                </button>
+                {salon.staffs.filter((s: any) => s.is_active).map((staff: any) => (
+                  <button
+                    key={staff.id}
+                    type="button"
+                    onClick={() => setReviewStaffId(staff.id === reviewStaffId ? null : staff.id)}
+                    className={`flex flex-col items-center justify-center min-w-[64px] h-[72px] p-1.5 rounded-xl border-2 transition-all shrink-0 ${
+                      reviewStaffId === staff.id
+                        ? 'border-amber-400 dark:border-amber-500 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200'
+                        : 'border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400'
+                    }`}
+                  >
+                    <div className="w-8 h-8 rounded-full mb-0.5 overflow-hidden flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/50 dark:border-zinc-700/50 shrink-0">
+                      {staff.image_url ? (
+                        <img
+                          src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${staff.image_url}`}
+                          alt={staff.full_name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">
+                          {staff.full_name?.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[10px] font-semibold truncate w-full text-center px-0.5">
+                      {staff.full_name?.split(' ')[0]}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Comment */}
           <div>
             <label className="text-sm font-bold text-zinc-900 dark:text-zinc-50 block mb-2">Fikriniz (İstəyə bağlı)</label>
             <textarea
               className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-700 resize-none h-24 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition-colors"
-              placeholder="Salon haqqında təəssüratlarınızı bölüşün..."
+              placeholder="Salon və ya usta haqqında təəssüratlarınızı bölüşün..."
               value={reviewComment}
               onChange={(e) => setReviewComment(e.target.value)}
             />
           </div>
           <Button 
             className="w-full"
-            onClick={() => reviewMutation.mutate({ rating: reviewRating, comment: reviewComment })}
+            onClick={() => reviewMutation.mutate({ rating: reviewRating, comment: reviewComment, staff_id: reviewStaffId })}
             isLoading={reviewMutation.isPending}
           >
             Göndər
