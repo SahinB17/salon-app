@@ -10,6 +10,7 @@ import { PageWrapper } from '../components/ui/PageWrapper';
 import { SkeletonCard } from '../components/ui/SkeletonCard';
 import { motion } from 'framer-motion';
 import api from '../lib/api';
+import Fuse from 'fuse.js';
 
 // Simple debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -45,49 +46,43 @@ export default function Search() {
       const response = await api.get(`/api/v1/salons/search/?query=${encodeURIComponent(debouncedQuery)}`);
       return response.data;
     },
-    enabled: debouncedQuery.trim().length > 0
+    enabled: !!debouncedQuery.trim()
   });
-  // Fuzzy search and grouping logic
-  const queryLower = debouncedQuery.toLowerCase();
-  
+
   const matchedServices: any[] = [];
   const matchedSalons: any[] = [];
 
-  if (results.length > 0) {
-    results.forEach((salon: any) => {
-      let salonNameMatched = false;
-      if (
-        salon.name.toLowerCase().includes(queryLower) || 
-        (salon.address && salon.address.toLowerCase().includes(queryLower))
-      ) {
-        salonNameMatched = true;
-        matchedSalons.push(salon);
-      }
+  if (results.length > 0 && debouncedQuery.trim()) {
+    // Bütün xidmətləri bir massivə yığırıq
+    const allServices = results.flatMap((salon: any) => 
+      (salon.services || []).map((s: any) => ({
+        ...s,
+        salon: { id: salon.id, name: salon.name, address: salon.address, image_url: salon.image_url }
+      }))
+    );
 
-      if (salon.services && Array.isArray(salon.services)) {
-        salon.services.forEach((service: any) => {
-          if (
-            service.name.toLowerCase().includes(queryLower) || 
-            (service.description && service.description.toLowerCase().includes(queryLower))
-          ) {
-             matchedServices.push({
-               ...service,
-               salon: {
-                 id: salon.id,
-                 name: salon.name,
-                 address: salon.address,
-                 image_url: salon.image_url
-               }
-             });
-          }
-        });
-      }
-      
-      // If no explicit match found but the backend returned it, we can still show the salon
-      // (Backend does fuzzy matching too, but this helps us group on frontend)
-      if (!salonNameMatched && matchedServices.length === 0) {
-          // Fallback: just put it in salons if we somehow couldn't match anything locally
-          matchedSalons.push(salon);
+    // Fuse.js ilə Xidmətləri qruplaşdırırıq
+    const serviceFuse = new Fuse(allServices, {
+      keys: ['name', 'description'],
+      threshold: 0.4
+    });
+    const serviceMatches = serviceFuse.search(debouncedQuery);
+    serviceMatches.forEach(res => matchedServices.push(res.item));
+
+    // Fuse.js ilə Salonları qruplaşdırırıq
+    const salonFuse = new Fuse(results, {
+      keys: ['name', 'address'],
+      threshold: 0.4
+    });
+    const salonMatches = salonFuse.search(debouncedQuery);
+    salonMatches.forEach(res => matchedSalons.push(res.item));
+
+    // Əgər backend nəsə tapıbsa amma Fuse.js heç birini filterdən keçirmədisə (çox böyük typo olanda)
+    results.forEach((salon: any) => {
+      const isMatchedSalon = matchedSalons.some(s => s.id === salon.id);
+      const hasMatchedService = matchedServices.some(s => s.salon.id === salon.id);
+      if (!isMatchedSalon && !hasMatchedService) {
+         matchedSalons.push(salon);
       }
     });
   }

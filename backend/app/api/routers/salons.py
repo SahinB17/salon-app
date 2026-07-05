@@ -7,7 +7,7 @@ from app.schemas.salon import SalonBase
 from app.schemas.report import ReportResponse
 from app.crud import crud_salon, crud_report
 from sqlalchemy.future import select
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 from app.models.salon import Salon
 from app.models.service import Service
 from sqlalchemy.orm import selectinload
@@ -62,6 +62,9 @@ async def search_salons(
         .outerjoin(Salon.services)
         .where(
             or_(
+                func.similarity(Salon.name, query) > 0.3,
+                func.similarity(Salon.address, query) > 0.3,
+                func.similarity(Service.name, query) > 0.3,
                 Salon.name.ilike(search_term),
                 Salon.address.ilike(search_term),
                 Service.name.ilike(search_term)
