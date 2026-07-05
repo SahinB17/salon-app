@@ -308,7 +308,7 @@ export default function Dashboard() {
                         }}
                         itemStyle={{ color: '#10b981', fontWeight: 'bold' }}
                         labelStyle={{ color: '#a1a1aa', marginBottom: '4px' }}
-                        formatter={(value: number | string) => [`${value} ₼`, 'Gəlir']}
+                        formatter={(value) => [`${value || 0} ₼`, 'Gəlir']}
                         labelFormatter={(label) => `Tarix: ${label}`}
                       />
                       <Area 
