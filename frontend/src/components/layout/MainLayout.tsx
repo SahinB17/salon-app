@@ -54,17 +54,17 @@ export default function MainLayout() {
           <div className="fixed top-3 right-4 lg:top-4 lg:right-6 z-50 flex items-center gap-3">
             <button 
               onClick={() => navigate('/favorites')}
-              className="p-2 rounded-xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm text-zinc-500 hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400 border border-zinc-200/50 dark:border-zinc-800 shadow-sm transition-all active:scale-95"
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm text-zinc-500 hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400 border border-zinc-200/50 dark:border-zinc-800 shadow-sm transition-all active:scale-95"
               title="Seçilmişlər"
             >
-              <Heart className="w-4 h-4" />
+              <Heart className="w-5 h-5" />
             </button>
             <button 
               onClick={() => setTheme(isDark ? 'light' : 'dark')}
-              className="p-2 rounded-xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm text-zinc-600 dark:text-zinc-300 border border-zinc-200/50 dark:border-zinc-800 shadow-sm transition-all active:scale-95"
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm text-zinc-600 dark:text-zinc-300 border border-zinc-200/50 dark:border-zinc-800 shadow-sm transition-all active:scale-95"
               title={isDark ? 'Açıq rejim' : 'Qaranlıq rejim'}
             >
-              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
             <NotificationBell />
           </div>

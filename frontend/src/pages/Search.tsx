@@ -11,6 +11,7 @@ import { SkeletonCard } from '../components/ui/SkeletonCard';
 import { motion } from 'framer-motion';
 import api from '../lib/api';
 import Fuse from 'fuse.js';
+import { DEFAULT_SALON_IMAGE } from '../lib/constants';
 
 // Simple debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -211,11 +212,14 @@ export default function Search() {
                          className="flex flex-row p-3 rounded-2xl border-0 shadow-sm active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer bg-white dark:bg-zinc-900 h-full"
                        >
                          <div className="w-24 h-24 bg-zinc-200 dark:bg-zinc-800 rounded-xl flex-shrink-0 overflow-hidden relative">
-                            {salon.image_url ? (
-                              <img src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-zinc-400 dark:text-zinc-500">
-                                 <MapPin className="w-6 h-6" />
+                            <img 
+                              src={salon.image_url ? `http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}` : DEFAULT_SALON_IMAGE} 
+                              alt={salon.name} 
+                              className="w-full h-full object-cover" 
+                            />
+                            {!salon.image_url && (
+                              <div className="absolute top-1 left-1 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] font-bold text-zinc-800 dark:text-zinc-200">
+                                Salon
                               </div>
                             )}
                          </div>

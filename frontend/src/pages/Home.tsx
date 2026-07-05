@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { PageWrapper } from '../components/ui/PageWrapper';
 import { SkeletonCard } from '../components/ui/SkeletonCard';
+import { DEFAULT_SALON_IMAGE } from '../lib/constants';
 import { toast } from 'sonner';
 import api from '../lib/api';
 
@@ -184,11 +185,14 @@ export default function Home() {
                   className="min-w-[140px] snap-center bg-white dark:bg-zinc-900 rounded-2xl p-2 shadow-sm border border-zinc-100 dark:border-zinc-800 active:scale-95 transition-transform cursor-pointer"
                 >
                   <div className="h-24 bg-zinc-200 dark:bg-zinc-800 rounded-xl overflow-hidden mb-2">
-                     {salon.image_url ? (
-                       <img src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
-                     ) : (
-                       <div className="w-full h-full flex items-center justify-center text-zinc-400 dark:text-zinc-500">
-                         <MapPin className="w-6 h-6" />
+                     <img 
+                       src={salon.image_url ? `http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}` : DEFAULT_SALON_IMAGE} 
+                       alt={salon.name} 
+                       className="w-full h-full object-cover" 
+                     />
+                     {!salon.image_url && (
+                       <div className="absolute top-1 left-1 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] font-bold text-zinc-800 dark:text-zinc-200">
+                         Salon
                        </div>
                      )}
                   </div>
@@ -241,9 +245,12 @@ export default function Home() {
                   className="w-full snap-center rounded-2xl overflow-hidden border-0 shadow-sm active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer dark:bg-zinc-900"
                 >
                   <div className="h-32 bg-zinc-200 dark:bg-zinc-800 w-full relative">
-                     {salon.image_url ? (
-                       <img src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
-                     ) : (
+                     <img 
+                       src={salon.image_url ? `http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}` : DEFAULT_SALON_IMAGE} 
+                       alt={salon.name} 
+                       className="w-full h-full object-cover" 
+                     />
+                     {!salon.image_url && (
                        <div className="absolute top-3 left-3 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-bold text-zinc-800 dark:text-zinc-200">
                          Salon
                        </div>

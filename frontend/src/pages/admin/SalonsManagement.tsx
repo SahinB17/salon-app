@@ -6,6 +6,7 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { toast } from 'sonner';
 import api from '../../lib/api';
+import { DEFAULT_SALON_IMAGE } from '../../lib/constants';
 
 export default function SalonsManagement() {
   const queryClient = useQueryClient();
@@ -269,10 +270,7 @@ export default function SalonsManagement() {
                   {salon.image_url ? (
                     <img src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-zinc-400">
-                      <ImageIcon className="w-10 h-10 mb-2 opacity-50" />
-                      <span className="text-sm font-medium">Şəkil yoxdur</span>
-                    </div>
+                    <img src={DEFAULT_SALON_IMAGE} alt={salon.name} className="w-full h-full object-cover opacity-80" />
                   )}
                   <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button 

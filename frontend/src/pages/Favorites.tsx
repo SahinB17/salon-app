@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
+import { DEFAULT_SALON_IMAGE } from '../lib/constants';
 import { MapPin, Star, Heart } from 'lucide-react';
 import { EmptyState } from '../components/ui/EmptyState';
 import { PageWrapper } from '../components/ui/PageWrapper';
@@ -57,9 +59,16 @@ export default function Favorites() {
                     <div className="absolute top-2 right-2">
                         <Heart className="w-4 h-4 fill-red-500 text-red-500" />
                     </div>
-                    <div className="w-24 h-24 bg-zinc-200 dark:bg-zinc-800 rounded-xl flex-shrink-0 overflow-hidden">
-                      {salon.image_url && (
-                        <img src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
+                    <div className="w-24 h-24 bg-zinc-200 dark:bg-zinc-800 rounded-xl flex-shrink-0 overflow-hidden relative">
+                      <img 
+                        src={salon.image_url ? `http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}` : DEFAULT_SALON_IMAGE} 
+                        alt={salon.name} 
+                        className="w-full h-full object-cover" 
+                      />
+                      {!salon.image_url && (
+                        <div className="absolute top-1 left-1 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] font-bold text-zinc-800 dark:text-zinc-200">
+                          Salon
+                        </div>
                       )}
                     </div>
                     <div className="ml-4 flex flex-col justify-center flex-1 pr-6">

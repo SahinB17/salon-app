@@ -5,6 +5,7 @@ import { ChevronLeft, MapPin, Star, Clock, Loader2, MessageSquare, Heart, X, Pho
 import { motion, AnimatePresence } from 'framer-motion';
 import useEmblaCarousel from 'embla-carousel-react';
 import { toast } from 'sonner';
+import { DEFAULT_SALON_IMAGE } from '../lib/constants';
 import { Button } from '../components/ui/Button';
 import { BottomSheet } from '../components/ui/BottomSheet';
 import { Input } from '../components/ui/Input';
@@ -238,9 +239,13 @@ export default function SalonDetail() {
       <div className="relative h-64 bg-zinc-200 dark:bg-zinc-800 transition-colors">
         <div className="overflow-hidden h-full" ref={emblaRef}>
           <div className="flex h-full">
-            {salon.image_url && (
+            {salon.image_url ? (
               <div className="flex-[0_0_100%] min-w-0">
                 <img src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
+              </div>
+            ) : (!salon.images || salon.images.length === 0) && (
+              <div className="flex-[0_0_100%] min-w-0">
+                <img src={DEFAULT_SALON_IMAGE} alt={salon.name} className="w-full h-full object-cover" />
               </div>
             )}
             {salon.images?.map((img: any) => (

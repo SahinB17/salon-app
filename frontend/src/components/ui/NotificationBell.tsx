@@ -62,7 +62,7 @@ export function NotificationBell() {
         onClick={() => setIsOpen(!isOpen)}
         className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200/50 dark:border-zinc-800 shadow-sm transition-all active:scale-95 group"
       >
-        <Bell className="w-4 h-4 transition-transform group-hover:rotate-12" />
+        <Bell className="w-5 h-5 transition-transform group-hover:rotate-12" />
         {unreadCount > 0 && (
           <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
