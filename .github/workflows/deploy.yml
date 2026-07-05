@@ -1,0 +1,33 @@
+name: Deploy to Oracle Cloud
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ${{ secrets.ORACLE_USERNAME }}
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          script: |
+            # Serverdeki qovluğa keçid edirik (bu yolu öz serverinizdəki yerə görə dəyişə bilərsiniz)
+            cd ~/salon-app
+            
+            # Ən son dəyişiklikləri GitHub-dan çəkirik
+            git pull origin main
+            
+            # Köhnə konteynerləri dayandırırıq
+            docker-compose down
+            
+            # Yeni kodlarla yenidən build edib ayağa qaldırırıq
+            docker-compose up --build -d
+            
+            # Təmizlik (İstifadə olunmayan köhnə image-ləri silirik)
+            docker image prune -f
