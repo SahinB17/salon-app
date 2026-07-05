@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Bell, CheckCheck, Loader2 } from 'lucide-react';
+import { Bell, CheckCheck, Loader2, Inbox } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../lib/api';
 
 export function NotificationBell() {
@@ -59,70 +60,96 @@ export function NotificationBell() {
       {/* Bell Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative w-10 h-10 flex items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-zinc-700 dark:text-zinc-300 active:scale-95"
+        className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200/50 dark:border-zinc-800 shadow-sm transition-all active:scale-95 group"
       >
-        <Bell className="w-5 h-5" />
+        <Bell className="w-4 h-4 transition-transform group-hover:rotate-12" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 bg-red-500 text-white text-[11px] font-bold rounded-full flex items-center justify-center border border-white dark:border-zinc-900 transition-colors">
-            {unreadCount}
+          <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
           </span>
         )}
       </button>
 
       {/* Notification Dropdown */}
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl shadow-xl overflow-hidden animate-in fade-in-50 slide-in-from-top-2 duration-150 transition-colors">
-          <div className="p-4 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between transition-colors">
-            <h3 className="font-bold text-zinc-950 dark:text-zinc-50 text-sm transition-colors">Bildirişlər</h3>
-            {unreadCount > 0 && (
-              <button
-                onClick={() => markAllReadMutation.mutate()}
-                disabled={markAllReadMutation.isPending}
-                className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 flex items-center gap-1 transition-colors disabled:opacity-50"
-              >
-                {markAllReadMutation.isPending ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <CheckCheck className="w-3.5 h-3.5" />
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+            className="absolute right-0 mt-3 w-80 sm:w-96 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md border border-zinc-200 dark:border-zinc-800/80 rounded-2xl shadow-xl overflow-hidden z-[100]"
+          >
+            <div className="p-4 border-b border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between">
+              <div>
+                <h3 className="font-extrabold text-zinc-950 dark:text-zinc-50 text-sm">Bildirişlər</h3>
+                {unreadCount > 0 && (
+                  <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-semibold mt-0.5 block">
+                    {unreadCount} yeni bildirişiniz var
+                  </span>
                 )}
-                Hamısını oxundu et
-              </button>
-            )}
-          </div>
-
-          <div className="max-h-[350px] overflow-y-auto divide-y divide-zinc-50 dark:divide-zinc-800/50 transition-colors">
-            {isLoading ? (
-              <div className="p-8 text-center text-zinc-400 dark:text-zinc-500 transition-colors">
-                <Loader2 className="w-5 h-5 animate-spin mx-auto text-zinc-400 dark:text-zinc-500" />
               </div>
-            ) : notifications.length === 0 ? (
-              <div className="p-8 text-center text-sm text-zinc-500 dark:text-zinc-400 transition-colors">
-                Heç bir bildiriş yoxdur.
-              </div>
-            ) : (
-              notifications.map((n: any) => (
-                <div
-                  key={n.id}
-                  onClick={() => !n.is_read && markReadMutation.mutate(n.id)}
-                  className={`p-4 transition-colors cursor-pointer text-left ${n.is_read ? 'bg-white dark:bg-zinc-900 hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50' : 'bg-blue-50/40 dark:bg-blue-900/10 hover:bg-blue-50/70 dark:hover:bg-blue-900/20 border-l-[3px] border-blue-500 dark:border-blue-400'}`}
+              {unreadCount > 0 && (
+                <button
+                  onClick={() => markAllReadMutation.mutate()}
+                  disabled={markAllReadMutation.isPending}
+                  className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1 transition-colors disabled:opacity-50"
                 >
-                  <div className="flex justify-between items-start mb-1">
-                    <span className={`text-xs font-bold transition-colors ${n.is_read ? 'text-zinc-700 dark:text-zinc-300' : 'text-zinc-950 dark:text-zinc-50'}`}>
-                      {n.title}
-                    </span>
-                    <span className="text-[10px] text-zinc-400 dark:text-zinc-500 transition-colors">
-                      {new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed transition-colors">
-                    {n.message}
-                  </p>
+                  {markAllReadMutation.isPending ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <CheckCheck className="w-3.5 h-3.5" />
+                  )}
+                  Oxundu et
+                </button>
+              )}
+            </div>
+
+            <div className="max-h-[350px] overflow-y-auto divide-y divide-zinc-100 dark:divide-zinc-800/50 custom-scrollbar">
+              {isLoading ? (
+                <div className="py-12 flex flex-col items-center justify-center">
+                  <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
                 </div>
-              ))
-            )}
-          </div>
-        </div>
-      )}
+              ) : notifications.length === 0 ? (
+                <div className="py-12 flex flex-col items-center justify-center text-zinc-400 dark:text-zinc-500">
+                  <Inbox className="w-8 h-8 mb-2 opacity-40 text-zinc-400 dark:text-zinc-500" />
+                  <span className="text-xs font-medium">Heç bir bildiriş yoxdur</span>
+                </div>
+              ) : (
+                notifications.map((n: any) => (
+                  <div
+                    key={n.id}
+                    onClick={() => !n.is_read && markReadMutation.mutate(n.id)}
+                    className={`p-4 transition-colors cursor-pointer text-left relative ${
+                      n.is_read 
+                        ? 'bg-transparent hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30' 
+                        : 'bg-emerald-500/[0.03] dark:bg-emerald-400/[0.02] hover:bg-emerald-500/[0.06] dark:hover:bg-emerald-400/[0.04]'
+                    }`}
+                  >
+                    {!n.is_read && (
+                      <div className="absolute left-2.5 top-[22px] w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400"></div>
+                    )}
+                    <div className="pl-3.5">
+                      <div className="flex justify-between items-start mb-1 gap-4">
+                        <span className={`text-xs font-bold ${n.is_read ? 'text-zinc-700 dark:text-zinc-300' : 'text-zinc-900 dark:text-zinc-50'}`}>
+                          {n.title}
+                        </span>
+                        <span className="text-[9px] font-semibold text-zinc-400 dark:text-zinc-500 shrink-0">
+                          {new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                        {n.message}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

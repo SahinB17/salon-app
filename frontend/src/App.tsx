@@ -29,7 +29,7 @@ function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="salon-app-theme">
       <QueryClientProvider client={queryClient}>
-        <Toaster position="bottom-center" richColors theme="light" />
+        <Toaster position="top-center" richColors />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />

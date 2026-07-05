@@ -236,13 +236,16 @@ export default function SalonsManagement() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-1">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight transition-colors">Salonlarım</h1>
-          <p className="text-zinc-500 dark:text-zinc-400 mt-1 transition-colors">Bizneslərinizi buradan idarə edin</p>
+          <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-50 tracking-tight transition-colors">Salonlarım</h1>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 transition-colors">Bizneslərinizi buradan idarə edin</p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)} className="rounded-xl px-5 transition-colors">
-          <Plus className="w-5 h-5 mr-2" />
+        <Button 
+          onClick={() => setIsModalOpen(true)} 
+          className="rounded-2xl h-12 sm:h-11 px-6 shadow-md transition-all active:scale-95 w-full sm:w-auto text-xs font-bold"
+        >
+          <Plus className="w-4 h-4 mr-2" />
           Yeni Salon
         </Button>
       </div>
@@ -355,7 +358,7 @@ export default function SalonsManagement() {
                   <Input required placeholder="Nizami küç. 42" value={address} onChange={e => setAddress(e.target.value)} />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Enlik (Latitude)</label>
                     <Input type="number" step="any" placeholder="40.4093" value={latitude} onChange={e => setLatitude(e.target.value)} />

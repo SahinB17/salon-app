@@ -64,37 +64,48 @@ export default function AdminLayout() {
 
       {/* Main Content Area */}
       <div className="flex-1 lg:pl-64 flex flex-col min-h-screen pb-20 lg:pb-0 relative">
-        <div className="fixed top-3 right-4 lg:top-4 lg:right-6 z-50 flex items-center gap-3">
-          <button 
-            onClick={() => setTheme(isDark ? 'light' : 'dark')}
-            className="p-2 rounded-full bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 shadow-sm transition-colors active:scale-95"
-          >
-            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </button>
-          <NotificationBell />
-        </div>
+        {/* Top Sticky Header */}
+        <header className="sticky top-0 z-40 h-16 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md flex items-center justify-between px-4 lg:px-8 transition-colors">
+          <div className="flex items-center lg:hidden">
+            <span className="text-lg font-black tracking-tight bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-zinc-50 dark:to-zinc-400 bg-clip-text text-transparent">Salon Admin</span>
+          </div>
+          <div className="hidden lg:block text-xs font-semibold text-zinc-400 dark:text-zinc-500">
+            {new Date().toLocaleDateString('az-AZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </div>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setTheme(isDark ? 'light' : 'dark')}
+              className="p-2 rounded-xl bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200/50 dark:border-zinc-800 shadow-sm transition-all active:scale-95"
+              title={isDark ? 'Açıq rejim' : 'Qaranlıq rejim'}
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+            <NotificationBell />
+          </div>
+        </header>
+
         <main className="flex-1 p-4 lg:p-8">
           <Outlet />
         </main>
 
         {/* Mobile Bottom Navigation (Hidden on desktop) */}
-        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 px-2 pb-safe pt-1 z-50 transition-colors">
-          <div className="flex justify-around items-center h-16 max-w-md mx-auto">
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-900 pb-safe pt-1 z-50 transition-colors">
+          <div className="flex justify-around items-center h-16 w-full px-1">
             {navItems.map((item) => (
               <NavLink
                 key={item.name}
                 to={item.path}
                 className={({ isActive }) =>
                   cn(
-                    "flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors min-w-[64px]",
+                    "flex flex-col items-center justify-center flex-1 min-w-0 h-full space-y-1 transition-colors px-1 text-center",
                     isActive ? "text-zinc-950 dark:text-zinc-50" : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300"
                   )
                 }
               >
                 {({ isActive }) => (
                   <>
-                    <item.icon className={cn("w-6 h-6", isActive && "stroke-[2.5px]")} />
-                    <span className={cn("text-[10px] font-medium", isActive && "font-semibold")}>
+                    <item.icon className={cn("w-5 h-5", isActive && "stroke-[2.5px] text-zinc-950 dark:text-zinc-50")} />
+                    <span className={cn("text-[9px] font-medium truncate w-full", isActive ? "font-bold text-zinc-950 dark:text-zinc-50" : "text-zinc-500 dark:text-zinc-400")}>
                       {item.name}
                     </span>
                   </>
@@ -103,10 +114,10 @@ export default function AdminLayout() {
             ))}
             <button
               onClick={handleLogout}
-              className="flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors min-w-[64px] text-zinc-400 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400"
+              className="flex flex-col items-center justify-center flex-1 min-w-0 h-full space-y-1 transition-colors px-1 text-center text-zinc-400 dark:text-zinc-500 hover:text-red-500 dark:hover:text-red-400"
             >
-              <LogOut className="w-6 h-6" />
-              <span className="text-[10px] font-medium">Çıxış</span>
+              <LogOut className="w-5 h-5" />
+              <span className="text-[9px] font-medium truncate w-full text-zinc-500 dark:text-zinc-400">Çıxış</span>
             </button>
           </div>
         </nav>

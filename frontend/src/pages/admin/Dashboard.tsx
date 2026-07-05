@@ -141,53 +141,66 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight transition-colors">Xoş gəldiniz, {user?.full_name}! 👋</h1>
-          <p className="text-zinc-500 dark:text-zinc-400 mt-1 transition-colors">Salon biznesinizin ümumi vəziyyəti</p>
+      <div className="relative rounded-3xl bg-white dark:bg-zinc-950 p-6 text-zinc-900 dark:text-white shadow-sm dark:shadow-lg border border-zinc-200 dark:border-zinc-800 transition-all">
+        <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+          <div className="absolute right-0 top-0 -mr-16 -mt-16 w-48 h-48 rounded-full bg-emerald-500/5 dark:bg-emerald-500/10 blur-3xl"></div>
+          <div className="absolute left-1/3 bottom-0 -mb-20 w-64 h-64 rounded-full bg-blue-500/5 dark:bg-blue-500/10 blur-3xl"></div>
         </div>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+          <div>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 mb-3">
+              ⚡ Admin Panel
+            </span>
+            <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-zinc-950 via-zinc-800 to-zinc-650 dark:from-white dark:via-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent">
+              Xoş gəldiniz, {user?.full_name || 'Admin'}! 👋
+            </h1>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1.5 font-medium">
+              Biznesinizin ümumi performansı və gündəlik hesabatları
+            </p>
+          </div>
 
-        {salons.length > 1 && (
-          <div className="relative mt-2 sm:mt-0" ref={dropdownRef}>
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center justify-between h-11 w-full sm:w-[240px] px-4 rounded-xl border border-zinc-800 hover:border-zinc-700 bg-zinc-900/80 text-white font-medium text-sm transition-all shadow-sm"
-            >
-              <span className="truncate">
-                {selectedSalonId === 'all' ? '📊 Bütün Salonların Cəmi' : `🏪 ${salons.find((s: any) => s.id === selectedSalonId)?.name || 'Salon Seçin'}`}
-              </span>
-              <ChevronDown className={`w-4 h-4 text-zinc-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
-            
-            {isDropdownOpen && (
-              <div className="absolute top-full mt-2 w-full z-50 bg-zinc-900/95 backdrop-blur-md border border-zinc-800 rounded-xl shadow-2xl p-1">
-                <button
-                  onClick={() => {
-                    setSelectedSalonId('all');
-                    setIsDropdownOpen(false);
-                  }}
-                  className="w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center justify-between transition-colors hover:bg-zinc-800/80 text-zinc-300 hover:text-white"
-                >
-                  <span className={selectedSalonId === 'all' ? 'font-medium text-white' : ''}>📊 Bütün Salonların Cəmi</span>
-                  {selectedSalonId === 'all' && <Check className="w-4 h-4 text-white" />}
-                </button>
-                {salons.map((s: any) => (
+          {salons.length > 1 && (
+            <div className="relative shrink-0" ref={dropdownRef}>
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="flex items-center justify-between h-11 w-full md:w-[240px] px-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/90 text-zinc-800 dark:text-white font-semibold text-xs transition-all shadow-sm hover:bg-zinc-100 dark:hover:bg-zinc-850 active:scale-95"
+              >
+                <span className="truncate">
+                  {selectedSalonId === 'all' ? '📊 Bütün Salonların Cəmi' : `🏪 ${salons.find((s: any) => s.id === selectedSalonId)?.name || 'Salon Seçin'}`}
+                </span>
+                <ChevronDown className={`w-4 h-4 text-zinc-400 dark:text-zinc-505 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {isDropdownOpen && (
+                <div className="absolute right-0 top-full mt-2 w-full md:w-[240px] z-50 bg-white dark:bg-zinc-950 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl p-1">
                   <button
-                    key={s.id}
                     onClick={() => {
-                      setSelectedSalonId(s.id);
+                      setSelectedSalonId('all');
                       setIsDropdownOpen(false);
                     }}
-                    className="w-full text-left px-3 py-2.5 rounded-lg text-sm flex items-center justify-between transition-colors hover:bg-zinc-800/80 text-zinc-300 hover:text-white mt-1"
+                    className="w-full text-left px-3 py-2 rounded-lg text-xs flex items-center justify-between transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-850 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 hover:dark:text-white"
                   >
-                    <span className={selectedSalonId === s.id ? 'font-medium text-white' : ''}>🏪 {s.name}</span>
-                    {selectedSalonId === s.id && <Check className="w-4 h-4 text-white" />}
+                    <span className={selectedSalonId === 'all' ? 'font-medium text-zinc-900 dark:text-white' : ''}>📊 Bütün Salonların Cəmi</span>
+                    {selectedSalonId === 'all' && <Check className="w-3.5 h-3.5 text-zinc-900 dark:text-white" />}
                   </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+                  {salons.map((s: any) => (
+                    <button
+                      key={s.id}
+                      onClick={() => {
+                        setSelectedSalonId(s.id);
+                        setIsDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-2 rounded-lg text-xs flex items-center justify-between transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-850 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 hover:dark:text-white mt-1"
+                    >
+                      <span className={selectedSalonId === s.id ? 'font-medium text-zinc-900 dark:text-white' : ''}>🏪 {s.name}</span>
+                      {selectedSalonId === s.id && <Check className="w-3.5 h-3.5 text-zinc-900 dark:text-white" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {isSalonsLoading ? (
@@ -285,6 +298,7 @@ export default function Dashboard() {
                     <AreaChart
                       data={dailyReport.data}
                       margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                      style={{ outline: 'none' }}
                     >
                       <defs>
                         <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
@@ -336,35 +350,75 @@ export default function Dashboard() {
 
           {/* Revenue Breakdown Table */}
           <div className="mt-8">
-            <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-4 transition-colors">Gündəlik Gəlir Hesabatı</h2>
-            <Card className="border-0 shadow-sm rounded-2xl overflow-hidden dark:bg-zinc-900 dark:border-zinc-800 transition-colors">
+            <h2 className="text-lg font-extrabold text-zinc-900 dark:text-zinc-50 mb-4 transition-colors">Gündəlik Gəlir Hesabatı</h2>
+            <Card className="border border-zinc-200 dark:border-zinc-800 shadow-sm rounded-2xl overflow-hidden bg-white dark:bg-zinc-900 transition-colors">
               {isLoading ? (
-                <div className="p-8 text-center text-zinc-400 dark:text-zinc-500 transition-colors">
-                  <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                <div className="p-12 text-center text-zinc-400 dark:text-zinc-500 transition-colors">
+                  <Loader2 className="w-6 h-6 animate-spin mx-auto text-emerald-500" />
                 </div>
               ) : !dailyReport?.data?.length ? (
-                <div className="p-8 text-center text-zinc-500 dark:text-zinc-400 transition-colors">Hələ heç bir hesabat məlumatı yoxdur.</div>
+                <div className="p-12 text-center text-zinc-500 dark:text-zinc-400 transition-colors">Hələ heç bir hesabat məlumatı yoxdur.</div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-100 dark:border-zinc-800 transition-colors">
-                        <th className="px-6 py-3 text-sm font-semibold text-zinc-600 dark:text-zinc-300 transition-colors">Tarix</th>
-                        <th className="px-6 py-3 text-sm font-semibold text-zinc-600 dark:text-zinc-300 transition-colors">Gəlir</th>
-                        <th className="px-6 py-3 text-sm font-semibold text-zinc-600 dark:text-zinc-300 transition-colors">Müştəri sayı</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800 transition-colors">
-                      {dailyReport.data.slice(-10).reverse().map((row: any) => (
-                        <tr key={row.date} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 transition-colors">
-                          <td className="px-6 py-3 text-sm text-zinc-900 dark:text-zinc-100 font-medium transition-colors">{row.date}</td>
-                          <td className="px-6 py-3 text-sm text-zinc-900 dark:text-zinc-100 transition-colors">{row.revenue.toFixed(0)} ₼</td>
-                          <td className="px-6 py-3 text-sm text-zinc-500 dark:text-zinc-400 transition-colors">{row.customers} nəfər</td>
+                <>
+                  {/* Mobile Cards List View */}
+                  <div className="block md:hidden space-y-3 p-4">
+                    {dailyReport.data.slice(-10).reverse().map((row: any) => (
+                      <div key={row.date} className="bg-zinc-50 dark:bg-zinc-800/30 border border-zinc-150 dark:border-zinc-800/60 p-4 rounded-2xl flex items-center justify-between transition-all">
+                        <div className="space-y-1">
+                          <div className="flex items-center text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                            <Calendar className="w-3.5 h-3.5 mr-1 text-zinc-400" />
+                            {row.date}
+                          </div>
+                          <div className="flex items-center text-sm font-bold text-zinc-800 dark:text-zinc-200">
+                            <Users className="w-3.5 h-3.5 mr-1 text-zinc-400" />
+                            {row.customers} müştəri
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-black bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/20">
+                            +{row.revenue.toFixed(0)} ₼
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Desktop Table View */}
+                  <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-zinc-50 dark:bg-zinc-800/30 border-b border-zinc-200 dark:border-zinc-800 transition-colors">
+                          <th className="px-6 py-4 text-xs font-bold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase transition-colors">Tarix</th>
+                          <th className="px-6 py-4 text-xs font-bold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase transition-colors">Gəlir</th>
+                          <th className="px-6 py-4 text-xs font-bold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase transition-colors">Müştəri Sayı</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800 transition-colors">
+                        {dailyReport.data.slice(-10).reverse().map((row: any) => (
+                          <tr key={row.date} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 transition-all">
+                            <td className="px-6 py-4 text-sm text-zinc-950 dark:text-zinc-100 font-semibold transition-colors">
+                              <div className="flex items-center space-x-2">
+                                <Calendar className="w-4 h-4 text-zinc-400" />
+                                <span>{row.date}</span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-sm transition-colors">
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100/50 dark:border-emerald-900/20">
+                                {row.revenue.toFixed(0)} ₼
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-zinc-600 dark:text-zinc-400 transition-colors">
+                              <div className="flex items-center space-x-1.5">
+                                <Users className="w-4 h-4 text-zinc-400" />
+                                <span className="font-semibold text-zinc-700 dark:text-zinc-300">{row.customers} nəfər</span>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
               )}
             </Card>
           </div>

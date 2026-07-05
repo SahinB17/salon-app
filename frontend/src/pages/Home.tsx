@@ -54,20 +54,32 @@ export default function Home() {
     <PageWrapper className="flex flex-col min-h-screen bg-zinc-50 dark:bg-[#121212] font-sans pb-6 transition-colors">
       <div className="max-w-7xl mx-auto w-full">
         {/* Header / Greeting */}
-        <div className="px-4 pt-12 lg:pt-16 pb-6 bg-white dark:bg-zinc-900 rounded-b-3xl shadow-sm border-b border-zinc-100 dark:border-zinc-800 transition-colors">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{displayGreeting}</h1>
+        <div className="relative overflow-hidden rounded-b-[2.5rem] bg-white dark:bg-zinc-950 px-6 pt-16 pb-8 text-zinc-900 dark:text-white shadow-sm dark:shadow-lg border-b border-zinc-100 dark:border-zinc-900 transition-all">
+          <div className="absolute inset-0 overflow-hidden rounded-b-[2.5rem] pointer-events-none">
+            <div className="absolute right-0 top-0 -mr-16 -mt-16 w-48 h-48 rounded-full bg-amber-500/5 dark:bg-amber-500/15 blur-3xl"></div>
+            <div className="absolute left-1/3 bottom-0 -mb-20 w-64 h-64 rounded-full bg-rose-500/5 dark:bg-rose-500/10 blur-3xl"></div>
           </div>
-        <p className="text-zinc-500 dark:text-zinc-400 mt-1">Həftəsonu üçün özünə vaxt ayır ✨</p>
+          
+          <div className="relative z-10 max-w-2xl">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200/60 dark:border-amber-500/20 mb-3">
+              ✨ Xoş gəlmisiniz
+            </span>
+            <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-zinc-950 via-zinc-800 to-zinc-650 dark:from-white dark:via-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent">
+              {displayGreeting}
+            </h1>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2 font-medium">
+              Bu gün özünüzə vaxt ayırın və ən yaxşı xidmətləri sifariş edin
+            </p>
+          </div>
+        </div>
         
         {/* Visual Search Box (Touch Target) */}
         <div 
           onClick={() => navigate('/salons')}
-          className="mt-6 flex items-center bg-zinc-100/80 dark:bg-zinc-800/80 rounded-2xl p-4 cursor-pointer active:scale-[0.98] transition-transform h-14"
+          className="mt-6 mx-4 flex items-center bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl p-4 shadow-sm cursor-pointer active:scale-[0.98] transition-all h-14"
         >
           <Search className="w-5 h-5 text-zinc-400 dark:text-zinc-500 mr-3" />
           <span className="text-zinc-500 dark:text-zinc-400 font-medium">Salon və ya xidmət axtar...</span>
-        </div>
         </div>
 
         {/* Recently Viewed */}
@@ -170,27 +182,7 @@ export default function Home() {
           </motion.div>
         </div>
 
-        <div className="px-4 mt-6 lg:mt-10 mb-8">
-          <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-4">Kateqoriyalar</h2>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
-             <div className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm flex flex-col items-center justify-center h-24 lg:h-32 active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer">
-                <span className="text-2xl lg:text-3xl mb-1">💇‍♀️</span>
-                <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm lg:text-base">Saç</span>
-             </div>
-             <div className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm flex flex-col items-center justify-center h-24 lg:h-32 active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer">
-                <span className="text-2xl lg:text-3xl mb-1">💅</span>
-                <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm lg:text-base">Dırnaq</span>
-             </div>
-             <div className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm flex flex-col items-center justify-center h-24 lg:h-32 active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer">
-                <span className="text-2xl lg:text-3xl mb-1">🧔</span>
-                <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm lg:text-base">Bərbər</span>
-             </div>
-             <div className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm flex flex-col items-center justify-center h-24 lg:h-32 active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer">
-                <span className="text-2xl lg:text-3xl mb-1">💆‍♀️</span>
-                <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-sm lg:text-base">Masaj</span>
-             </div>
-          </div>
-        </div>
+
       </div>
     </PageWrapper>
   );
