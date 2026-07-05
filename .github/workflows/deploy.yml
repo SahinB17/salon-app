@@ -26,8 +26,11 @@ jobs:
             # Köhnə konteynerləri dayandırırıq
             docker-compose down
             
-            # Yeni kodlarla yenidən build edib ayağa qaldırırıq
-            docker-compose up --build -d
+            # Konteynerləri ayağa qaldırırıq
+            docker-compose up -d
+            
+            # Verilənlər bazası miqrasiyalarını avtomatik işə salırıq
+            docker-compose exec -T backend alembic upgrade head
             
             # Təmizlik (İstifadə olunmayan köhnə image-ləri silirik)
             docker image prune -f
