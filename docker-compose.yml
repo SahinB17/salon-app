@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: salon_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - /app/venv
+      - /app/__pycache__
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: salon_frontend
+    ports:
+      - "80:80"
+    # Note: Volumes are not mounted here because we use multi-stage build (Nginx) for production-like frontend.
+    # If you want hot-reloading for local dev, you'd use a different dev-specific command and volumes.
+    restart: unless-stopped
+    depends_on:
+      - backend
