@@ -148,19 +148,21 @@ export default function SalonDetail() {
 
   const bookMutation = useMutation({
     mutationFn: async () => {
-      const startDateTime = `${appointmentDate}T${appointmentTime}:00`;
-      const d = new Date(startDateTime);
+      // Parse local selected datetime
+      const localStart = new Date(`${appointmentDate}T${appointmentTime}:00`);
+      const startDateTimeISO = localStart.toISOString();
+
       // Use service duration if available, otherwise default to 60 minutes
       const durationMinutes = selectedService?.duration_minutes || 60;
-      d.setMinutes(d.getMinutes() + durationMinutes);
-      const endDateTime = d.toISOString().substring(0, 19);
+      const localEnd = new Date(localStart.getTime() + durationMinutes * 60000);
+      const endDateTimeISO = localEnd.toISOString();
 
       const response = await api.post('/api/v1/appointments/', {
         salon_id: parseInt(id!),
         service_id: selectedService.id,
         staff_id: selectedStaff,
-        start_time: startDateTime,
-        end_time: endDateTime
+        start_time: startDateTimeISO,
+        end_time: endDateTimeISO
       });
       return response.data;
     },

@@ -115,11 +115,19 @@ export default function Dashboard() {
         const promises = salons.map((s: any) => api.get(`/api/v1/appointments/salon/${s.id}`));
         const results = await Promise.all(promises);
         const allAppointments = results.flatMap((res: any) => res.data);
-        return allAppointments.filter((a: any) => a.start_time?.startsWith(today));
+        return allAppointments.filter((a: any) => {
+          if (!a.start_time) return false;
+          const localDateStr = new Date(a.start_time).toLocaleDateString('en-CA');
+          return localDateStr === today;
+        });
       }
       
       const res = await api.get(`/api/v1/appointments/salon/${selectedSalonId}`);
-      return res.data.filter((a: any) => a.start_time?.startsWith(today));
+      return res.data.filter((a: any) => {
+        if (!a.start_time) return false;
+        const localDateStr = new Date(a.start_time).toLocaleDateString('en-CA');
+        return localDateStr === today;
+      });
     },
     enabled: !!selectedSalonId && salons.length > 0
   });
