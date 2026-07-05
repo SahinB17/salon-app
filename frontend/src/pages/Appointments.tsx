@@ -63,28 +63,41 @@ export default function Appointments() {
               const config = statusConfig[apt.status] || { label: apt.status, variant: 'default' };
 
               return (
-                <Card key={apt.id} className="p-4 rounded-2xl border-0 shadow-sm bg-white dark:bg-zinc-900 transition-colors">
+                <Card key={apt.id} className="p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800/80 shadow-sm bg-white dark:bg-zinc-900 transition-colors">
                   <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center text-zinc-900 dark:text-zinc-50 font-bold">
-                       <CalendarIcon className="w-4 h-4 mr-1.5 text-zinc-400 dark:text-zinc-500" />
-                       {start.toLocaleDateString('az-AZ', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    <div>
+                      <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-50 transition-colors">
+                        {apt.salon?.name || 'Salon'}
+                      </h3>
+                      <p className="flex items-center text-zinc-500 dark:text-zinc-400 text-xs mt-0.5">
+                        <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
+                        <span className="line-clamp-1">{apt.salon?.address || 'Ünvan yoxdur'}</span>
+                      </p>
                     </div>
                     <Badge variant={config.variant}>{config.label}</Badge>
                   </div>
                   
-                  <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-3 flex justify-between items-center">
+                  <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-3 flex justify-between items-center transition-colors">
                     <div>
-                      <div className="font-semibold text-zinc-900 dark:text-zinc-50 text-sm">{apt.service_id} (Xidmət)</div>
-                      <div className="flex items-center text-zinc-500 dark:text-zinc-400 text-xs mt-1">
-                        <Clock className="w-3 h-3 mr-1" />
-                        {start.toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' })}
+                      <div className="font-semibold text-zinc-950 dark:text-zinc-50 text-sm">
+                        {apt.service?.name || 'Xidmət'}
+                      </div>
+                      <div className="flex items-center text-zinc-500 dark:text-zinc-400 text-xs mt-1.5 gap-3">
+                        <span className="flex items-center">
+                          <CalendarIcon className="w-3 h-3 mr-1 text-zinc-400" />
+                          {start.toLocaleDateString('az-AZ', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </span>
+                        <span className="flex items-center">
+                          <Clock className="w-3 h-3 mr-1 text-zinc-400" />
+                          {start.toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="mt-3 flex items-center text-zinc-500 dark:text-zinc-400 text-xs font-medium">
-                     <MapPin className="w-3.5 h-3.5 mr-1" />
-                     Salon ID: {apt.salon_id}
+                    {apt.service?.price && (
+                      <div className="text-sm font-extrabold text-zinc-900 dark:text-zinc-50">
+                        {apt.service.price} ₼
+                      </div>
+                    )}
                   </div>
                 </Card>
               );
