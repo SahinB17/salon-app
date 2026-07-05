@@ -218,7 +218,7 @@ export default function SalonsManagement() {
     setDescription(salon.description || '');
     setLatitude(salon.latitude ? String(salon.latitude) : '');
     setLongitude(salon.longitude ? String(salon.longitude) : '');
-    setImagePreview(salon.image_url ? `http://localhost:8000${salon.image_url}` : null);
+    setImagePreview(salon.image_url ? `http://${window.location.hostname}:8000${salon.image_url}` : null);
     setImageFile(null);
     setIsModalOpen(true);
   };
@@ -264,7 +264,7 @@ export default function SalonsManagement() {
               <Card key={salon.id} className="rounded-2xl border-0 shadow-sm overflow-hidden flex flex-col group relative dark:bg-zinc-900 transition-colors">
                 <div className="h-48 bg-zinc-200 dark:bg-zinc-800 relative overflow-hidden transition-colors">
                   {salon.image_url ? (
-                    <img src={`http://localhost:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
+                    <img src={`http://${window.location.hostname}:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center text-zinc-400">
                       <ImageIcon className="w-10 h-10 mb-2 opacity-50" />
@@ -428,7 +428,7 @@ export default function SalonsManagement() {
                 {/* Existing Images */}
                 {activeGallerySalon.images?.map((img: any) => (
                   <div key={img.id} className="relative h-32 rounded-2xl overflow-hidden group border border-zinc-100 dark:border-zinc-800 transition-colors">
-                    <img src={`http://localhost:8000${img.image_url}`} alt="Qalereya" className="w-full h-full object-cover" />
+                    <img src={`http://${window.location.hostname}:8000${img.image_url}`} alt="Qalereya" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <button 
                         onClick={() => deleteGalleryImageMutation.mutate(img.id)}

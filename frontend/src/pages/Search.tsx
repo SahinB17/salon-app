@@ -128,7 +128,7 @@ export default function Search() {
                  >
                    <div className="w-24 h-24 bg-zinc-200 dark:bg-zinc-800 rounded-xl flex-shrink-0 overflow-hidden relative">
                       {salon.image_url ? (
-                        <img src={`http://localhost:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
+                        <img src={`http://${window.location.hostname}:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-zinc-400 dark:text-zinc-500">
                            <MapPin className="w-6 h-6" />

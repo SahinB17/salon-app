@@ -59,7 +59,7 @@ export default function Favorites() {
                     </div>
                     <div className="w-24 h-24 bg-zinc-200 rounded-xl flex-shrink-0 overflow-hidden">
                       {salon.image_url && (
-                        <img src={`http://localhost:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
+                        <img src={`http://${window.location.hostname}:8000${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
                       )}
                     </div>
                     <div className="ml-4 flex flex-col justify-center flex-1 pr-6">
