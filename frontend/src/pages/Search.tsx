@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search as SearchIcon, MapPin, Star } from 'lucide-react';
+import { Search as SearchIcon, MapPin, Star, Clock } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
@@ -47,10 +47,54 @@ export default function Search() {
     },
     enabled: debouncedQuery.trim().length > 0
   });
+  // Fuzzy search and grouping logic
+  const queryLower = debouncedQuery.toLowerCase();
+  
+  const matchedServices: any[] = [];
+  const matchedSalons: any[] = [];
+
+  if (results.length > 0) {
+    results.forEach((salon: any) => {
+      let salonNameMatched = false;
+      if (
+        salon.name.toLowerCase().includes(queryLower) || 
+        (salon.address && salon.address.toLowerCase().includes(queryLower))
+      ) {
+        salonNameMatched = true;
+        matchedSalons.push(salon);
+      }
+
+      if (salon.services && Array.isArray(salon.services)) {
+        salon.services.forEach((service: any) => {
+          if (
+            service.name.toLowerCase().includes(queryLower) || 
+            (service.description && service.description.toLowerCase().includes(queryLower))
+          ) {
+             matchedServices.push({
+               ...service,
+               salon: {
+                 id: salon.id,
+                 name: salon.name,
+                 address: salon.address,
+                 image_url: salon.image_url
+               }
+             });
+          }
+        });
+      }
+      
+      // If no explicit match found but the backend returned it, we can still show the salon
+      // (Backend does fuzzy matching too, but this helps us group on frontend)
+      if (!salonNameMatched && matchedServices.length === 0) {
+          // Fallback: just put it in salons if we somehow couldn't match anything locally
+          matchedSalons.push(salon);
+      }
+    });
+  }
 
   return (
     <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-[#121212] pb-24 lg:pb-8 transition-colors">
-      <div className="max-w-7xl mx-auto w-full">
+      <div className="max-w-md md:max-w-7xl mx-auto w-full">
         {/* Sticky Header with Search Input */}
         <div className="sticky top-0 z-10 bg-[#FAFAFA] dark:bg-[#121212] pt-12 lg:pt-16 pb-4 transition-colors">
           <div className="px-4">
@@ -85,7 +129,7 @@ export default function Search() {
       </div>
 
       {/* Results Area */}
-      <div className="px-4 mt-6 max-w-7xl mx-auto w-full">
+      <div className="px-4 mt-6 max-w-md md:max-w-7xl mx-auto w-full">
         {isLoading ? (
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
              {[1, 2, 3, 4, 5, 6].map(i => (
@@ -111,54 +155,93 @@ export default function Search() {
              <Map salons={results} className="w-full h-[60vh] rounded-xl z-0" />
            </div>
         ) : (
-           <motion.div 
-             initial="hidden"
-             animate="visible"
-             variants={{
-               hidden: { opacity: 0 },
-               visible: {
-                 opacity: 1,
-                 transition: { staggerChildren: 0.1 }
-               }
-             }}
-             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-           >
-             {results.map((salon: any) => (
-               <motion.div
-                 key={salon.id}
-                 variants={{
-                   hidden: { opacity: 0, y: 20 },
-                   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
-                 }}
-               >
-                 <Card 
-                   onClick={() => navigate(`/salons/${salon.id}`)}
-                   className="flex flex-row p-3 rounded-2xl border-0 shadow-sm active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer bg-white dark:bg-zinc-900 h-full"
-                 >
-                   <div className="w-24 h-24 bg-zinc-200 dark:bg-zinc-800 rounded-xl flex-shrink-0 overflow-hidden relative">
-                      {salon.image_url ? (
-                        <img src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-zinc-400 dark:text-zinc-500">
-                           <MapPin className="w-6 h-6" />
+           <div className="space-y-8">
+             {/* Matched Services Section */}
+             {matchedServices.length > 0 && (
+               <div>
+                 <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-4 tracking-tight">Tapılan Xidmətlər</h2>
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                   {matchedServices.map((service, idx) => (
+                     <Card 
+                       key={`srv-${service.id}-${idx}`}
+                       onClick={() => navigate(`/salons/${service.salon.id}`)}
+                       className="p-4 rounded-2xl border-0 shadow-sm active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer bg-white dark:bg-zinc-900 flex justify-between items-center"
+                     >
+                        <div>
+                          <h3 className="font-bold text-zinc-900 dark:text-zinc-50 text-base">{service.name}</h3>
+                          <div className="flex items-center text-zinc-500 dark:text-zinc-400 text-sm mt-1.5">
+                            <MapPin className="w-3.5 h-3.5 mr-1" />
+                            {service.salon.name}
+                          </div>
                         </div>
-                      )}
-                   </div>
-                   <div className="ml-4 flex flex-col justify-center flex-1">
-                     <h3 className="font-bold text-zinc-900 dark:text-zinc-50 line-clamp-1">{salon.name}</h3>
-                     <div className="flex items-center text-zinc-500 dark:text-zinc-400 mt-1 text-sm">
-                       <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
-                       <span className="line-clamp-1">{salon.address || 'Ünvan yoxdur'}</span>
-                     </div>
-                     <div className="flex items-center text-amber-500 font-medium text-sm mt-2">
-                       <Star className="w-4 h-4 fill-current mr-1" />
-                       {salon.average_rating ? salon.average_rating.toFixed(1) : '0.0'}
-                     </div>
-                   </div>
-                 </Card>
-               </motion.div>
-             ))}
-           </motion.div>
+                        <div className="text-right flex flex-col items-end">
+                          <div className="font-extrabold text-lg text-zinc-900 dark:text-zinc-50">{service.price} ₼</div>
+                          <div className="flex items-center text-zinc-500 dark:text-zinc-400 text-xs mt-1 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-md font-medium">
+                            <Clock className="w-3.5 h-3.5 mr-1" />
+                            {service.duration} dəq
+                          </div>
+                        </div>
+                     </Card>
+                   ))}
+                 </div>
+               </div>
+             )}
+
+             {/* Matched Salons Section */}
+             {matchedSalons.length > 0 && (
+               <div>
+                 <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-4 tracking-tight">Tapılan Salonlar</h2>
+                 <motion.div 
+                   initial="hidden"
+                   animate="visible"
+                   variants={{
+                     hidden: { opacity: 0 },
+                     visible: {
+                       opacity: 1,
+                       transition: { staggerChildren: 0.1 }
+                     }
+                   }}
+                   className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                 >
+                   {matchedSalons.map((salon: any) => (
+                     <motion.div
+                       key={salon.id}
+                       variants={{
+                         hidden: { opacity: 0, y: 20 },
+                         visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+                       }}
+                     >
+                       <Card 
+                         onClick={() => navigate(`/salons/${salon.id}`)}
+                         className="flex flex-row p-3 rounded-2xl border-0 shadow-sm active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer bg-white dark:bg-zinc-900 h-full"
+                       >
+                         <div className="w-24 h-24 bg-zinc-200 dark:bg-zinc-800 rounded-xl flex-shrink-0 overflow-hidden relative">
+                            {salon.image_url ? (
+                              <img src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-zinc-400 dark:text-zinc-500">
+                                 <MapPin className="w-6 h-6" />
+                              </div>
+                            )}
+                         </div>
+                         <div className="ml-4 flex flex-col justify-center flex-1">
+                           <h3 className="font-bold text-zinc-900 dark:text-zinc-50 line-clamp-1">{salon.name}</h3>
+                           <div className="flex items-center text-zinc-500 dark:text-zinc-400 mt-1 text-sm">
+                             <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
+                             <span className="line-clamp-1">{salon.address || 'Ünvan yoxdur'}</span>
+                           </div>
+                           <div className="flex items-center text-amber-500 font-medium text-sm mt-2">
+                             <Star className="w-4 h-4 fill-current mr-1" />
+                             {salon.average_rating ? salon.average_rating.toFixed(1) : '0.0'}
+                           </div>
+                         </div>
+                       </Card>
+                     </motion.div>
+                   ))}
+                 </motion.div>
+               </div>
+             )}
+           </div>
         )}
       </div>
     </PageWrapper>

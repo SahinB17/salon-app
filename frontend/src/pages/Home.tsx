@@ -72,7 +72,7 @@ export default function Home() {
 
   return (
     <PageWrapper className="flex flex-col min-h-screen bg-zinc-50 dark:bg-[#121212] font-sans pb-6 transition-colors">
-      <div className="max-w-7xl mx-auto w-full">
+      <div className="max-w-md md:max-w-7xl mx-auto w-full">
         {/* Header / Greeting */}
         <div className="relative overflow-hidden rounded-b-[2.5rem] bg-white dark:bg-zinc-950 px-6 pt-16 pb-8 text-zinc-900 dark:text-white shadow-sm dark:shadow-lg border-b border-zinc-100 dark:border-zinc-900 transition-all">
           <div className="absolute inset-0 overflow-hidden rounded-b-[2.5rem] pointer-events-none">

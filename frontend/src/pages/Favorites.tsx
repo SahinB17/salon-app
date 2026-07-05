@@ -21,7 +21,7 @@ export default function Favorites() {
 
   return (
     <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-zinc-950 pb-24 lg:pb-8 transition-colors">
-      <div className="max-w-7xl mx-auto w-full px-4 pt-12 lg:pt-16">
+      <div className="max-w-md md:max-w-7xl mx-auto w-full px-4 pt-12 lg:pt-16">
         <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-6 transition-colors">Seçilmiş Salonlarım</h1>
 
         {isLoading ? (

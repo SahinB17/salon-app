@@ -22,6 +22,8 @@ import StaffManagement from './pages/admin/StaffManagement';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from './components/ThemeProvider';
 
+import ScrollToTop from './components/ui/ScrollToTop';
+
 // Create a client
 const queryClient = new QueryClient();
 
@@ -31,6 +33,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <Toaster position="top-center" richColors />
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
