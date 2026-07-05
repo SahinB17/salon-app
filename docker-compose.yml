@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  db:
+    image: postgres:15-alpine
+    container_name: salon_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: sahinmb123
+      POSTGRES_DB: salon_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   backend:
     build:
       context: ./backend
@@ -14,7 +27,11 @@ services:
       - /app/__pycache__
     env_file:
       - ./backend/.env
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:sahinmb123@db:5432/salon_db
     restart: unless-stopped
+    depends_on:
+      - db
 
   frontend:
     build:
@@ -28,3 +45,6 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+
+volumes:
+  postgres_data:
