@@ -1,10 +1,11 @@
-import { Search, MapPin, Star, Clock } from 'lucide-react';
+import { Search, MapPin, Star, Clock, Calendar, Navigation } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { PageWrapper } from '../components/ui/PageWrapper';
 import { SkeletonCard } from '../components/ui/SkeletonCard';
+import { toast } from 'sonner';
 import api from '../lib/api';
 
 import { motion } from 'framer-motion';
@@ -38,6 +39,25 @@ export default function Home() {
     },
     enabled: !!localStorage.getItem('token')
   });
+
+  const { data: appointments = [] } = useQuery({
+    queryKey: ['myAppointments'],
+    queryFn: async () => {
+      const response = await api.get('/api/v1/appointments/me');
+      return response.data;
+    },
+    enabled: !!localStorage.getItem('token')
+  });
+
+  const upcomingAppointment = appointments
+    .filter((apt: any) => {
+      if (apt.status === 'cancelled' || apt.status === 'completed') return false;
+      const aptDate = new Date(apt.start_time);
+      const now = new Date();
+      const end = new Date(apt.end_time);
+      return aptDate.getTime() <= now.getTime() + 36 * 60 * 60 * 1000 && end.getTime() >= now.getTime();
+    })
+    .sort((a: any, b: any) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())[0];
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -73,6 +93,53 @@ export default function Home() {
           </div>
         </div>
         
+        {/* Upcoming Appointment Banner */}
+        {upcomingAppointment && (
+          <div className="mx-4 mt-6">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 dark:from-amber-600 dark:to-amber-700 p-4 text-white shadow-md">
+              <div className="absolute right-0 top-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-white/10 blur-xl"></div>
+              
+              <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-xl bg-white/20 backdrop-blur-sm mt-0.5">
+                    <Calendar className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-white/25 px-2 py-0.5 rounded-full">
+                      Yaxınlaşan Randevu
+                    </span>
+                    <h3 className="font-bold text-sm mt-1.5">
+                      {upcomingAppointment.salon?.name || 'Salon'}
+                    </h3>
+                    <p className="text-xs text-amber-50 mt-0.5 font-medium">
+                      {upcomingAppointment.service?.name || 'Xidmət'} • {new Date(upcomingAppointment.start_time).toLocaleDateString('az-AZ', { day: 'numeric', month: 'long' })} {new Date(upcomingAppointment.start_time).toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+                </div>
+                
+                <button
+                  onClick={() => {
+                    const lat = upcomingAppointment.salon?.latitude;
+                    const lng = upcomingAppointment.salon?.longitude;
+                    const addr = upcomingAppointment.salon?.address;
+                    if (lat && lng) {
+                      window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, '_blank');
+                    } else if (addr) {
+                      window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`, '_blank');
+                    } else {
+                      toast.error("Məkan məlumatı tapılmadı");
+                    }
+                  }}
+                  className="flex items-center justify-center gap-1.5 bg-white text-amber-900 font-bold text-xs px-4 py-2 rounded-xl shadow-sm active:scale-95 transition-all w-full sm:w-auto h-10 hover:bg-amber-50"
+                >
+                  <Navigation className="w-3.5 h-3.5 fill-current" />
+                  Yola düş
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Visual Search Box (Touch Target) */}
         <div 
           onClick={() => navigate('/salons')}
@@ -80,6 +147,29 @@ export default function Home() {
         >
           <Search className="w-5 h-5 text-zinc-400 dark:text-zinc-500 mr-3" />
           <span className="text-zinc-500 dark:text-zinc-400 font-medium">Salon və ya xidmət axtar...</span>
+        </div>
+
+        {/* Quick Search Services */}
+        <div className="mt-4 mx-4">
+          <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide -mx-4 px-4">
+            {[
+              { name: 'Kişi saç kəsimi', emoji: '🧔' },
+              { name: 'Qadın saç kəsimi', emoji: '💇‍♀️' },
+              { name: 'Manikür', emoji: '💅' },
+              { name: 'Makiyaj', emoji: '💄' },
+              { name: 'Masaj', emoji: '💆‍♂️' },
+              { name: 'Lazer epilyasiyası', emoji: '✨' },
+            ].map((srv) => (
+              <button
+                key={srv.name}
+                onClick={() => navigate(`/salons?q=${encodeURIComponent(srv.name)}`)}
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-white dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/80 hover:border-zinc-350 dark:hover:border-zinc-700 rounded-full shadow-sm text-xs font-semibold text-zinc-700 dark:text-zinc-300 whitespace-nowrap active:scale-95 transition-all"
+              >
+                <span>{srv.emoji}</span>
+                <span>{srv.name}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Recently Viewed */}

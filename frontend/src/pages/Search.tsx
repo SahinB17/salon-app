@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search as SearchIcon, MapPin, Star } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Map } from '../components/ui/Map';
@@ -25,9 +25,18 @@ function useDebounce<T>(value: T, delay: number): T {
 
 export default function Search() {
   const navigate = useNavigate();
-  const [query, setQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get('q') || '');
   const [viewMode, setViewMode] = useState<'list'|'map'>('list');
   const debouncedQuery = useDebounce(query, 500);
+
+  // Sync state if parameter changes
+  useEffect(() => {
+    const q = searchParams.get('q');
+    if (q !== null && q !== query) {
+      setQuery(q);
+    }
+  }, [searchParams]);
 
   const { data: results = [], isLoading, isError } = useQuery({
     queryKey: ['searchSalons', debouncedQuery],
