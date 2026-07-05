@@ -7,3 +7,4 @@ from .notification import Notification
 from .review import Review
 from .favorite import Favorite
 from .salon_image import SalonImage
+from .staff_service import staff_services

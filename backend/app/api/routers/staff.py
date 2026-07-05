@@ -1,4 +1,4 @@
-from typing import List, Any
+from typing import List, Any, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.api.deps import SessionDep, get_current_active_user
 from app.models.user import User
@@ -23,10 +23,11 @@ async def create_staff_endpoint(
 async def read_staff_by_salon(
     salon_id: int,
     session: SessionDep,
+    service_id: Optional[int] = None,
     skip: int = 0,
     limit: int = 100,
 ) -> Any:
-    return await crud_staff.get_staff_by_salon(db=session, salon_id=salon_id, skip=skip, limit=limit)
+    return await crud_staff.get_staff_by_salon(db=session, salon_id=salon_id, service_id=service_id, skip=skip, limit=limit)
 
 @router.patch("/{staff_id}", response_model=StaffResponse)
 async def update_staff_endpoint(

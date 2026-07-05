@@ -1,96 +1,78 @@
-# Salon App - Tam DevOps və Deployment Bələdçisi (Lokal -> Oracle Cloud)
+# 🏢 Salon App - DevOps, Deployment və CI/CD Bələdçisi (YENİLƏNİB)
 
-Bu sənəd **Salon App** layihəsinin lokal kompüterdən (Windows) uzaq Oracle Cloud serverinə (Ubuntu) tam avtomatlaşdırılmış şəkildə quraşdırılmasını, təhlükəsizlik qaydalarını və verilənlər bazası bağlantılarını addım-addım izah edir.
+Bu sənəd **Salon App** layihəsinin Oracle Cloud üzərindəki production mühitini, təhlükəsizlik divarlarını (Firewall), Nginx Reverse Proxy arxitekturasını və GitHub Actions ilə qurulmuş avtomatik deployment (CI/CD) sistemini izah edir. 
 
----
-
-## 1. Oracle Cloud İnfrastrukturunun Qurulması
-Layihəmiz Oracle Cloud-un "Always Free" (Həmişəlik Pulsuz) səviyyəsində qurulmuşdur.
-- **Model (Shape):** `VM.Standard.E2.1.Micro` (1 OCPU, 1 GB RAM)
-- **Əməliyyat Sistemi:** Canonical Ubuntu 22.04
-- **Yaddaş (Boot Volume):** 150 GB (9000 IOPS)
-
-> **Vacib:** Server yaradılarkən mütləq `SSH Private Key` (.key faylı) kompüterə yüklənilməlidir. Serverə parolla giriş Oracle tərəfindən bağlanıb.
+Layihədə işləyən hər bir **AI Agent** və ya **Proqramçı** dəyişiklik etməzdən əvvəl bu qaydaları oxumalı və onlara ciddi əməl etməlidir.
 
 ---
 
-## 2. Serverin Konfiqurasiyası və SWAP Yaddaş
-1 GB RAM gələcəkdə Docker build-ləri zamanı yetərsiz qalıb serveri dondura biləcəyi üçün, 150 GB-lıq sərt diskin 2 GB-nı süni RAM (SWAP) kimi ayırdıq.
-Serverə SSH ilə daxil olaraq aşağıdakı komandalar icra edilmişdir:
-```bash
-sudo fallocate -l 2G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
-echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+## 1. Oracle Server Parametrləri & Yaddaş (SWAP)
+*   **Model (Shape):** `VM.Standard.E2.1.Micro` (1 OCPU, 1 GB RAM - Always Free limitində)
+*   **Əməliyyat Sistemi:** Canonical Ubuntu 22.04 LTS
+*   **SWAP Yaddaş:** 1 GB RAM-ı olan zəif serverin dondurucu və ya ağır yüklənmələrə dözməsi üçün SSD üzərində **2 GB virtual yaddaş (SWAP)** ayrılıb:
+    ```bash
+    sudo fallocate -l 2G /swapfile
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+    sudo swapon /swapfile
+    echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+    ```
+
+---
+
+## 2. Nginx Reverse Proxy Arxitekturası (Port 80)
+Serveri xarici hücumlardan qorumaq və mobil operatorların (Azercell, Bakcell və s.) port 8000 kimi qeyri-standart portları bloklamasının qarşısını almaq üçün **bütün xidmətlər Port 80 (standart HTTP) arxasına yığılıb.** 
+
+Müştərilər və ya mobil cihazlar yalnız port 80-ə sorğu atır, Nginx isə daxili şəbəkədə sorğuları belə bölüşdürür:
+*   **Saytın özü (HTML/CSS/JS):** `/` qovluğundan birbaşa Nginx tərəfindən oxunur və brauzerə verilir.
+*   **API Sorğuları (`/api/v1/`):** Nginx port 80-də bu sorğuları tutub arxa planda işləyən `http://backend:8000/api/v1/` ünvanına yönləndirir.
+*   **Şəkil/Media Yükləmələri (`/static/`):** Yüklənən salon və qalereya şəkilləri backend daxilində `/static/` qovluğunda saxlanılır. Nginx port 80-də bu müraciəti tutub `http://backend:8000/static/` qovluğuna yönləndirir.
+
+Bu səbəbdən Oracle Cloud panelində **port 8000-in xaricə açılmasına ehtiyac yoxdur.** Yalnız **port 80** və SSH tunel üçün **port 22** xaricə açıqdır.
+
+---
+
+## 3. "Sıfır-Server-Build" Arxitekturası (Zero-Build Deployment)
+1 GB RAM-ı olan serverdə `npm install` və `vite build` (React paketləməsi) etmək yaddaşı tamamilə doldurur və serverin çökməsinə (OOM - Out of Memory xətası) səbəb olurdu. Bunun qarşısını almaq üçün bu unikal arxitektura quruldu:
+
+1.  **Lokalda Build:** Frontend kodları yerli kompüterdə cəmi 1 saniyəyə build olunur (`npm run build`) və hazır bişmiş `dist` qovluğu GitHub-a push edilir.
+2.  **Sürətli Deployment:** Server heç vaxt Node.js və ya npm yükləmir. `git pull` edən kimi hazır `dist` qovluğunu götürüb birbaşa Nginx-ə bağlayır (`docker-compose.yml` volumes vasitəsilə). Serverdə build vaxtı 15 dəqiqədən **1 saniyəyə** düşüb!
+
+---
+
+## 4. GitHub Actions ilə CI/CD Avtomatlaşdırılması
+Hər dəfə `main` budağına push (və ya merge) olunanda `.github/workflows/deploy.yml` faylı işə düşür və bu addımları yerinə yetirir:
+1.  Serverə SSH vasitəsilə təhlükəsiz qoşulur.
+2.  `git pull origin main` edərək lokalda bişirilmiş hazır frontend kodlarını və backend yeniliklərini çəkir.
+3.  `docker-compose down` edib köhnə konteynerləri silir.
+4.  `docker-compose up -d` edib sistemi 1 saniyədə yandırır (heç bir build prosesi aparılmır).
+5.  **Avtomatik Miqrasiya:** Backend konteynerinin daxilində `alembic upgrade head` əmrini avtomatik icra edib verilənlər bazasındakı cədvəlləri və sütunları yeniləyir.
+
+**Vacib:** Proqramçı və ya AI heç vaxt serverə girib əllə `git pull` və ya `alembic upgrade` yazmamalıdır. Hər şey bu CI/CD tərəfindən idarə olunur.
+
+---
+
+## 5. Qoşulma & Test Ayarları (Lokal vs Production)
+Sistemin həm yerli kompüterdə, həm də canlı serverdə problemsiz işləməsi üçün `frontend/src/lib/api.ts` faylı uzaq API ünvanını belə təyin edir:
+```typescript
+baseURL: window.location.port === '5173' ? `http://${window.location.hostname}:8000` : ''
+```
+*   **Lokalda:** Frontend `5173` portunda işlədiyindən API sorğuları yerli kompüterdəki backend-ə (`localhost:8000`) gedir.
+*   **Production-da (Canlıda):** Səhifə portsuz (yəni standart port 80-də) açıldığından sorğular relative olaraq `/api/v1` ünvanına (port 80-ə) gedir və Nginx tərəfindən backend-ə yönləndirilir.
+
+Aynı məntiq `.tsx` daxilindəki şəkillərə də şamil edilib:
+```typescript
+src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}`}
 ```
 
 ---
 
-## 3. Təhlükəsizlik (Firewall və VCN Qaydaları)
-Layihənin internetə tam çıxışı üçün həm Oracle panelində, həm də serverin daxilində portlar açıldı.
-
-### 3.1. Oracle VCN (Virtual Cloud Network)
-- Oracle panelindən serverin `public subnet` bölməsinə keçid edilir.
-- **Security Lists -> Ingress Rules** bölməsindən yeni qayda əlavə edilir:
-  - Source CIDR: `0.0.0.0/0`
-  - Destination Port Range: `80,8000`
-
-### 3.2. Server Daxili (IPTables)
-Ubuntu-nun daxili təhlükəsizlik divarını qırmaq üçün SSH ilə terminalda bu əmrlər verildi:
-```bash
-sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 80 -j ACCEPT
-sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 8000 -j ACCEPT
-sudo netfilter-persistent save
-```
-> **Qeyd:** Database portu (`5432`) bilərəkdən haker hücumlarından qorunmaq üçün qapalı saxlanılıb!
-
----
-
-## 4. Docker və Verilənlər Bazası (PostgreSQL)
-Layihəni 3 fərqli hissəyə böldük (`frontend`, `backend`, `db`) və tək bir `docker-compose.yml` faylı altında birləşdirdik.
-
-**Mühit Dəyişənləri (.env):**
-GitHub-a yüklənmədiyi üçün serverdə əlimizlə `backend/.env` faylını yaratdıq:
-```bash
-cat << 'EOF' > backend/.env
-DATABASE_URL=postgresql+asyncpg://postgres:sahinmb123@db:5432/salon_db
-SECRET_KEY=supersecretkey_please_change_in_production
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-EOF
-```
-
-**Docker-i İşə Salmaq:**
-```bash
-DOCKER_BUILDKIT=0 sudo docker-compose up --build -d
-```
-*(BuildKit yaddaş (cache) xətalarının qarşısını almaq üçün 0 olaraq təyin edilib)*
-
----
-
-## 5. Uzaqdan (Remote) Verilənlər Bazasina Qoşulmaq
-`5432` portunu internetə bağladığımız üçün lokal VS Code Database Client-dan canlı bazaya yalnız təhlükəsiz tunel vasitəsilə qoşuluruq.
-
-**Bağlantı Ayarları:**
-- **SSH Tunnel Tabı:** 
-  - Host: `<Server Public IP>` (Məsələn: 132.226.206.18)
-  - Username: `ubuntu`
-  - Auth: `Key` -> Mütləq yüklədiyiniz `.key` faylını seçin.
-- **Main Tabı:**
-  - Host: `127.0.0.1` (SSH artıq serverin içində olduğuna görə)
-  - Port: `5432`
-  - Username: `postgres`
-  - Password: `<DB Parolu>`
-  - Database: `salon_db`
-
----
-
-## 6. GitHub Actions ilə CI/CD Avtomatlaşdırılması
-Mütəmadi kod yenilənməsi üçün hər dəfə serverə girməmək adına avtomatlaşdırma qurduq.
-`deploy.yml` faylı yaradıldı. Hər dəfə `main` branch-a push edəndə GitHub özü arxa planda:
-1. Serverə SSH ilə qoşulur (`appleboy/ssh-action`).
-2. `git pull origin main` ilə yeni kodları çəkir.
-3. `docker-compose up --build -d` edərək saytı canlıda yeniləyir.
-
-Bunun üçün GitHub Repository **Secrets** qismində `ORACLE_HOST`, `ORACLE_USERNAME`, `ORACLE_SSH_KEY` və əlavə olaraq Github **Personal Access Token (PAT)** təyin edilmişdir. Git-in hər dəfə parol istəməməsi üçün isə serverdə `git config --global credential.helper store` komandası bir dəfəlik icra edilmişdir.
+## 6. Proqramçı/AI İş axışı Qaydaları (Development Loop)
+1.  **Lokalda Test et:** 
+    *   Birinci terminalda backend-i yandır: `cd backend && .\venv\Scripts\activate && uvicorn app.main:app --reload`
+    *   İkinci terminalda frontend-i yandır: `cd frontend && npm run dev`
+    *   `http://localhost:5173` ünvanında yazdıqlarını test et.
+2.  **AI Commit Qadağası:** AI Agent istifadəçidən icazəsiz heç vaxt `git commit` və ya `git push` etməməlidir. Kod dəyişikliklərini sadəcə lokalda yazıb istifadəçinin test etməsi üçün buraxmalıdır.
+3.  **Deploy etmək üçün:**
+    *   Hər şey lokalda işləyirsə, frontend-i build et: `cd frontend && npm run build`
+    *   Bütün faylları commit et və `push` et. CI/CD sistemi 15 saniyəyə canlıdakı saytı tamamilə yeniləyəcək.

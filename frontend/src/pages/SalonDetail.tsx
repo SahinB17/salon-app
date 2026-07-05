@@ -187,6 +187,13 @@ export default function SalonDetail() {
     return <div className="p-8 text-center text-red-500">Salon tapılmadı</div>;
   }
 
+  // Filter active staff by selected service
+  const eligibleStaffs = salon.staffs?.filter((s: any) => s.is_active) || [];
+  const hasAnyServiceLinks = eligibleStaffs.some((s: any) => s.services && s.services.length > 0);
+  const filteredStaffs = hasAnyServiceLinks && selectedService
+    ? eligibleStaffs.filter((s: any) => s.services?.some((srv: any) => srv.id === selectedService.id))
+    : eligibleStaffs;
+
   const handleBookClick = (service: any) => {
     setSelectedService(service);
     setSelectedStaff(null);
@@ -396,7 +403,7 @@ export default function SalonDetail() {
                 >
                   <span className="text-xs font-semibold">Fərq etməz</span>
                 </div>
-                {salon.staffs && salon.staffs.filter((s: any) => s.is_active).map((staff: any) => (
+                {filteredStaffs.map((staff: any) => (
                   <div 
                     key={staff.id}
                     onClick={() => setSelectedStaff(staff.id)}

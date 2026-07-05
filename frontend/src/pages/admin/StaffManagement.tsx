@@ -30,6 +30,7 @@ export default function StaffManagement() {
   const [workStart, setWorkStart] = useState('09:00');
   const [workEnd, setWorkEnd] = useState('18:00');
   const [workingDays, setWorkingDays] = useState<number[]>([1, 2, 3, 4, 5]);
+  const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>([]);
 
   const weekDayNames = [
     { label: 'B.e.', value: 1 },
@@ -40,6 +41,17 @@ export default function StaffManagement() {
     { label: 'Ş.', value: 6 },
     { label: 'B.', value: 7 },
   ];
+
+  // Fetch services for selected salon
+  const { data: services = [] } = useQuery({
+    queryKey: ['services', selectedSalonId],
+    queryFn: async () => {
+      if (!selectedSalonId) return [];
+      const res = await api.get(`/api/v1/services/salon/${selectedSalonId}`);
+      return res.data;
+    },
+    enabled: !!selectedSalonId
+  });
 
   // Get user
   const { data: user } = useQuery({
@@ -128,6 +140,7 @@ export default function StaffManagement() {
       work_start: workStart ? `${workStart}:00` : null,
       work_end: workEnd ? `${workEnd}:00` : null,
       working_days: workingDays.sort((a, b) => a - b).join(','),
+      service_ids: selectedServiceIds,
     };
 
     if (editStaffId) {
@@ -149,6 +162,7 @@ export default function StaffManagement() {
     setSpecialty(staff.specialty || '');
     setWorkStart(staff.work_start ? staff.work_start.substring(0, 5) : '09:00');
     setWorkEnd(staff.work_end ? staff.work_end.substring(0, 5) : '18:00');
+    setSelectedServiceIds(staff.services ? staff.services.map((s: any) => s.id) : []);
     
     if (staff.working_days) {
       setWorkingDays(staff.working_days.split(',').map(Number));
@@ -171,6 +185,7 @@ export default function StaffManagement() {
     setWorkStart('09:00');
     setWorkEnd('18:00');
     setWorkingDays([1, 2, 3, 4, 5]);
+    setSelectedServiceIds([]);
     setEditStaffId(null);
     setIsModalOpen(false);
   };
@@ -287,6 +302,16 @@ export default function StaffManagement() {
               {staff.specialty && (
                 <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-2 transition-colors">{staff.specialty}</p>
               )}
+
+              {staff.services && staff.services.length > 0 && (
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {staff.services.map((s: any) => (
+                    <span key={s.id} className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors">
+                      {s.name}
+                    </span>
+                  ))}
+                </div>
+              )}
               
               <div className="mt-2 space-y-1 text-xs text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/50 p-2.5 rounded-xl border border-zinc-100 dark:border-zinc-800 transition-colors">
                 <div className="flex justify-between">
@@ -374,6 +399,36 @@ export default function StaffManagement() {
                       );
                     })}
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300 block transition-colors">Göstərdiyi Xidmətlər</label>
+                  {services.length === 0 ? (
+                    <p className="text-xs text-zinc-500">Bu salonda hələ heç bir xidmət yaradılmayıb.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 gap-2 max-h-[140px] overflow-y-auto p-3 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-zinc-50/50 dark:bg-zinc-950/30">
+                      {services.map((s: any) => {
+                        const isChecked = selectedServiceIds.includes(s.id);
+                        return (
+                          <label key={s.id} className="flex items-center gap-2.5 text-sm cursor-pointer select-none">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => {
+                                if (isChecked) {
+                                  setSelectedServiceIds(selectedServiceIds.filter(id => id !== s.id));
+                                } else {
+                                  setSelectedServiceIds([...selectedServiceIds, s.id]);
+                                }
+                              }}
+                              className="rounded border-zinc-300 dark:border-zinc-800 text-zinc-950 dark:text-zinc-50 focus:ring-zinc-900 dark:bg-zinc-950"
+                            />
+                            <span className="text-zinc-700 dark:text-zinc-300">{s.name} ({s.price} AZN)</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </form>
             </div>

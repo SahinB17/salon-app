@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, T
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.db.database import Base
+from app.models.staff_service import staff_services
 
 class Staff(Base):
     __tablename__ = "staffs"
@@ -22,3 +23,4 @@ class Staff(Base):
 
     salon = relationship("Salon", back_populates="staffs")
     appointments = relationship("Appointment", back_populates="staff", cascade="all, delete-orphan")
+    services = relationship("Service", secondary="staff_services", lazy="selectin")
