@@ -7,8 +7,6 @@ backend/static/uploads/*
 __pycache__/
 *.py[cod]
 *$py.class
-alembic.ini
-
 # SQLite Database
 *.db
 *.sqlite3
