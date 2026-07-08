@@ -74,7 +74,7 @@ export default function Home() {
   return (
     <PageWrapper className="flex flex-col min-h-screen bg-zinc-50 dark:bg-[#121212] font-sans pb-6 transition-colors">
         {/* Header / Greeting */}
-        <div className="relative overflow-hidden rounded-b-[2.5rem] bg-white dark:bg-zinc-950 px-6 pt-16 pb-8 text-zinc-900 dark:text-white shadow-sm dark:shadow-lg border-b border-zinc-100 dark:border-zinc-900 transition-all">
+        <div className="relative overflow-hidden rounded-b-[2.5rem] lg:rounded-3xl lg:mt-6 lg:mx-6 bg-white dark:bg-zinc-950 px-6 pt-16 lg:pt-10 pb-8 text-zinc-900 dark:text-white shadow-sm dark:shadow-lg border-b lg:border border-zinc-100 dark:border-zinc-900 transition-all">
           <div className="absolute inset-0 overflow-hidden rounded-b-[2.5rem] pointer-events-none">
             <div className="absolute right-0 top-0 -mr-16 -mt-16 w-48 h-48 rounded-full bg-amber-500/5 dark:bg-amber-500/15 blur-3xl"></div>
             <div className="absolute left-1/3 bottom-0 -mb-20 w-64 h-64 rounded-full bg-rose-500/5 dark:bg-rose-500/10 blur-3xl"></div>
@@ -95,7 +95,7 @@ export default function Home() {
         
         {/* Upcoming Appointment Banner */}
         {upcomingAppointment && (
-          <div className="mx-4 mt-6">
+          <div className="mx-4 lg:max-w-2xl lg:mx-auto mt-6">
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 dark:from-amber-600 dark:to-amber-700 p-4 text-white shadow-md">
               <div className="absolute right-0 top-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-white/10 blur-xl"></div>
               
@@ -143,15 +143,15 @@ export default function Home() {
         {/* Visual Search Box (Touch Target) */}
         <div 
           onClick={() => navigate('/salons')}
-          className="mt-6 mx-4 flex items-center bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl p-4 shadow-sm cursor-pointer active:scale-[0.98] transition-all h-14"
+          className="mt-6 mx-4 lg:max-w-2xl lg:mx-auto flex items-center bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer active:scale-[0.98] transition-all h-14"
         >
           <Search className="w-5 h-5 text-zinc-400 dark:text-zinc-500 mr-3" />
           <span className="text-zinc-500 dark:text-zinc-400 font-medium">Salon və ya xidmət axtar...</span>
         </div>
 
         {/* Quick Search Services */}
-        <div className="mt-4 mx-4">
-          <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide -mx-4 px-4">
+        <div className="mt-4 mx-4 lg:max-w-3xl lg:mx-auto">
+          <div className="flex overflow-x-auto lg:flex-wrap lg:justify-center gap-2 pb-2 scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0">
             {[
               { name: 'Kişi saç kəsimi', emoji: '🧔' },
               { name: 'Qadın saç kəsimi', emoji: '💇‍♀️' },
@@ -174,9 +174,9 @@ export default function Home() {
 
         {/* Recently Viewed */}
         {recentlyViewed.length > 0 && (
-          <div className="px-4 mt-8">
+          <div className="px-4 lg:px-6 mt-8">
             <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-4">Son Baxılanlar</h2>
-            <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-2 -mx-4 px-4 scrollbar-hide">
+            <div className="flex overflow-x-auto lg:overflow-visible lg:grid lg:grid-cols-4 xl:grid-cols-5 snap-x snap-mandatory gap-4 pb-2 -mx-4 px-4 lg:mx-0 lg:px-0 scrollbar-hide">
               {recentlyViewed.map((salon: any) => (
                 <div 
                   key={salon.id} 
@@ -203,8 +203,8 @@ export default function Home() {
         )}
 
         {/* Main Content */}
-        <div className="px-4 mt-8">
-          <div className="flex justify-between items-center mb-4">
+        <div className="px-4 lg:px-6 mt-8">
+            <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">Məşhur Salonlar</h2>
             <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors" onClick={() => navigate('/salons')}>
               Hamısı

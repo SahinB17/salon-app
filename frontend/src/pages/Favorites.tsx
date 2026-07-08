@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { DEFAULT_SALON_IMAGE } from '../lib/constants';
 import { MapPin, Star, Heart } from 'lucide-react';

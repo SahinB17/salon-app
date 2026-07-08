@@ -148,7 +148,7 @@ function BookingFormContent({
                 const outsideShift =
                   (staffWorkStart && slot < staffWorkStart) ||
                   (staffWorkEnd && slot >= staffWorkEnd);
-                const disabled = booked || past || outsideShift;
+                const disabled = Boolean(booked || past || outsideShift);
                 const selected = appointmentTime === slot;
 
                 return (
