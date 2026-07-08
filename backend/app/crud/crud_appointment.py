@@ -72,13 +72,21 @@ async def create_appointment(db: AsyncSession, appointment_in: AppointmentCreate
 
 async def get_user_appointments(db: AsyncSession, customer_id: int, skip: int = 0, limit: int = 100) -> List[Appointment]:
     result = await db.execute(
-        select(Appointment).where(Appointment.customer_id == customer_id).offset(skip).limit(limit)
+        select(Appointment)
+        .where(Appointment.customer_id == customer_id)
+        .order_by(Appointment.created_at.desc())
+        .offset(skip)
+        .limit(limit)
     )
     return list(result.scalars().all())
 
 async def get_salon_appointments(db: AsyncSession, salon_id: int, skip: int = 0, limit: int = 100) -> List[Appointment]:
     result = await db.execute(
-        select(Appointment).where(Appointment.salon_id == salon_id).offset(skip).limit(limit)
+        select(Appointment)
+        .where(Appointment.salon_id == salon_id)
+        .order_by(Appointment.created_at.desc())
+        .offset(skip)
+        .limit(limit)
     )
     return list(result.scalars().all())
 

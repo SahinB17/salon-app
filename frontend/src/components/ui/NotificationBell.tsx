@@ -2,12 +2,14 @@ import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Bell, CheckCheck, Loader2, Inbox } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import api from '../../lib/api';
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   // Fetch notifications, poll every 10 seconds
   const { data: notifications = [], isLoading } = useQuery({
@@ -54,6 +56,21 @@ export function NotificationBell() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleNotificationClick = (n: any) => {
+    if (!n.is_read) {
+      markReadMutation.mutate(n.id);
+    }
+    setIsOpen(false);
+    
+    // Navigate based on user role
+    const role = localStorage.getItem('role');
+    if (role === 'salon_admin' || role === 'system_admin') {
+      navigate('/admin/appointments');
+    } else {
+      navigate('/appointments');
+    }
+  };
 
   return (
     <div className="relative z-50" ref={dropdownRef}>
@@ -120,7 +137,7 @@ export function NotificationBell() {
                 notifications.map((n: any) => (
                   <div
                     key={n.id}
-                    onClick={() => !n.is_read && markReadMutation.mutate(n.id)}
+                    onClick={() => handleNotificationClick(n)}
                     className={`p-4 transition-colors cursor-pointer text-left relative ${
                       n.is_read 
                         ? 'bg-transparent hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30' 

@@ -1,8 +1,10 @@
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Search, Calendar, User, Sun, Moon, Heart } from 'lucide-react';
+import { Home, Search, Calendar, User, Sun, Moon, Heart, Sparkles, ChevronRight } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { NotificationBell } from '../ui/NotificationBell';
 import { useTheme } from '../ThemeProvider';
+import { useQuery } from '@tanstack/react-query';
+import api from '../../lib/api';
 
 export default function MainLayout() {
   const location = useLocation();
@@ -18,22 +20,39 @@ export default function MainLayout() {
   const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
   const isSalonDetailPage = location.pathname.match(/\/salons\/\d+/);
 
+  const { data: user } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return null;
+      const response = await api.get('/api/v1/users/me');
+      return response.data;
+    },
+    enabled: !!localStorage.getItem('token')
+  });
+
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 lg:flex transition-colors">
+    <div className="min-h-screen bg-zinc-50 dark:bg-[#0a0a0a] lg:flex transition-colors">
       {/* Desktop Sidebar (Hidden on mobile) */}
-      <aside className="hidden lg:flex lg:w-64 lg:flex-col fixed inset-y-0 left-0 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 z-50 transition-colors">
-        <div className="flex h-16 items-center px-6 border-b border-zinc-100 dark:border-zinc-800">
-          <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">SalonApp</h1>
+      <aside className="hidden lg:flex lg:w-72 lg:flex-col fixed inset-y-0 left-0 bg-white dark:bg-[#121212] border-r border-zinc-200 dark:border-zinc-900 z-50 transition-colors">
+        <div className="flex h-20 items-center px-8 border-b border-zinc-100 dark:border-zinc-900/50">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-6 h-6 text-amber-500" />
+            <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">SalonApp</h1>
+          </div>
         </div>
-        <nav className="flex-1 px-4 py-6 space-y-2">
+        
+        <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto scrollbar-hide">
           {navItems.map((item) => (
             <NavLink
               key={item.name}
               to={item.path}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors font-medium",
-                  isActive ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-zinc-50" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+                  "flex items-center space-x-3 px-4 py-3.5 rounded-2xl transition-all font-medium",
+                  isActive 
+                    ? "bg-zinc-100 dark:bg-amber-500/10 text-zinc-950 dark:text-amber-500" 
+                    : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/40"
                 )
               }
             >
@@ -46,22 +65,43 @@ export default function MainLayout() {
             </NavLink>
           ))}
         </nav>
+
+        {/* User Profile */}
+        <div className="p-6 border-t border-zinc-100 dark:border-zinc-900/50 mt-auto">
+          <div className="flex items-center justify-between p-2 -m-2 rounded-2xl hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors cursor-pointer group" onClick={() => navigate('/profile')}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden shrink-0 border border-zinc-300 dark:border-zinc-700">
+                {user?.image_url ? (
+                  <img src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${user.image_url}`} alt={user.full_name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center font-bold text-zinc-500">
+                    {user?.full_name ? user.full_name.substring(0,2).toUpperCase() : 'U'}
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col">
+                <span className="font-bold text-sm text-zinc-900 dark:text-zinc-50 line-clamp-1">{user?.full_name || 'İstifadəçi'}</span>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors" />
+          </div>
+        </div>
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 lg:pl-64 flex flex-col min-h-screen pb-20 lg:pb-0 relative">
+      <div className="flex-1 lg:pl-72 flex flex-col min-h-screen pb-20 lg:pb-0 relative">
         {!isSalonDetailPage && (
-          <div className="fixed top-3 right-4 lg:top-4 lg:right-6 z-50 flex items-center gap-3">
+          <div className="fixed top-3 right-4 lg:top-6 lg:right-8 z-50 flex items-center gap-3">
             <button 
               onClick={() => navigate('/favorites')}
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm text-zinc-500 hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400 border border-zinc-200/50 dark:border-zinc-800 shadow-sm transition-all active:scale-95"
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/90 dark:bg-[#121212]/90 backdrop-blur-md text-zinc-500 hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400 border border-zinc-200/50 dark:border-zinc-800/80 shadow-sm transition-all active:scale-95"
               title="Seçilmişlər"
             >
               <Heart className="w-5 h-5" />
             </button>
             <button 
               onClick={() => setTheme(isDark ? 'light' : 'dark')}
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm text-zinc-600 dark:text-zinc-300 border border-zinc-200/50 dark:border-zinc-800 shadow-sm transition-all active:scale-95"
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/90 dark:bg-[#121212]/90 backdrop-blur-md text-zinc-600 dark:text-zinc-300 border border-zinc-200/50 dark:border-zinc-800/80 shadow-sm transition-all active:scale-95"
               title={isDark ? 'Açıq rejim' : 'Qaranlıq rejim'}
             >
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -71,7 +111,7 @@ export default function MainLayout() {
         )}
 
         <main className="flex-1 w-full">
-          <div className="w-full max-w-5xl mx-auto">
+          <div className="w-full max-w-6xl mx-auto">
             <Outlet />
           </div>
         </main>

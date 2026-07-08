@@ -75,7 +75,7 @@ function BookingFormContent({
 }: BookingFormContentProps) {
   return (
     <div className="space-y-6">
-      <div className="bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-xl transition-colors">
+      <div className="bg-zinc-50 dark:bg-[#161616] p-4 rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800/60 transition-colors">
         <div className="font-bold text-zinc-900 dark:text-zinc-50">{selectedService.name}</div>
         <div className="text-zinc-500 dark:text-zinc-400 text-sm mt-1">
           {selectedService.price} ₼ • {selectedService.duration_minutes} dəq.
@@ -87,9 +87,9 @@ function BookingFormContent({
         <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
           <div
             onClick={() => setSelectedStaff(null)}
-            className={`flex flex-col items-center justify-center min-w-[76px] h-[92px] p-2 rounded-2xl border-2 transition-all cursor-pointer ${selectedStaff === null ? 'border-zinc-900 dark:border-zinc-100 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50' : 'border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-300'}`}
+            className={`flex flex-col items-center justify-center min-w-[76px] h-[92px] p-2 rounded-2xl border-2 transition-all cursor-pointer ${selectedStaff === null ? 'border-amber-500 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-500' : 'border-zinc-100 dark:border-zinc-800/60 bg-white dark:bg-[#161616] hover:border-amber-500/30 text-zinc-800 dark:text-zinc-400'}`}
           >
-            <div className="w-9 h-9 rounded-full mb-1 flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shrink-0">
+            <div className="w-9 h-9 rounded-full mb-1 flex items-center justify-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shrink-0">
               <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">All</span>
             </div>
             <span className="text-xs font-semibold truncate w-full text-center px-0.5">Fərq etməz</span>
@@ -98,9 +98,9 @@ function BookingFormContent({
             <div
               key={staff.id}
               onClick={() => setSelectedStaff(staff.id)}
-              className={`flex flex-col items-center justify-center min-w-[76px] h-[92px] p-2 rounded-2xl border-2 transition-all cursor-pointer shrink-0 ${selectedStaff === staff.id ? 'border-zinc-900 dark:border-zinc-100 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50' : 'border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-400'}`}
+              className={`flex flex-col items-center justify-center min-w-[76px] h-[92px] p-2 rounded-2xl border-2 transition-all cursor-pointer shrink-0 ${selectedStaff === staff.id ? 'border-amber-500 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-500' : 'border-zinc-100 dark:border-zinc-800/60 bg-white dark:bg-[#161616] hover:border-amber-500/30 text-zinc-700 dark:text-zinc-400'}`}
             >
-              <div className="w-9 h-9 rounded-full mb-1 overflow-hidden flex items-center justify-center bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/50 dark:border-zinc-700/50 shrink-0">
+              <div className="w-9 h-9 rounded-full mb-1 overflow-hidden flex items-center justify-center bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/50 shrink-0">
                 {staff.image_url ? (
                   <img src={getImageUrl(staff.image_url)} alt={staff.full_name} className="w-full h-full object-cover" />
                 ) : (
@@ -126,6 +126,7 @@ function BookingFormContent({
           value={appointmentDate}
           onChange={(e) => { setAppointmentDate(e.target.value); setAppointmentTime(''); }}
           min={new Date().toISOString().split('T')[0]}
+          className="bg-white dark:bg-[#161616] border-zinc-200/80 dark:border-zinc-800/80 focus:border-amber-500/50 dark:focus:border-amber-500/50 focus:ring-4 focus:ring-amber-500/10 transition-all rounded-xl"
         />
       </div>
 
@@ -158,9 +159,9 @@ function BookingFormContent({
                     disabled={disabled}
                     className={`
                       py-2.5 rounded-xl text-sm font-medium transition-all
-                      ${selected ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 ring-2 ring-zinc-900 dark:ring-zinc-100 ring-offset-2 dark:ring-offset-zinc-950' : ''}
-                      ${disabled ? 'bg-red-50 dark:bg-red-500/10 text-red-300 dark:text-red-400 cursor-not-allowed line-through' : ''}
-                      ${!selected && !disabled ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 cursor-pointer' : ''}
+                      ${selected ? 'bg-amber-500 text-amber-950 ring-2 ring-amber-500 ring-offset-2 dark:ring-offset-[#121212] font-bold shadow-lg shadow-amber-500/25' : ''}
+                      ${disabled ? 'bg-red-50/50 dark:bg-red-500/5 text-red-300 dark:text-red-900/50 cursor-not-allowed line-through border border-red-100/50 dark:border-red-900/20' : ''}
+                      ${!selected && !disabled ? 'bg-zinc-50 dark:bg-[#1a1a1a] text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-[#222] border border-zinc-200/50 dark:border-zinc-800/60 cursor-pointer' : ''}
                     `}
                   >
                     {slot}
@@ -169,10 +170,10 @@ function BookingFormContent({
               })}
             </div>
           )}
-          <div className="flex items-center gap-4 mt-3 text-xs text-zinc-500 dark:text-zinc-400">
-            <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20" /> Boş</div>
-            <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20" /> Dolu</div>
-            <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-zinc-900 dark:bg-zinc-100" /> Seçildi</div>
+          <div className="flex items-center gap-4 mt-4 text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+            <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-zinc-50 dark:bg-[#1a1a1a] border border-zinc-200/50 dark:border-zinc-800/60" /> Boş</div>
+            <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-red-50/50 dark:bg-red-500/5 border border-red-100/50 dark:border-red-900/20" /> Dolu</div>
+            <div className="flex items-center gap-1.5"><div className="w-3 h-3 rounded bg-amber-500" /> Seçildi</div>
           </div>
         </div>
       )}
@@ -410,7 +411,7 @@ export default function SalonDetail() {
   } : null;
 
   return (
-    <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-[#121212] pb-6 lg:pb-10 transition-colors">
+    <PageWrapper className="flex flex-col min-h-screen bg-zinc-50 dark:bg-[#0a0a0a] pb-6 lg:pb-10 transition-colors">
       <div className="lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start lg:px-4 lg:pt-6">
         {/* Left column — gallery, info, services, reviews */}
         <div className="lg:col-span-8">
@@ -433,6 +434,8 @@ export default function SalonDetail() {
                 ))}
               </div>
             </div>
+            {/* Gradient overlay for premium transition to content */}
+            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white dark:from-[#0a0a0a] to-transparent pointer-events-none lg:hidden z-0"></div>
             <button
               onClick={() => navigate(-1)}
               className="absolute top-12 left-4 lg:top-4 w-10 h-10 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm z-10 active:scale-95"
@@ -455,7 +458,7 @@ export default function SalonDetail() {
             </button>
           </div>
 
-          <div className="px-5 pt-6 pb-4 bg-white dark:bg-zinc-900 rounded-t-3xl -mt-6 lg:mt-4 lg:rounded-2xl relative z-10 shadow-sm border border-zinc-100 dark:border-zinc-800 transition-colors">
+          <div className="px-5 pt-6 pb-4 bg-white dark:bg-[#121212] rounded-t-[2rem] -mt-8 lg:mt-4 lg:rounded-[1.5rem] relative z-10 shadow-sm border border-zinc-100 dark:border-zinc-800/60 transition-colors">
             <div className="flex justify-between items-start">
               <div>
                 <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{salon.name}</h1>
@@ -491,7 +494,7 @@ export default function SalonDetail() {
                 {salon.images.map((img: { id: number; image_url: string }) => (
                   <div
                     key={img.id}
-                    className="w-40 h-40 flex-shrink-0 rounded-2xl overflow-hidden shadow-sm border border-zinc-100 dark:border-zinc-800 cursor-pointer active:scale-95 transition-transform"
+                    className="w-40 h-40 flex-shrink-0 rounded-[1.25rem] overflow-hidden shadow-sm border border-zinc-100 dark:border-zinc-800/60 cursor-pointer active:scale-95 transition-transform"
                     onClick={() => setSelectedImage(img.image_url)}
                   >
                     <img src={getImageUrl(img.image_url)} alt="Qalereya" className="w-full h-full object-cover pointer-events-none" />
@@ -503,7 +506,7 @@ export default function SalonDetail() {
 
           <div className="px-4 mt-6 lg:hidden">
             <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-4">Məkan</h2>
-            <div className="w-full h-48 rounded-2xl overflow-hidden shadow-sm border border-zinc-100 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800 relative z-0">
+            <div className="w-full h-48 rounded-[1.5rem] overflow-hidden shadow-sm border border-zinc-100 dark:border-zinc-800/60 bg-zinc-100 dark:bg-zinc-800 relative z-0">
               <Map salons={[salon]} className="w-full h-full z-0" />
             </div>
           </div>
@@ -515,10 +518,10 @@ export default function SalonDetail() {
                 salon.services.map((service: { id: number; name: string; price: number; duration_minutes: number }) => (
                   <div
                     key={service.id}
-                    className={`bg-white dark:bg-zinc-900 p-4 rounded-2xl shadow-sm border flex justify-between items-center transition-colors ${
+                    className={`bg-white dark:bg-[#121212] p-4 rounded-[1.5rem] shadow-sm border flex justify-between items-center transition-colors ${
                       selectedService?.id === service.id
-                        ? 'border-zinc-900 dark:border-zinc-100 ring-1 ring-zinc-900/10 dark:ring-zinc-100/10'
-                        : 'border-zinc-100 dark:border-zinc-800'
+                        ? 'border-amber-500/50 ring-1 ring-amber-500/20 bg-amber-50/10'
+                        : 'border-zinc-100 dark:border-zinc-800/60'
                     }`}
                   >
                     <div>
@@ -527,7 +530,7 @@ export default function SalonDetail() {
                     </div>
                     <Button
                       onClick={() => handleBookClick(service)}
-                      className="h-10 px-5 rounded-full"
+                      className={`h-10 px-5 rounded-full transition-all ${selectedService?.id === service.id ? 'bg-amber-500 hover:bg-amber-600 text-amber-950' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 hover:bg-zinc-200 dark:hover:bg-zinc-700'}`}
                     >
                       Seç
                     </Button>
@@ -550,7 +553,7 @@ export default function SalonDetail() {
             <div className="space-y-4">
               {reviews && reviews.length > 0 ? (
                 reviews.map((review: { id: number; rating: number; comment?: string; created_at: string; customer?: { full_name?: string } }) => (
-                  <div key={review.id} className="bg-white dark:bg-zinc-900 p-4 rounded-2xl shadow-sm border border-zinc-100 dark:border-zinc-800 transition-colors">
+                  <div key={review.id} className="bg-white dark:bg-[#121212] p-5 rounded-[1.5rem] shadow-sm border border-zinc-100 dark:border-zinc-800/60 transition-colors">
                     <div className="flex justify-between items-start mb-2">
                       <div className="font-bold text-sm text-zinc-900 dark:text-zinc-50">{review.customer?.full_name || 'İstifadəçi'}</div>
                       <div className="flex items-center text-amber-500 text-xs font-bold">
@@ -567,7 +570,7 @@ export default function SalonDetail() {
                   </div>
                 ))
               ) : (
-                <div className="bg-zinc-50 dark:bg-zinc-800/50 p-6 rounded-2xl border border-zinc-100 dark:border-zinc-800 text-center transition-colors">
+                <div className="bg-zinc-50 dark:bg-[#161616] p-6 rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800/60 text-center transition-colors">
                   <MessageSquare className="w-8 h-8 text-zinc-300 dark:text-zinc-600 mx-auto mb-2" />
                   <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">Hələ rəy yazılmayıb</p>
                   <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">İlk rəyi siz yazın!</p>
@@ -579,18 +582,18 @@ export default function SalonDetail() {
 
         {/* Right column — sticky map + booking */}
         <aside className="hidden lg:flex lg:col-span-4 lg:flex-col lg:gap-5 lg:sticky lg:top-6 lg:self-start">
-          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-[#121212] rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800/60 shadow-sm overflow-hidden">
             <div className="px-5 pt-5 pb-3">
               <h2 className="text-base font-bold text-zinc-900 dark:text-zinc-50">Məkan</h2>
             </div>
             <div className="h-44 px-3 pb-3">
-              <div className="w-full h-full rounded-xl overflow-hidden border border-zinc-100 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800">
+              <div className="w-full h-full rounded-xl overflow-hidden border border-zinc-100 dark:border-zinc-800/60 bg-zinc-100 dark:bg-zinc-800">
                 <Map salons={[salon]} className="w-full h-full z-0" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm p-5">
+          <div className="bg-white/80 dark:bg-[#121212]/80 backdrop-blur-md rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800/60 shadow-sm p-5">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">Rezervasiya</h2>
               {selectedService && (
@@ -724,7 +727,7 @@ export default function SalonDetail() {
           <div>
             <label className="text-sm font-bold text-zinc-900 dark:text-zinc-50 block mb-2">Fikriniz (İstəyə bağlı)</label>
             <textarea
-              className="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-700 resize-none h-24 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition-colors"
+              className="w-full bg-zinc-50 dark:bg-[#161616] border border-zinc-200 dark:border-zinc-800/60 text-zinc-900 dark:text-zinc-100 rounded-xl p-3 text-sm focus:outline-none focus:border-amber-500/50 focus:ring-4 focus:ring-amber-500/10 resize-none h-24 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition-all"
               placeholder="Salon və ya usta haqqında təəssüratlarınızı bölüşün..."
               value={reviewComment}
               onChange={(e) => setReviewComment(e.target.value)}

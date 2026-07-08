@@ -103,13 +103,16 @@ export default function Profile() {
   });
 
   return (
-    <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-[#121212] pb-24 lg:pb-8 transition-colors">
+    <PageWrapper className="flex flex-col min-h-screen bg-zinc-50 dark:bg-[#0a0a0a] pb-24 lg:pb-8 transition-colors">
         {/* Header */}
-        <div className="bg-white dark:bg-zinc-900 px-4 pt-12 lg:pt-16 pb-6 shadow-sm border-b border-zinc-100 dark:border-zinc-800 rounded-b-3xl transition-colors">
-          <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-6">Profilim</h1>
+        <div className="bg-white dark:bg-[#121212] px-4 pt-12 lg:pt-16 pb-6 shadow-sm border-b border-zinc-100 dark:border-zinc-800/50 rounded-b-[2rem] transition-colors relative overflow-hidden">
+          {/* Subtle gradient glow in header for premium feel */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 dark:bg-amber-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
           
-          <div className="flex items-center">
-            <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center flex-shrink-0 transition-colors">
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-6 relative z-10 tracking-tight">Profilim</h1>
+          
+          <div className="flex items-center relative z-10">
+            <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/50 dark:border-zinc-800/50 rounded-full flex items-center justify-center flex-shrink-0 transition-colors shadow-sm">
               <UserIcon className="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
             </div>
             <div className="ml-4">
@@ -129,16 +132,16 @@ export default function Profile() {
         </div>
 
         {/* Menu Items */}
-        <div className="px-4 mt-8 space-y-3">
+        <div className="px-4 mt-8 space-y-4">
           <Card 
             onClick={() => {
               setSettingsView('menu');
               setIsSettingsOpen(true);
             }}
-            className="p-4 rounded-2xl border-0 shadow-sm flex justify-between items-center bg-white dark:bg-zinc-900 cursor-pointer active:scale-[0.98] transition-all"
+            className="p-5 rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800/60 shadow-sm flex justify-between items-center bg-white dark:bg-[#121212] cursor-pointer active:scale-[0.98] transition-all group"
           >
-            <div className="flex items-center text-zinc-700 dark:text-zinc-300 font-medium">
-              <Settings className="w-5 h-5 mr-3 text-zinc-400 dark:text-zinc-500" />
+            <div className="flex items-center text-zinc-700 dark:text-zinc-300 font-medium group-hover:text-amber-600 dark:group-hover:text-amber-500 transition-colors">
+              <Settings className="w-5 h-5 mr-4 text-zinc-400 dark:text-zinc-500 group-hover:text-amber-500 transition-colors" />
               Tənzimləmələr
             </div>
             <ChevronRight className="w-5 h-5 text-zinc-300 dark:text-zinc-600" />
@@ -146,10 +149,10 @@ export default function Profile() {
 
           <Card 
             onClick={() => navigate('/favorites')}
-            className="p-4 rounded-2xl border-0 shadow-sm flex justify-between items-center bg-white dark:bg-zinc-900 cursor-pointer active:scale-[0.98] transition-all"
+            className="p-5 rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800/60 shadow-sm flex justify-between items-center bg-white dark:bg-[#121212] cursor-pointer active:scale-[0.98] transition-all group"
           >
-            <div className="flex items-center text-zinc-700 dark:text-zinc-300 font-medium">
-              <Heart className="w-5 h-5 mr-3 text-red-500/80 dark:text-red-400/80" />
+            <div className="flex items-center text-zinc-700 dark:text-zinc-300 font-medium group-hover:text-amber-600 dark:group-hover:text-amber-500 transition-colors">
+              <Heart className="w-5 h-5 mr-4 text-red-500/80 dark:text-red-400/80 group-hover:text-red-500 transition-colors" />
               Seçilmişlər (Favoritlər)
             </div>
             <ChevronRight className="w-5 h-5 text-zinc-300 dark:text-zinc-600" />
@@ -157,10 +160,10 @@ export default function Profile() {
 
           <Card 
             onClick={handleLogout}
-            className="p-4 rounded-2xl border-0 shadow-sm flex justify-between items-center bg-red-50 dark:bg-red-500/10 cursor-pointer active:scale-[0.98] transition-all mt-6"
+            className="p-5 rounded-[1.5rem] border border-red-100 dark:border-red-900/30 shadow-sm flex justify-between items-center bg-red-50/50 dark:bg-red-500/5 cursor-pointer active:scale-[0.98] transition-all mt-8"
           >
             <div className="flex items-center text-red-600 dark:text-red-400 font-bold">
-              <LogOut className="w-5 h-5 mr-3" />
+              <LogOut className="w-5 h-5 mr-4" />
               Hesabdan Çıx
             </div>
           </Card>
@@ -237,7 +240,7 @@ export default function Profile() {
                 <Input 
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 focus:bg-white dark:focus:bg-zinc-900"
+                  className="bg-white dark:bg-[#161616] border-zinc-200/80 dark:border-zinc-800/80 focus:border-amber-500/50 dark:focus:border-amber-500/50 focus:ring-4 focus:ring-amber-500/10 transition-all rounded-xl"
                 />
               </div>
               <div>
@@ -246,7 +249,7 @@ export default function Profile() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+994 (--) --- -- --"
-                  className="bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 focus:bg-white dark:focus:bg-zinc-900"
+                  className="bg-white dark:bg-[#161616] border-zinc-200/80 dark:border-zinc-800/80 focus:border-amber-500/50 dark:focus:border-amber-500/50 focus:ring-4 focus:ring-amber-500/10 transition-all rounded-xl"
                 />
               </div>
               <div className="pt-2 flex gap-3">

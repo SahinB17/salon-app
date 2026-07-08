@@ -89,16 +89,16 @@ export default function Search() {
   }
 
   return (
-    <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-[#121212] pb-24 lg:pb-8 transition-colors">
+    <PageWrapper className="flex flex-col min-h-screen bg-zinc-50 dark:bg-[#0a0a0a] pb-24 lg:pb-8 transition-colors">
         {/* Sticky Header with Search Input */}
-        <div className="sticky top-0 z-10 bg-[#FAFAFA] dark:bg-[#121212] pt-12 lg:pt-16 pb-4 transition-colors">
+        <div className="sticky top-0 z-10 bg-zinc-50/90 dark:bg-[#0a0a0a]/90 backdrop-blur-xl pt-12 lg:pt-16 pb-4 border-b border-zinc-200/50 dark:border-zinc-900/50 transition-colors">
           <div className="px-4">
-            <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-4">Axtarış</h1>
+            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-4 tracking-tight">Axtarış</h1>
             <div className="relative max-w-2xl">
-              <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 dark:text-zinc-500" />
+              <SearchIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 dark:text-zinc-500" />
               <Input 
                 autoFocus
-                className="pl-12 h-12 bg-zinc-100/80 dark:bg-zinc-800/50 border-transparent focus:bg-white dark:focus:bg-zinc-900"
+                className="pl-14 h-14 bg-white dark:bg-[#161616] border-zinc-200/80 dark:border-zinc-800/80 focus:border-amber-500/50 dark:focus:border-amber-500/50 rounded-full shadow-sm focus:ring-4 focus:ring-amber-500/10 transition-all text-base"
                 placeholder="Salon adı, xidmət və ya ünvan..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -155,28 +155,28 @@ export default function Search() {
                <div>
                  <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-4 tracking-tight">Tapılan Xidmətlər</h2>
                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                   {matchedServices.map((service, idx) => (
-                     <Card 
-                       key={`srv-${service.id}-${idx}`}
-                       onClick={() => navigate(`/salons/${service.salon.id}`)}
-                       className="p-4 rounded-2xl border-0 shadow-sm active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer bg-white dark:bg-zinc-900 flex justify-between items-center"
-                     >
-                        <div>
-                          <h3 className="font-bold text-zinc-900 dark:text-zinc-50 text-base">{service.name}</h3>
-                          <div className="flex items-center text-zinc-500 dark:text-zinc-400 text-sm mt-1.5">
-                            <MapPin className="w-3.5 h-3.5 mr-1" />
-                            {service.salon.name}
-                          </div>
-                        </div>
-                        <div className="text-right flex flex-col items-end">
-                          <div className="font-extrabold text-lg text-zinc-900 dark:text-zinc-50">{service.price} ₼</div>
-                          <div className="flex items-center text-zinc-500 dark:text-zinc-400 text-xs mt-1 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-md font-medium">
-                            <Clock className="w-3.5 h-3.5 mr-1" />
-                            {service.duration} dəq
-                          </div>
-                        </div>
-                     </Card>
-                   ))}
+                    {matchedServices.map((service, idx) => (
+                      <Card 
+                        key={`srv-${service.id}-${idx}`}
+                        onClick={() => navigate(`/salons/${service.salon.id}`)}
+                        className="p-5 rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800/60 shadow-sm active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer bg-white dark:bg-[#121212] flex justify-between items-center group"
+                      >
+                         <div>
+                           <h3 className="font-bold text-zinc-900 dark:text-zinc-50 text-base group-hover:text-amber-600 dark:group-hover:text-amber-500 transition-colors">{service.name}</h3>
+                           <div className="flex items-center text-zinc-500 dark:text-zinc-400 text-sm mt-1.5">
+                             <MapPin className="w-3.5 h-3.5 mr-1 text-amber-500" />
+                             {service.salon.name}
+                           </div>
+                         </div>
+                         <div className="text-right flex flex-col items-end">
+                           <div className="font-extrabold text-lg text-zinc-900 dark:text-zinc-50">{service.price} ₼</div>
+                           <div className="flex items-center text-zinc-500 dark:text-zinc-400 text-xs mt-1.5 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800/80 px-2 py-1 rounded-lg font-medium">
+                             <Clock className="w-3.5 h-3.5 mr-1" />
+                             {service.duration} dəq
+                           </div>
+                         </div>
+                      </Card>
+                    ))}
                  </div>
                </div>
              )}
@@ -207,28 +207,28 @@ export default function Search() {
                      >
                        <Card 
                          onClick={() => navigate(`/salons/${salon.id}`)}
-                         className="flex flex-row p-3 rounded-2xl border-0 shadow-sm active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer bg-white dark:bg-zinc-900 h-full"
+                         className="flex flex-row p-3 rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800/60 shadow-sm active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer bg-white dark:bg-[#121212] h-full group"
                        >
-                         <div className="w-24 h-24 bg-zinc-200 dark:bg-zinc-800 rounded-xl flex-shrink-0 overflow-hidden relative">
+                         <div className="w-24 h-24 bg-zinc-200 dark:bg-zinc-900 rounded-[1.25rem] flex-shrink-0 overflow-hidden relative border border-zinc-100 dark:border-zinc-800/50">
                             <img 
                               src={salon.image_url ? `http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}` : DEFAULT_SALON_IMAGE} 
                               alt={salon.name} 
-                              className="w-full h-full object-cover" 
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
                             />
                             {!salon.image_url && (
-                              <div className="absolute top-1 left-1 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-1.5 py-0.5 rounded text-[10px] font-bold text-zinc-800 dark:text-zinc-200">
+                              <div className="absolute top-1 left-1 bg-white/90 dark:bg-[#121212]/90 backdrop-blur-sm px-2 py-0.5 rounded-lg text-[10px] font-bold text-zinc-800 dark:text-zinc-200">
                                 Salon
                               </div>
                             )}
                          </div>
-                         <div className="ml-4 flex flex-col justify-center flex-1">
-                           <h3 className="font-bold text-zinc-900 dark:text-zinc-50 line-clamp-1">{salon.name}</h3>
-                           <div className="flex items-center text-zinc-500 dark:text-zinc-400 mt-1 text-sm">
-                             <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
+                         <div className="ml-4 flex flex-col justify-center flex-1 pr-2">
+                           <h3 className="font-bold text-zinc-900 dark:text-zinc-50 line-clamp-1 group-hover:text-amber-600 dark:group-hover:text-amber-500 transition-colors">{salon.name}</h3>
+                           <div className="flex items-center text-zinc-500 dark:text-zinc-400 mt-1.5 text-sm">
+                             <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0 text-amber-500" />
                              <span className="line-clamp-1">{salon.address || 'Ünvan yoxdur'}</span>
                            </div>
-                           <div className="flex items-center text-amber-500 font-medium text-sm mt-2">
-                             <Star className="w-4 h-4 fill-current mr-1" />
+                           <div className="flex items-center text-amber-600 dark:text-amber-500 font-bold text-sm mt-2 bg-amber-50 dark:bg-amber-500/10 w-max px-2 py-0.5 rounded-md">
+                             <Star className="w-3.5 h-3.5 fill-current mr-1" />
                              {salon.average_rating ? salon.average_rating.toFixed(1) : '0.0'}
                            </div>
                          </div>
