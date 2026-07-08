@@ -90,7 +90,6 @@ export default function Search() {
 
   return (
     <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-[#121212] pb-24 lg:pb-8 transition-colors">
-      <div className="max-w-md md:max-w-7xl mx-auto w-full">
         {/* Sticky Header with Search Input */}
         <div className="sticky top-0 z-10 bg-[#FAFAFA] dark:bg-[#121212] pt-12 lg:pt-16 pb-4 transition-colors">
           <div className="px-4">
@@ -122,10 +121,9 @@ export default function Search() {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Results Area */}
-      <div className="px-4 mt-6 max-w-md md:max-w-7xl mx-auto w-full">
+      <div className="px-4 mt-6 w-full">
         {isLoading ? (
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
              {[1, 2, 3, 4, 5, 6].map(i => (

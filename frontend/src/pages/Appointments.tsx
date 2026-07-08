@@ -24,7 +24,7 @@ export default function Appointments() {
 
   return (
     <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-[#121212] pb-24 lg:pb-8 transition-colors">
-      <div className="max-w-md md:max-w-7xl mx-auto w-full">
+      <div className="max-w-3xl mx-auto w-full">
         {/* Header */}
         <div className="px-4 pt-12 lg:pt-16 pb-4 bg-[#FAFAFA] dark:bg-[#121212] shadow-sm sticky top-0 z-10 transition-colors">
           <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">Rezervasiyalarım</h1>

@@ -104,7 +104,6 @@ export default function Profile() {
 
   return (
     <PageWrapper className="flex flex-col min-h-screen bg-[#FAFAFA] dark:bg-[#121212] pb-24 lg:pb-8 transition-colors">
-      <div className="max-w-md md:max-w-3xl mx-auto w-full">
         {/* Header */}
         <div className="bg-white dark:bg-zinc-900 px-4 pt-12 lg:pt-16 pb-6 shadow-sm border-b border-zinc-100 dark:border-zinc-800 rounded-b-3xl transition-colors">
           <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-6">Profilim</h1>
@@ -166,7 +165,6 @@ export default function Profile() {
             </div>
           </Card>
         </div>
-      </div>
 
       {/* Settings Bottom Sheet */}
       <BottomSheet

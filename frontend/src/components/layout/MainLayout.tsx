@@ -70,8 +70,10 @@ export default function MainLayout() {
           </div>
         )}
 
-        <main className="flex-1">
-          <Outlet />
+        <main className="flex-1 w-full">
+          <div className="w-full max-w-5xl mx-auto">
+            <Outlet />
+          </div>
         </main>
 
         {/* Mobile Bottom Navigation (Hidden on desktop) */}

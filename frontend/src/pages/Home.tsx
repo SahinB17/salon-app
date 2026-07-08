@@ -73,7 +73,6 @@ export default function Home() {
 
   return (
     <PageWrapper className="flex flex-col min-h-screen bg-zinc-50 dark:bg-[#121212] font-sans pb-6 transition-colors">
-      <div className="max-w-md md:max-w-7xl mx-auto w-full">
         {/* Header / Greeting */}
         <div className="relative overflow-hidden rounded-b-[2.5rem] bg-white dark:bg-zinc-950 px-6 pt-16 pb-8 text-zinc-900 dark:text-white shadow-sm dark:shadow-lg border-b border-zinc-100 dark:border-zinc-900 transition-all">
           <div className="absolute inset-0 overflow-hidden rounded-b-[2.5rem] pointer-events-none">
@@ -224,11 +223,10 @@ export default function Home() {
                 }
               }
             }}
-            className="space-y-4"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
           >
             {isLoading ? (
-              // Loading skeleton
-              [1, 2, 3, 4].map((i) => (
+              [1, 2, 3, 4, 5, 6].map((i) => (
                 <SkeletonCard key={i} />
               ))
             ) : (
@@ -242,7 +240,7 @@ export default function Home() {
               >
                 <Card 
                   onClick={() => navigate(`/salons/${salon.id}`)}
-                  className="w-full snap-center rounded-2xl overflow-hidden border-0 shadow-sm active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer dark:bg-zinc-900"
+                  className="w-full h-full snap-center rounded-2xl overflow-hidden border-0 shadow-sm active:scale-[0.98] lg:hover:scale-[1.02] transition-transform cursor-pointer dark:bg-zinc-900"
                 >
                   <div className="h-32 bg-zinc-200 dark:bg-zinc-800 w-full relative">
                      <img 
@@ -278,9 +276,6 @@ export default function Home() {
           )}
           </motion.div>
         </div>
-
-
-      </div>
     </PageWrapper>
   );
 }
