@@ -20,7 +20,7 @@ export default function AdminLayout() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
-    navigate('/login');
+    navigate('/', { state: { requireLogin: true } });
   };
 
   return (

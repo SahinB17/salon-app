@@ -186,7 +186,15 @@ function BookingFormContent({
 
       <Button
         className="w-full"
-        onClick={() => bookMutation.mutate()}
+        onClick={() => {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            window.dispatchEvent(new CustomEvent('open-login-modal'));
+            return;
+          }
+          bookMutation.mutate();
+        }}
+        title={!localStorage.getItem('token') ? "Rezervasiya etmək üçün daxil olun" : ""}
         isLoading={bookMutation.isPending}
         disabled={!appointmentDate || !appointmentTime}
       >
@@ -264,9 +272,12 @@ export default function SalonDetail() {
   const { data: favorites = [] } = useQuery({
     queryKey: ['favorites'],
     queryFn: async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return [];
       const response = await api.get('/api/v1/favorites/me');
       return response.data;
-    }
+    },
+    enabled: !!localStorage.getItem('token')
   });
 
   const isFavorite = favorites.some((fav: { salon_id: number }) => fav.salon_id === parseInt(id!));
@@ -442,8 +453,16 @@ export default function SalonDetail() {
             >
               <ChevronLeft className="w-6 h-6 text-zinc-900 dark:text-zinc-50 pr-1" />
             </button>
-            <button
-              onClick={() => toggleFavoriteMutation.mutate(isFavorite)}
+             <button
+              onClick={() => {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                  window.dispatchEvent(new CustomEvent('open-login-modal'));
+                  return;
+                }
+                toggleFavoriteMutation.mutate(isFavorite);
+              }}
+              title={!localStorage.getItem('token') ? "Favoritlərə əlavə etmək üçün daxil olun" : ""}
               className="absolute top-12 right-4 lg:top-4 w-10 h-10 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm z-10 active:scale-95 transition-transform"
             >
               <motion.div
@@ -545,7 +564,18 @@ export default function SalonDetail() {
           <div className="px-4 mt-8 pb-4">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">Rəylər ({reviews?.length || 0})</h2>
-              <Button className="bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 h-8 px-3 text-xs rounded-full transition-colors" onClick={() => setIsReviewModalOpen(true)}>
+              <Button 
+                onClick={() => {
+                  const token = localStorage.getItem('token');
+                  if (!token) {
+                    window.dispatchEvent(new CustomEvent('open-login-modal'));
+                    return;
+                  }
+                  setIsReviewModalOpen(true);
+                }}
+                title={!localStorage.getItem('token') ? "Rəy yazmaq üçün daxil olun" : ""}
+                className="bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-50 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 h-8 px-3 text-xs rounded-full transition-colors"
+              >
                 <MessageSquare className="w-3.5 h-3.5 mr-1" />
                 Rəy yaz
               </Button>

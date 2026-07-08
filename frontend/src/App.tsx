@@ -1,8 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import ForgotPassword from './pages/ForgotPassword';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import MainLayout from './components/layout/MainLayout';
 import Home from './pages/Home';
@@ -35,20 +32,20 @@ function App() {
       <BrowserRouter>
         <ScrollToTop />
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
           
-          <Route element={<ProtectedRoute />}>
-            <Route element={<MainLayout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/salons" element={<Search />} />
-              <Route path="/salons/:id" element={<SalonDetail />} />
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/salons" element={<Search />} />
+            <Route path="/salons/:id" element={<SalonDetail />} />
+            
+            <Route element={<ProtectedRoute />}>
               <Route path="/appointments" element={<Appointments />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/favorites" element={<Favorites />} />
             </Route>
+          </Route>
 
+          <Route element={<ProtectedRoute />}>
             {/* Admin Routes (Protected via AdminRoute & wrapped in AdminLayout) */}
             <Route path="/admin" element={<AdminRoute />}>
               <Route element={<AdminLayout />}>

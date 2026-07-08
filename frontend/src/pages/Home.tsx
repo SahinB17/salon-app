@@ -298,9 +298,15 @@ export default function Home() {
                   <div 
                     onClick={(e) => {
                       e.stopPropagation();
+                      const token = localStorage.getItem('token');
+                      if (!token) {
+                        window.dispatchEvent(new CustomEvent('open-login-modal'));
+                        return;
+                      }
                       const isFav = favorites.some((fav: any) => fav.salon_id === salon.id);
                       toggleFavoriteMutation.mutate({ salonId: salon.id, isFav });
                     }}
+                    title={!localStorage.getItem('token') ? "Favoritlərə əlavə etmək üçün daxil olun" : ""}
                     className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 text-white hover:bg-white/20 transition-colors"
                   >
                      <Heart className={`w-4 h-4 transition-colors ${favorites.some((fav: any) => fav.salon_id === salon.id) ? 'fill-red-500 text-red-500' : ''}`} />

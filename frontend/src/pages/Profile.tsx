@@ -50,7 +50,7 @@ export default function Profile() {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
     queryClient.clear();
-    navigate('/login');
+    navigate('/', { state: { requireLogin: true } });
   };
 
   const updateProfileMutation = useMutation({

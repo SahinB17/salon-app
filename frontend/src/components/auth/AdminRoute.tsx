@@ -5,7 +5,7 @@ export default function AdminRoute() {
   const role = localStorage.getItem('role');
 
   if (!token) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" state={{ requireLogin: true }} replace />;
   }
 
   if (role !== 'salon_admin') {
