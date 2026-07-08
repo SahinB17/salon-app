@@ -308,8 +308,8 @@ export default function Home() {
 
                   {/* Content Bottom */}
                   <div className="absolute bottom-0 left-0 right-0 p-5 lg:p-6">
-                    <div className="flex justify-between items-end">
-                      <div className="flex-1 min-w-0 pr-4">
+                    <div className="grid grid-cols-[1fr_auto] items-end gap-4 w-full">
+                      <div className="min-w-0 pr-2">
                         <h3 className="font-bold text-white text-lg lg:text-xl truncate">{salon.name}</h3>
                         <div className="flex items-center text-zinc-300 mt-2 text-xs lg:text-sm">
                           <MapPin className="w-3.5 h-3.5 mr-1" />
