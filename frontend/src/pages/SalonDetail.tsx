@@ -331,10 +331,16 @@ export default function SalonDetail() {
   const bookMutation = useMutation({
     mutationFn: async () => {
       const localStart = new Date(`${appointmentDate}T${appointmentTime}:00`);
-      const startDateTimeISO = localStart.toISOString();
+      const startDateTimeISO = `${appointmentDate}T${appointmentTime}:00`;
       const durationMinutes = selectedService?.duration_minutes || 60;
       const localEnd = new Date(localStart.getTime() + durationMinutes * 60000);
-      const endDateTimeISO = localEnd.toISOString();
+      
+      const endYear = localEnd.getFullYear();
+      const endMonth = String(localEnd.getMonth() + 1).padStart(2, '0');
+      const endDay = String(localEnd.getDate()).padStart(2, '0');
+      const endHour = String(localEnd.getHours()).padStart(2, '0');
+      const endMin = String(localEnd.getMinutes()).padStart(2, '0');
+      const endDateTimeISO = `${endYear}-${endMonth}-${endDay}T${endHour}:${endMin}:00`;
 
       const response = await api.post('/api/v1/appointments/', {
         salon_id: parseInt(id!),
