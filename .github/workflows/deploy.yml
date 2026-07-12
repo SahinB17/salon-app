@@ -34,3 +34,13 @@ jobs:
             
             # Təmizlik (İstifadə olunmayan köhnə image-ləri silirik)
             docker image prune -f
+            
+            # -------------------------------------------------------
+            # Hazirliq App-ı da avtomatik ayağa qaldırırıq
+            # (salon-app deploy olanda ortaq Docker şəbəkəsi sıfırlanır
+            # və hazirliq konteynerləri söndüyü üçün bunu əlavə etdik)
+            # -------------------------------------------------------
+            cd ~/hazirliq-app
+            docker-compose up -d
+            docker-compose exec -T hazirliq_backend alembic upgrade head
+
