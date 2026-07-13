@@ -37,7 +37,7 @@ services:
     image: nginx:alpine
     container_name: salon_frontend
     ports:
-      - "80:80"
+      - "8003:80"
     volumes:
       - ./frontend/dist:/usr/share/nginx/html
       - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf
