@@ -23,11 +23,8 @@ jobs:
             # Ən son dəyişiklikləri GitHub-dan çəkirik
             git pull origin main
             
-            # Köhnə konteynerləri dayandırırıq
-            docker-compose down
-            
-            # Konteynerləri ayağa qaldırırıq
-            docker-compose up -d
+            # Yeni dəyişiklikləri build edib konteynerləri ayağa qaldırırıq (şəbəkəni silmədən)
+            docker-compose up -d --build
             
             # Verilənlər bazası miqrasiyalarını avtomatik işə salırıq
             docker-compose exec -T backend alembic upgrade head
