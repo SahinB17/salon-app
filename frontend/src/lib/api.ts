@@ -16,8 +16,12 @@ api.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       const currentToken = localStorage.getItem('token');
-      const requestAuthHeader = error.config?.headers?.Authorization;
-      const requestToken = requestAuthHeader ? requestAuthHeader.replace('Bearer ', '') : null;
+      const requestAuthHeader = error.config?.headers 
+        ? (typeof error.config.headers.get === 'function' 
+            ? error.config.headers.get('Authorization') 
+            : (error.config.headers.Authorization || error.config.headers.authorization))
+        : null;
+      const requestToken = typeof requestAuthHeader === 'string' ? requestAuthHeader.replace('Bearer ', '') : null;
 
       // Only log out if the request was made with the current token
       // This prevents old pre-login requests from logging the user out due to a race condition

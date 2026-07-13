@@ -60,6 +60,9 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
       const response = await api.post('/api/v1/login/access-token', formData, {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
+      // Save token immediately to prevent interceptor race conditions
+      localStorage.setItem('token', response.data.access_token);
+      localStorage.setItem('role', response.data.role);
       return response.data;
     },
     onSuccess: (data) => {
