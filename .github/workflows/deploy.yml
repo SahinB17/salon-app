@@ -24,10 +24,10 @@ jobs:
             git pull origin main
             
             # Yeni dəyişiklikləri build edib konteynerləri ayağa qaldırırıq (şəbəkəni silmədən)
-            docker-compose up -d --build
+            docker compose up -d --build
             
             # Verilənlər bazası miqrasiyalarını avtomatik işə salırıq
-            docker-compose exec -T backend alembic upgrade head
+            docker compose exec -T backend alembic upgrade head
             
             # Təmizlik (İstifadə olunmayan köhnə image-ləri silirik)
             docker image prune -f
@@ -38,6 +38,6 @@ jobs:
             # və hazirliq konteynerləri söndüyü üçün bunu əlavə etdik)
             # -------------------------------------------------------
             cd ~/hazirliq-app
-            docker-compose up -d
-            docker-compose exec -T hazirliq_backend alembic upgrade head
+            docker compose up -d
+            docker compose exec -T hazirliq_backend alembic upgrade head
 
