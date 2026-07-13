@@ -20,7 +20,8 @@ jobs:
             # Serverdeki qovluğa keçid edirik (bu yolu öz serverinizdəki yerə görə dəyişə bilərsiniz)
             cd ~/salon-app
             
-            # Ən son dəyişiklikləri GitHub-dan çəkirik
+            # Ən son dəyişiklikləri GitHub-dan çəkirik (lokal dəyişiklikləri təmizləməklə)
+            git reset --hard
             git pull origin main
             
             # Yalnız backend və frontend-i yenidən build edib başladırıq (DB-yə toxunmuruq)
