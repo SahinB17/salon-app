@@ -26,7 +26,7 @@ jobs:
             
             # Yalnız backend və frontend-i yenidən build edib başladırıq (DB-yə toxunmuruq)
             docker compose build salon_backend frontend
-            docker compose up -d --no-deps salon_backend frontend
+            docker compose up -d --no-deps --remove-orphans salon_backend frontend
             
             # Verilənlər bazası miqrasiyalarını avtomatik işə salırıq
             docker compose exec -T salon_backend alembic upgrade head
