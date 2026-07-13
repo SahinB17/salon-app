@@ -23,8 +23,8 @@ jobs:
             # Ən son dəyişiklikləri GitHub-dan çəkirik
             git pull origin main
             
-            # Köhnə konteynerləri dayandırırıq (şəbəkə xətasına görə '|| true' əlavə edirik)
-            docker-compose down || true
+            # Köhnə konteynerləri sürətli şəkildə dayandırırıq (1 saniyəlik timeout ilə)
+            docker-compose down -t 1 || true
             
             # Yeni dəyişiklikləri build edib konteynerləri ayağa qaldırırıq
             docker-compose up -d --build
@@ -39,12 +39,10 @@ jobs:
             docker image prune -f
             
             # -------------------------------------------------------
-            # Hazirliq App-ı da avtomatik ayağa qaldırırıq
-            # (salon-app deploy olanda ortaq Docker şəbəkəsi sıfırlanır
-            # və hazirliq konteynerləri söndüyü üçün bunu əlavə etdik)
+            # Hazirliq App-ı da sürətli şəkildə yenidən başladırıq
+            # (salon_db söndüyü üçün bazaya bağlantısını təzələyirik)
             # -------------------------------------------------------
             cd ~/hazirliq-app
-            docker-compose down || true
-            docker-compose up -d
+            docker-compose restart -t 1
             docker-compose exec -T hazirliq_backend alembic upgrade head
 
