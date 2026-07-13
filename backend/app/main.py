@@ -15,6 +15,9 @@ origins = [
     "http://localhost",
     "http://127.0.0.1",
     "http://132.226.206.18",
+    "https://132.226.206.18",
+    "https://salon.shinetech.app",
+    "http://salon.shinetech.app",
 ]
 
 app.add_middleware(

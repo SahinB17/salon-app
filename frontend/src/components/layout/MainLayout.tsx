@@ -89,7 +89,7 @@ export default function MainLayout() {
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden shrink-0 border border-zinc-300 dark:border-zinc-700">
                   {user?.image_url ? (
-                    <img src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${user.image_url}`} alt={user.full_name} className="w-full h-full object-cover" />
+                    <img src={`${window.location.protocol}//${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${user.image_url}`} alt={user.full_name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center font-bold text-zinc-500">
                       {user?.full_name ? user.full_name.substring(0,2).toUpperCase() : 'U'}

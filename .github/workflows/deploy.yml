@@ -23,26 +23,13 @@ jobs:
             # Ən son dəyişiklikləri GitHub-dan çəkirik
             git pull origin main
             
-            # Köhnə konteynerləri sürətli şəkildə dayandırırıq (1 saniyəlik timeout ilə)
-            docker-compose down -t 1 || true
-            
-            # Yeni dəyişiklikləri build edib konteynerləri ayağa qaldırırıq
-            docker-compose up -d --build
+            # Yalnız backend və frontend-i yenidən build edib başladırıq (DB-yə toxunmuruq)
+            docker-compose build backend frontend
+            docker-compose up -d --no-deps backend frontend
             
             # Verilənlər bazası miqrasiyalarını avtomatik işə salırıq
             docker-compose exec -T backend alembic upgrade head
             
-            # Hazirliq DB-nin mövcudluğunu yoxlayırıq və yoxdursa yaradırıq
-            docker exec salon_db psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'hazirliq_db'" | grep -q 1 || docker exec salon_db psql -U postgres -c "CREATE DATABASE hazirliq_db"
-            
             # Təmizlik (İstifadə olunmayan köhnə image-ləri silirik)
             docker image prune -f
-            
-            # -------------------------------------------------------
-            # Hazirliq App-ı da sürətli şəkildə yenidən başladırıq
-            # (salon_db söndüyü üçün bazaya bağlantısını təzələyirik)
-            # -------------------------------------------------------
-            cd ~/hazirliq-app
-            docker-compose restart -t 1
-            docker-compose exec -T hazirliq_backend alembic upgrade head
 

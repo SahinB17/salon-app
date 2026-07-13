@@ -23,7 +23,7 @@ function generateTimeSlots(startHour = 9, endHour = 21) {
 }
 
 function getImageUrl(path: string) {
-  return `http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${path}`;
+  return `${window.location.protocol}//${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${path}`;
 }
 
 interface BookingFormContentProps {

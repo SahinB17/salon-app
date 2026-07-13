@@ -227,7 +227,7 @@ export default function Home() {
                   className="w-[160px] lg:w-[220px] min-w-[160px] lg:min-w-[220px] shrink-0 h-32 lg:h-40 relative group snap-center rounded-2xl overflow-hidden shadow-sm active:scale-95 transition-transform cursor-pointer"
                 >
                   <img 
-                    src={salon.image_url ? `http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}` : DEFAULT_SALON_IMAGE} 
+                    src={salon.image_url ? `${window.location.protocol}//${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}` : DEFAULT_SALON_IMAGE} 
                     alt={salon.name} 
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
                   />
@@ -288,7 +288,7 @@ export default function Home() {
                   style={{ transform: 'translateZ(0)' }}
                 >
                   <img 
-                    src={salon.image_url ? `http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}` : DEFAULT_SALON_IMAGE} 
+                    src={salon.image_url ? `${window.location.protocol}//${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}` : DEFAULT_SALON_IMAGE} 
                     alt={salon.name} 
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                   />

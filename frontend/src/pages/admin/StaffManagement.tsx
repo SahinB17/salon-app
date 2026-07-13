@@ -308,7 +308,7 @@ export default function StaffManagement() {
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden transition-colors ${staff.is_active ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500'}`}>
                   {staff.image_url ? (
                     <img 
-                      src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${staff.image_url}`} 
+                      src={`${window.location.protocol}//${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${staff.image_url}`} 
                       alt={staff.full_name} 
                       className="w-full h-full object-cover" 
                     />
@@ -409,7 +409,7 @@ export default function StaffManagement() {
                   <div className="relative group w-24 h-24 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 transition-all flex items-center justify-center">
                     {imageUrl ? (
                       <img 
-                        src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${imageUrl}`} 
+                        src={`${window.location.protocol}//${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${imageUrl}`} 
                         alt="Profil" 
                         className="w-full h-full object-cover" 
                       />

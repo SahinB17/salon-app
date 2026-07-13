@@ -211,7 +211,7 @@ export default function Search() {
                        >
                          <div className="w-24 h-24 bg-zinc-200 dark:bg-zinc-900 rounded-[1.25rem] flex-shrink-0 overflow-hidden relative border border-zinc-100 dark:border-zinc-800/50">
                             <img 
-                              src={salon.image_url ? `http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}` : DEFAULT_SALON_IMAGE} 
+                              src={salon.image_url ? `${window.location.protocol}//${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}` : DEFAULT_SALON_IMAGE} 
                               alt={salon.name} 
                               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
                             />

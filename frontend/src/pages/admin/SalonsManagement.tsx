@@ -219,7 +219,7 @@ export default function SalonsManagement() {
     setDescription(salon.description || '');
     setLatitude(salon.latitude ? String(salon.latitude) : '');
     setLongitude(salon.longitude ? String(salon.longitude) : '');
-    setImagePreview(salon.image_url ? `http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}` : null);
+    setImagePreview(salon.image_url ? `${window.location.protocol}//${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}` : null);
     setImageFile(null);
     setIsModalOpen(true);
   };
@@ -268,7 +268,7 @@ export default function SalonsManagement() {
               <Card key={salon.id} className="rounded-2xl border-0 shadow-sm overflow-hidden flex flex-col group relative dark:bg-zinc-900 transition-colors">
                 <div className="h-48 bg-zinc-200 dark:bg-zinc-800 relative overflow-hidden transition-colors">
                   {salon.image_url ? (
-                    <img src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
+                    <img src={`${window.location.protocol}//${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${salon.image_url}`} alt={salon.name} className="w-full h-full object-cover" />
                   ) : (
                     <img src={DEFAULT_SALON_IMAGE} alt={salon.name} className="w-full h-full object-cover opacity-80" />
                   )}
@@ -429,7 +429,7 @@ export default function SalonsManagement() {
                 {/* Existing Images */}
                 {activeGallerySalon.images?.map((img: any) => (
                   <div key={img.id} className="relative h-32 rounded-2xl overflow-hidden group border border-zinc-100 dark:border-zinc-800 transition-colors">
-                    <img src={`http://${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${img.image_url}`} alt="Qalereya" className="w-full h-full object-cover" />
+                    <img src={`${window.location.protocol}//${window.location.hostname}${window.location.port === '5173' ? ':8000' : ''}${img.image_url}`} alt="Qalereya" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <button 
                         onClick={() => deleteGalleryImageMutation.mutate(img.id)}
